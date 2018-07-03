@@ -183,11 +183,6 @@
 	
 	function fnSearch()
 	{
-		doPagingClick(1);
-	}
-	
-	function doPagingClick(cpage)
-	{
 		if( isProcess )
 		{			
 			alert('Loading data.\nPlease wait a minute.');
@@ -233,7 +228,7 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 	}
 	
-	$(function() {
+	function fnIndexView() {
 		var container_name;
 		var tmp_docker_status = [];
 		var docker_status = [];
@@ -344,6 +339,10 @@
 		html += "  <td class='text-left'>" + (system_info.Containers) + "</td>";
 		html += "</tr>";
 		$("#tbody").html(html);
-
+	}
+	
+	$(function() {
+		fnIndexView();
+		index_timer = setInterval("fnSearch()", 1000 * 30);
 	});
 </script>
