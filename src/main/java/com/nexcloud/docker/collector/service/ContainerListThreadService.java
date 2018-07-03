@@ -33,7 +33,11 @@ public class ContainerListThreadService implements Runnable {
 	public synchronized static int getThread_cnt() {
 		return thread_cnt;
 	}
-
+	
+	public synchronized static void setThread_cnt() {
+		thread_cnt = getThread_cnt() + 1;
+	}
+	
 	public synchronized static void setThread_cnt(int thread_cnt) {
 		ContainerListThreadService.thread_cnt = thread_cnt;
 	}
@@ -121,7 +125,8 @@ public class ContainerListThreadService implements Runnable {
 			ResourceLoader.getInstance().setResource("history_"+con.getId(), history);
 		}
 		
-		setThread_cnt(getThread_cnt() + 1);
+		setThread_cnt();
+		//setThread_cnt(getThread_cnt() + 1);
 		con_list.add(gson.toJson(con));
 	}
 
