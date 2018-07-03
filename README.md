@@ -11,7 +11,7 @@ NexClipper features the following capabilities:
 * Container process, network , environment, network, log
 
 # Quick Start: Running NexClipper in a Docker Container
-You can run nexdocker to monitor the docker containers.  
+You can run NexClipper to monitor the docker containers.  
 Simply run:
 
 ```
@@ -19,7 +19,7 @@ sudo docker pull nexclipper/nexclipper;
 ```
 
 ```
-sudo docker run -d \
+sudo docker run \
 	     --detach=true \
 	     --name NexClipper \
 	     -p 10001:9001 \
