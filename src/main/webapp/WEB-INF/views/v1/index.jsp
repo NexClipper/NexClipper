@@ -125,14 +125,11 @@
                                                                 <div class="col">
                                                                     <select class="form-control m-input form-metrics" id="docker_name">
 		                                                            	<option value="">Select Docker name</option>
-		                                         						
 		                                                            </select>
                                                                 </div>
                                                                 <div class="col">
 		                                                            <select class="form-control m-input form-metrics" id="docker_status">
 		                                                                <option value="">Select Docker status</option>
-		                                                                <option value="running">running</option>
-											                            <option value="exited">exited</option>
 		                                                            </select>
 		                                                        </div>
                                                             </div>
@@ -238,6 +235,8 @@
 	
 	$(function() {
 		var container_name;
+		var tmp_docker_status = [];
+		var docker_status = [];
 		var dockerData = JSON.parse(JSON.stringify(${con_list}));
 		for(var i=0; i<dockerData.length; i++) {
 			if (dockerData[i].Labels.MESOS_TASK_ID ){
@@ -246,9 +245,21 @@
     		else {
     			container_name = dockerData[i].Names[0].substr(1);
     		}
+						
 			$("#docker_name").append("<option value='"+container_name+"'>"+container_name+"</option>");
-		}
 			
+			tmp_docker_status.push(dockerData[i].State);
+		}
+		
+		$.each(tmp_docker_status, function(key, value ){ 
+			if($.inArray(value, docker_status) === -1)
+				docker_status.push(value); 
+		});
+		
+		for (var i=0; i<docker_status.length; i++) {
+			$("#docker_status").append("<option value='"+docker_status[i]+"'>"+docker_status[i]+"</option>");	
+		}
+	
 		var system_info = ${system_info};
 		
 		$("#host_name").html(system_info.Name);
