@@ -141,7 +141,7 @@
                                                 <div class="col-lg-10 col-xl-4">
                                                     <div class="form-group m-form__group">
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Search for..." aria-label="Search for..." aria-describedby="basic-addon2" id="searchTxt" OnKeyDown="f_fnSearch();">
+                                                            <input type="text" class="form-control" placeholder="Search Cotainer Name or ID" aria-label="Search for..." aria-describedby="basic-addon2" id="searchTxt" OnKeyDown="f_fnSearch();">
                                                             <div class="input-group-append">
                                                                 <button class="btn btn-success" type="button" onClick="fnSearch()">Search</button>
                                                             </div>
@@ -228,7 +228,19 @@
 		return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 	}
 	
-	function fnIndexView() {
+	function fnAddjQueryEvent()
+	{
+		$("#docker_name").change(function() {
+			fnSearch();
+		});
+		
+		$("#docker_status").change(function() {
+			fnSearch();
+		});
+	}
+	
+	function fnAddComboBoxData()
+	{
 		var container_name;
 		var tmp_docker_status = [];
 		var docker_status = [];
@@ -254,7 +266,9 @@
 		for (var i=0; i<docker_status.length; i++) {
 			$("#docker_status").append("<option value='"+docker_status[i]+"'>"+docker_status[i]+"</option>");	
 		}
+	}
 	
+	function fnIndexView() {
 		var system_info = ${system_info};
 		
 		$("#host_name").html(system_info.Name);
@@ -342,7 +356,11 @@
 	}
 	
 	$(function() {
+		
 		fnIndexView();
+		fnAddComboBoxData();
+		fnAddjQueryEvent();
+		
 		index_timer = setInterval("fnSearch()", 1000 * 30);
 	});
 </script>
