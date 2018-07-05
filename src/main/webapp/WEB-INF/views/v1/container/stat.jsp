@@ -163,30 +163,29 @@ if( obj.useds.length > 0)
 {
 	var m_chart1_last_time = obj.useds[obj.useds.length-1].timestamp;
 	var docker_date = new Date(m_chart1_last_time);
+	var cur_dt = new Date();
+	
+	if( diff_hour == -1 )
+	{
+		var milisec_diff; 
+		    
+		if( docker_date.getTime() > cur_dt.getTime() ) {
+			milisec_diff  = docker_date.getTime() - cur_dt.getTime();
+		}
+		else {
+			milisec_diff  = cur_dt.getTime() - docker_date.getTime();
+		}
+		    
+		var date_diff = new Date( milisec_diff );
+		diff_hour = date_diff.getHours();
+	}
 	
 	for(var i=0; i<CHART_COUNT-obj.useds.length; i++ )
 	{
 		var dt = new Date();
-	    dt.setSeconds(dt.getSeconds() - (CHART_COUNT-i)*5);
-	    
-	    if( diff_hour == -1 )
-	    {
-		    var milisec_diff; 
-		    
-		    if( docker_date.getTime() > dt.getTime() )
-		    {
-		    	milisec_diff  = docker_date.getTime() - dt.getTime();
-		    }
-		    else
-		    {
-		    	milisec_diff  = dt.getTime() - docker_date.getTime();
-		    }
-		    
-		    var date_diff = new Date( milisec_diff );
-		    diff_hour = date_diff.getHours();
-	    }
-	    
+	    dt.setSeconds(dt.getSeconds() - (CHART_COUNT-i)*10);
 	    dt.setHours(dt.getHours() + parseInt(diff_hour));  
+	    
 		var dateA = dt.getTime();
 		
 		cpu_percent.push([dateA, null]);
