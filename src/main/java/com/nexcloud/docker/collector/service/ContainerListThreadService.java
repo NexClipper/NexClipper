@@ -49,11 +49,14 @@ public class ContainerListThreadService implements Runnable {
 	public synchronized static void setCon_list(List<String> con_list) {
 		ContainerListThreadService.con_list = con_list;
 	}
-
+	
+	public synchronized static void addCon_list(Container con) {
+		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+		con_list.add(gson.toJson(con));
+	}
+	
 	@Override
 	public synchronized void run() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-		
 		if (con.getState().equals("running")) {
 			ContainerStat conStat = getContainerStat(Util.uri_container_stat, con.getId());
 			con.setCpuPercent(calculateCPUPercent(conStat));
@@ -126,8 +129,7 @@ public class ContainerListThreadService implements Runnable {
 		}
 		
 		setThread_cnt();
-		//setThread_cnt(getThread_cnt() + 1);
-		con_list.add(gson.toJson(con));
+		addCon_list(con);
 	}
 
 	public ContainerStat getContainerStat(String api_name, String id) {
