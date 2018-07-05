@@ -30,7 +30,7 @@
                                         </div>
                                         <div class="col">
                                             <div class="m-widget14__legends-container">
-                                                <div class="m-widget14__legends">
+                                                <div class="m-widget14__legends" style="font-size: 1.5em">
                                                 	<div class="m-widget14__legend">
                                                         <span class="m-widget14__legend-bullet m--bg-accent"></span>
                                                         <span class="m-widget14__legend-text m--font-accent">Total : <strong id="total"></strong></span>
@@ -230,6 +230,8 @@
 	
 	function fnAddjQueryEvent()
 	{
+		$("#docker_status").val("running");
+		
 		$("#docker_name").change(function() {
 			fnSearch();
 		});
@@ -360,6 +362,7 @@
 		fnIndexView();
 		fnAddComboBoxData();
 		fnAddjQueryEvent();
+		fnSearch();
 		
 		index_timer = setInterval("fnSearch()", 1000 * 30);
 	});
