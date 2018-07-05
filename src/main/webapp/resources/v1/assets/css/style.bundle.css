@@ -1069,7 +1069,7 @@ pre code {
     background-color: transparent; }
 .table th,
 .table td {
-    padding: 0.75rem;
+    padding: 0.55rem;
     vertical-align: top;
     border-top: 1px solid #f4f5f8; }
 .table thead th {
@@ -16465,7 +16465,7 @@ code {
 .m-portlet .m-portlet__head .m-portlet__head-caption .m-portlet__head-title .m-portlet__head-text {
     display: table-cell;
     vertical-align: middle;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     font-weight: 600;
     font-family: Roboto, Noto Sans KR; }
 .m-portlet .m-portlet__head .m-portlet__head-caption .m-portlet__head-title .m-portlet__head-text small {
@@ -16627,7 +16627,7 @@ code {
 .m-portlet.m-portlet--last {
     margin-bottom: 0; }
 .m-portlet.m-portlet--head-sm .m-portlet__head {
-    height: 4.1rem; }
+    height: 3.1rem; }
 .m-portlet.m-portlet--head-sm .m-portlet__head .m-portlet__head-tools {
     padding: 0; }
 .m-portlet.m-portlet--head-sm .m-portlet__head .m-portlet__head-tools .m-tabs-line .m-tabs__link {
@@ -19967,7 +19967,7 @@ body.m-portlet--fullscreen.m-aside-left--fixed .m-aside-left {
     margin-bottom: 0; }
 .m-widget14 .m-widget14__legend .m-widget14__legend-bullet {
     width: 2rem;
-    height: 0.45rem;
+    height: 0.75rem;
     display: inline-block;
     border-radius: 1.1rem;
     margin-bottom: 0.12rem;
