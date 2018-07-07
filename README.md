@@ -1,5 +1,6 @@
 # What is NexClipper?  
-NexClipper collects statistics, status, process, network, environment, volume, and log information about containers.
+NexClipper is the simple and easy container monitoring tool which to collects statistics, status, process, network, environment, volume, and log.
+![GUI1](images/log1.png) 
 
 # Feature Overview
 NexClipper features the following capabilities:
