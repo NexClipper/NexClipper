@@ -13,7 +13,10 @@ public class Labels {
 	private String version;
 	
 	private String MESOS_TASK_ID;
-
+	
+	@SerializedName("io.kubernetes.docker.type")
+	private String kubernetes_docker_type;
+	
 	public String getVendor() {
 		return vendor;
 	}
@@ -44,6 +47,14 @@ public class Labels {
 
 	public void setMESOS_TASK_ID(String mESOS_TASK_ID) {
 		MESOS_TASK_ID = mESOS_TASK_ID;
+	}
+
+	public String getKubernetes_docker_type() {
+		return kubernetes_docker_type;
+	}
+
+	public void setKubernetes_docker_type(String kubernetes_docker_type) {
+		this.kubernetes_docker_type = kubernetes_docker_type;
 	}
 
 	@Override

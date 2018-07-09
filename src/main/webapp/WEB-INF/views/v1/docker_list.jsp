@@ -19,9 +19,13 @@
 				var container_type = "";
         		var container_name = "";
         		
-        		if (dataJSONArray[i].Labels.MESOS_TASK_ID ){
+        		if (dataJSONArray[i].Labels.MESOS_TASK_ID) {
         			container_type = "Mesos";
         			container_name = dataJSONArray[i].Labels.MESOS_TASK_ID;
+        		}
+        		else if (dataJSONArray[i].Labels['io.kubernetes.docker.type']) {
+        			container_type = "K8S";
+        			container_name = dataJSONArray[i].Names[0].substr(1);
         		}
         		else {
         			container_type = "Docker";
@@ -44,7 +48,6 @@
                             'state' : dataJSONArray[i].State,
                             'status' : dataJSONArray[i].Status,
                             'created' : new Date(dataJSONArray[i].Created*1000).toLocaleString()
-        					
                         }
         		);
         	}
@@ -77,24 +80,27 @@
                         field: "type",
                         title: "Type",
                         textAlign: 'center',
-                        width:100
+                        width:70
                     }, {
                     field: "id",
                     title: "Container ID",
                     textAlign: 'center',
+                    width:100,
                     template: function (row) {
                         return "<a href=\"javascript:fnDetailView('"+row.id+"')\" class=\"font-weight-bold\">" + row.id + "</a>";
                     }
                 }, {
                     field: "name",
                     title: "Container Name",
-                    textAlign: 'left',
+                    textAlign: 'center',
+                    width:200,
                     template: function (row) {
                         return "<a href=\"javascript:fnDetailView('"+row.id+"')\" class=\"font-weight-bold\">" + row.name + "</a>";
                     }
                 }, {
                     field: "image",
                     title: "Image",
+                    width:200,
                     textAlign: 'center',
                 },{
                     field: "cpu",
@@ -121,12 +127,12 @@
                     field: "status",
                     title: "Status",
                     textAlign: 'center',
-                    width:200
+                    width:150
                 }, {
                     field: "created",
                     title: "Created",
                     textAlign: 'center',
-                    width:300
+                    width:200
                 }
                 ]
             });
