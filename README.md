@@ -36,11 +36,16 @@ sudo docker run \
 NexClipper exposes a web UI at its port:  
 **http://<HOST_IP>:<HOST_PORT>/**
 
-## Dashboard
+# Dashboard
 The dashboard shows the container's statistics, status, logs, and various information.
 ![GUI1](images/main_k8s.PNG)  
 
 ![GUI1](images/detail_container.PNG)
+
+# Licensing
+NexClipper is licensed under the Apache License, Version 2.0. See 
+[LICENSE](https://github.com/TheNexCloud/NexClipper/blob/master/LICENSE) for the full
+license text.
 
 # Contact
 http://www.nexcloud.co.kr/  
