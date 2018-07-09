@@ -6,21 +6,8 @@
 	    <div class="row m-row--no-padding m-row--col-separator-xl">
 	        <div class="col-md-12 col-lg-12 col-xl-12">
 	            <div class="m-widget14">
-	                <div class="m-widget14__header">
-	                    <div class="m-widget14__title">
-	                        <select class="form-control m-input m-input--square d-inline" id="sel1" style="width:auto;">
-	                            <option value="CPU" selected>CPU (%)</option>
-	                            <!-- 
-	                            <option value="CPU_USED">CPU (Core)</option>
-	                            <option value="MEM">MEM (%)</option>
-	                            <option value="MEM_USED">MEM (GB)</option>
-	                             -->
-	                        </select>
-	                    </div>
-	                </div>
 	                <div id="m_flotcharts1" class="flotchart-dummy" style="height: 200px;"></div>
 	            </div>
-	
 	        </div>
 	    </div>
 	</div>
@@ -31,18 +18,6 @@
         <div class="row m-row--no-padding m-row--col-separator-xl">
             <div class="col-md-12 col-lg-12 col-xl-12">
                 <div class="m-widget14">
-                    <div class="m-widget14__header">
-                        <div class="m-widget14__title">
-                            <select class="form-control m-input m-input--square d-inline" id="sel2" style="width:auto;">
-                                <option value="Memory">Memory </option>
-                                <!-- 
-                                <option value="CPU_USED">CPU (Core)</option>
-                                <option value="MEM" selected>MEM (%)</option>
-                                <option value="MEM_USED">MEM (GB)</option>
-                                 -->
-                            </select>
-                        </div>
-                    </div>
                     <div id="m_flotcharts2" class="flotchart-dummy" style="height: 200px;"></div>
                 </div>
             </div>
@@ -55,18 +30,6 @@
 	    <div class="row m-row--no-padding m-row--col-separator-xl">
 	        <div class="col-md-12 col-lg-12 col-xl-12">
 	            <div class="m-widget14">
-	                <div class="m-widget14__header">
-	                    <div class="m-widget14__title">
-	                        <select class="form-control m-input m-input--square d-inline" id="sel2" style="width:auto;">
-	                            <option value="Networks">Networks</option>
-	                            <!-- 
-	                            <option value="CPU_USED">CPU (Core)</option>
-	                            <option value="MEM" selected>MEM (%)</option>
-	                            <option value="MEM_USED">MEM (GB)</option>
-	                             -->
-	                        </select>
-	                    </div>
-	                </div>
 	                <div id="m_flotcharts3" class="flotchart-dummy" style="height: 200px;"></div>
 	            </div>
 	        </div>
@@ -79,18 +42,6 @@
         <div class="row m-row--no-padding m-row--col-separator-xl">
             <div class="col-md-12 col-lg-12 col-xl-12">
                 <div class="m-widget14">
-                    <div class="m-widget14__header">
-                        <div class="m-widget14__title">
-                            <select class="form-control m-input m-input--square d-inline" id="sel2" style="width:auto;">
-                                <option value="Networks">Networks</option>
-                                <!-- 
-                                <option value="CPU_USED">CPU (Core)</option>
-                                <option value="MEM" selected>MEM (%)</option>
-                                <option value="MEM_USED">MEM (GB)</option>
-                                 -->
-                            </select>
-                        </div>
-                    </div>
                     <div id="m_flotcharts4" class="flotchart-dummy" style="height: 200px;"></div>
                 </div>
             </div>
@@ -103,18 +54,6 @@
         <div class="row m-row--no-padding m-row--col-separator-xl">
             <div class="col-md-12 col-lg-12 col-xl-12">
                 <div class="m-widget14">
-                    <div class="m-widget14__header">
-                        <div class="m-widget14__title">
-                            <select class="form-control m-input m-input--square d-inline" id="sel2" style="width:auto;">
-                                <option value="Block I/O">Block I/O</option>
-                                <!-- 
-                                <option value="CPU_USED">CPU (Core)</option>
-                                <option value="MEM" selected>MEM (%)</option>
-                                <option value="MEM_USED">MEM (GB)</option>
-                                 -->
-                            </select>
-                        </div>
-                    </div>
                     <div id="m_flotcharts5" class="flotchart-dummy" style="height: 200px;"></div>
                 </div>
             </div>
