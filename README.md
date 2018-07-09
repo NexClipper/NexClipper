@@ -38,7 +38,7 @@ NexClipper exposes a web UI at its port:
 
 ## Dashboard
 The dashboard shows the container's statistics, status, logs, and various information.
-![GUI1](images/main.PNG)  
+![GUI1](images/main_k8s.PNG)  
 
 ![GUI1](images/detail_container.PNG)
 
