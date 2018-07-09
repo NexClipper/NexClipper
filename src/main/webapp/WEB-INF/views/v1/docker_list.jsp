@@ -43,6 +43,7 @@
                             'id' : dataJSONArray[i].Id,
                             'name' : container_name,
                             'image' : dataJSONArray[i].Image,
+                            'command' : dataJSONArray[i].Command.substr(0, 50),
                             'cpu' : parseFloat(dataJSONArray[i].cpuPercent).toFixed(2),
                             'mem' : parseFloat(dataJSONArray[i].memPercent).toFixed(2),
                             'state' : dataJSONArray[i].State,
@@ -102,7 +103,12 @@
                     title: "Image",
                     width:200,
                     textAlign: 'center',
-                },{
+                }, {
+                    field: "command",
+                    title: "Command",
+                    width:200,
+                    textAlign: 'center',
+                }, {
                     field: "cpu",
                     title: "CPU(%)",
                     textAlign: 'center',
