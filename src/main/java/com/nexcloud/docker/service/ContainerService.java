@@ -26,7 +26,7 @@ import com.nexcloud.docker.util.Util;
 @Service
 public class ContainerService {
 	private static final Logger logger = LoggerFactory.getLogger(ContainerService.class);
-	private static final int log_cnt = 3000;
+	private static final int log_cnt = 10000;
 	
 	public String getContainerInspect(String id) {
 		String uri = String.format(Util.uri_container_inspect, id);
