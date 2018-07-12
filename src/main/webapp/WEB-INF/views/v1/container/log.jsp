@@ -32,8 +32,6 @@ function fnLog (){
 		success		: function (data){
 			if( data.result == "SUCCESS" )
 			{
-				console.log("data.log.length: " +data.log.length);
-			
 				var obj;
 				if ( data.log.length > 0 ) {
 					for ( var i = 0; i < data.log.length; i++) {
@@ -98,10 +96,8 @@ jQuery(document).ready(
 			$("#tlog").html(html);
 			$('html, body').animate({ scrollTop: document.body.scrollHeight }, 1000);
 			m_log_last_time = con_log[con_log.length-1].time;
-			console.log("time --->> " +m_log_last_time);
 			
 			stop();
 			start();
-			
 		});
 </script>
