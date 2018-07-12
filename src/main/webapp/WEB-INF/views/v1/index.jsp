@@ -364,6 +364,6 @@
 		fnAddjQueryEvent();
 		fnSearch();
 		
-		index_timer = setInterval("fnSearch()", 1000 * 30);
+		//index_timer = setInterval("fnSearch()", 1000 * 30);
 	});
 </script>
