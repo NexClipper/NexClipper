@@ -1,7 +1,7 @@
 package com.nexcloud.docker.container.list.domain;
 
 public class Networks {
-	private String IPAMConfig;
+	//private String IPAMConfig;
 	private String Links;
 	private String Alias;
 	private String NetworkID;
@@ -14,6 +14,7 @@ public class Networks {
 	private int GlobalIPv6PrefixLen;
 	private String MacAddress;
 
+	/*
 	public String getIPAMConfig() {
 		return IPAMConfig;
 	}
@@ -21,6 +22,7 @@ public class Networks {
 	public void setIPAMConfig(String iPAMConfig) {
 		IPAMConfig = iPAMConfig;
 	}
+	*/
 
 	public String getLinks() {
 		return Links;
