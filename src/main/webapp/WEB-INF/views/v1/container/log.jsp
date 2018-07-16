@@ -36,7 +36,13 @@ function fnLog (){
 				if ( data.log.length > 0 ) {
 					for ( var i = 0; i < data.log.length; i++) {
 						obj = JSON.parse(data.log[i]);
-						$("#tlog").append("<h6>" +obj.log +"</h6>");
+						
+						if (obj.stream == "stderr") {
+							$("#tlog").append("<font color=red>" + "<h6>" +obj.log +"</h6>" + "</font>");
+						}
+						else {
+							$("#tlog").append("<h6>" +obj.log +"</h6>");
+						}
 					}
 				}
 				
@@ -81,13 +87,13 @@ jQuery(document).ready(
 			html += "</style>";
 				
 			for (var i=0; i<con_log.length; i++) {
-				if(con_log[i].stream == "stdout") {					
-					html += "<h6>" +con_log[i].log +"</h6>";
-				}
-				else {
+				if(con_log[i].stream == "stderr") {
 					html += "<font color=red>";
 					html += "<h6>" +con_log[i].log +"</h6>";
 					html += "</font>";
+				}
+				else {
+					html += "<h6>" +con_log[i].log +"</h6>";
 				}
 			}
 			html += "</body>";
