@@ -25,7 +25,6 @@ public class Command {
 			return readBuffer.toString();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(1);
 		}
 		
 		return null;

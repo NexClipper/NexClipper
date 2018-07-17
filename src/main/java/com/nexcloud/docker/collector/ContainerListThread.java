@@ -24,11 +24,17 @@ public class ContainerListThread extends TimerTask {
 	
 	@Override
 	public void run() {		
-		int sleep_cnt=0;
+		int container_cnt=0, sleep_cnt=0;
 		String result = Util.procDockerApi(Util.uri_container_list);
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 		ArrayList<Container> containers  = gson.fromJson(result, new TypeToken<ArrayList<Container>>(){}.getType());
-		int container_cnt = containers.size();
+		
+		if (containers == null) {
+			return;
+		}
+		else {
+			container_cnt = containers.size();
+		}
 		
 		Runnable[] runnable = new Runnable[container_cnt];
 		Thread[] threads = new Thread[container_cnt];
