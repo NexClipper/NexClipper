@@ -88,7 +88,7 @@
                     textAlign: 'center',
                     width:100,
                     template: function (row) {
-                        return "<a href=\"javascript:fnDetailView('"+row.id+"')\" class=\"font-weight-bold\">" + row.id + "</a>";
+                        return "<a href='/containers/"+row.id+"/detail' class=\"font-weight-bold\">" + row.id + "</a>";
                     }
                 }, {
                     field: "name",
@@ -96,7 +96,7 @@
                     textAlign: 'center',
                     width:200,
                     template: function (row) {
-                        return "<a href=\"javascript:fnDetailView('"+row.id+"')\" class=\"font-weight-bold\">" + row.name + "</a>";
+                    	return "<a href='/containers/"+row.id+"/detail' class=\"font-weight-bold\">" + row.name + "</a>";
                     }
                 }, {
                     field: "image",

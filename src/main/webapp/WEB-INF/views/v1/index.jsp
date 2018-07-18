@@ -160,7 +160,6 @@
                                 	<jsp:include page="/WEB-INF/views/v1/docker_list.jsp"/>
                                 </div>
                                 
-
 							</div>
                         </div>
                         <!--end:: Container List-->
@@ -214,11 +213,6 @@
  		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
  		    }
 		});
-	}
-	
-	function fnDetailView( container_id )
-	{
-		location.href="/containers/"+container_id+"/detail";
 	}
 	
 	function formatBytes(bytes, decimals) {
