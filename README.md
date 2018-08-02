@@ -1,10 +1,23 @@
 # What is NexClipper?  
-NexClipper is the simple and easy container monitoring tool which to collects statistics, status, process, network, environment, volume, and log.
+NexCloud is the container monitoring and performance management solution specialized in Docker, Apache Mesos, Marathon, DC/OS, Mesosphere, Kubernetes. It will provide container performance management and Machine learning based predictive, forecasting, anormaly detection.
+
 
 ![GUI1](images/logo1.png) 
 
-# Feature Overview
-NexClipper features the following capabilities:
+# NexClipper Cloud Feature Overview
+NexClipper Cloud features the following capabilities:
+* Fullstack dashboard (Infrastructure, DC/OS, Kubernetes)
+* Container Cluster (DC/OS, Kuberentes)
+* Service Performance (for API)
+* Infrastruture Monitoring (Container, Host, Resource)
+* Incidents Manip)agement
+* AI Analytics (Forecasting, Anomaly detection, Metric correlation)
+
+For try NexClipper Cloud for free, visit http://server.nexclipper.com
+
+
+# NexClipper Light Feature Overview
+NexClipper Light features the following capabilities:
 * Dashboard
 * Container list
 * Status of containers (total continers, running, paused, stopped)
@@ -12,7 +25,7 @@ NexClipper features the following capabilities:
 * Container resource usage (cpu, memory, network, block i/o)
 * Container process, network , environment, network, log
 
-# Quick Start: Running NexClipper in a Docker Container
+# Quick Start: Running NexClipper Light in a Docker Container
 You can run NexClipper to monitor the docker containers.  
 Simply run:
 
