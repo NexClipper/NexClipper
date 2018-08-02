@@ -52,7 +52,7 @@ sudo docker run \
 NexClipper exposes a web UI at its port:  
 **http://<HOST_IP>:<HOST_PORT>/**
 
-# NexClipper LightDashboard
+# NexClipper Light Dashboard
 The dashboard shows the container's statistics, status, logs, and various information.
 ![GUI1](images/main_k8s.PNG)  
 
