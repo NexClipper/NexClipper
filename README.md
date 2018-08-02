@@ -10,7 +10,7 @@ NexClipper Cloud features the following capabilities:
 * Container Cluster (DC/OS, Kuberentes)
 * Service Performance (for API)
 * Infrastruture Monitoring (Container, Host, Resource)
-* Incidents Manip)agement
+* Incidents Management
 * AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
 For try NexClipper Cloud for free, visit http://server.nexclipper.com
