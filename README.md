@@ -4,7 +4,8 @@ NexCloud is the container monitoring and performance management solution special
 
 ![GUI1](images/logo1.png) 
 
-# NexClipper Cloud Feature Overview
+# NexClipper Cloud 
+NexClipper Cloud is online SaaS for monitoring and managing performance of container cluster -  Docker, DC/OS and Kubernetes.
 NexClipper Cloud features the following capabilities:
 * Fullstack dashboard (Infrastructure, DC/OS, Kubernetes)
 * Container Cluster (DC/OS, Kuberentes)
@@ -13,10 +14,12 @@ NexClipper Cloud features the following capabilities:
 * Incidents Management
 * AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For try NexClipper Cloud for free, visit http://server.nexclipper.com
+For try NexClipper Cloud beta, visit http://server.nexclipper.com
 
 
-# NexClipper Light Feature Overview
+
+# NexClipper Light 
+NexClipper light is host level monitoring tool for docker, DC/OS and Kubernetes without addational longterm data store, and not for container cluster level. But it provide almost necessary information to monitor docker instanty.
 NexClipper Light features the following capabilities:
 * Dashboard
 * Container list
@@ -43,13 +46,13 @@ sudo docker run \
 	     nexclipper/nexclipper;
 ```
 
-**NexClipper is now running (in the background) on http://localhost:10001.**
+**NexClipper light is now running (in the background) on http://localhost:10001.**
 
-# Web UI
+# NexClipper Light Web UI
 NexClipper exposes a web UI at its port:  
 **http://<HOST_IP>:<HOST_PORT>/**
 
-# Dashboard
+# NexClipper LightDashboard
 The dashboard shows the container's statistics, status, logs, and various information.
 ![GUI1](images/main_k8s.PNG)  
 
@@ -62,3 +65,4 @@ license text.
 
 # Contact
 http://www.nexcloud.co.kr/  
+nexcloud@nexcloud.co.kr 
