@@ -14,7 +14,8 @@ NexClipper Cloud features the following capabilities:
 * Incidents Management
 * AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For try NexClipper Cloud beta, visit http://server.nexclipper.com
+For more detail visit  http://www.nexclipper.com
+For try beta service, visit http://server.nexclipper.com
 
 
 
