@@ -1,5 +1,5 @@
 # What is NexClipper?  
-NexCloud is the container monitoring and performance management solution specialized in Docker, Apache Mesos, Marathon, DC/OS, Mesosphere, Kubernetes. It will provide container performance management and Machine learning based predictive, forecasting, anormaly detection.
+NexClipper is the container monitoring and performance management solution specialized in Docker, Apache Mesos, Marathon, DC/OS, Mesosphere, Kubernetes. It provides container performance management and Machine learning based predictive, forecasting, anormaly detection.
 
 
 ![GUI1](images/logo1.png) 
