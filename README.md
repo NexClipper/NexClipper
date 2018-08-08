@@ -20,7 +20,7 @@ For try beta service, visit http://server.nexclipper.com
 
 
 # NexClipper Light 
-NexClipper light is host level monitoring tool for docker, DC/OS and Kubernetes without addational longterm data store, and not for container cluster level. But it provide almost necessary information to monitor docker instanty.
+NexClipper light is host level monitoring tool for docker, DC/OS and Kubernetes without additional longterm data store, and not for container cluster level. But it provide almost necessary information to monitor docker instanty.
 NexClipper Light features the following capabilities:
 * Dashboard
 * Container list
