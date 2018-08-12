@@ -1,5 +1,7 @@
 # What is NexClipper?  
-NexClipper is the container monitoring and performance management solution specialized in Docker, Apache Mesos, Marathon, DC/OS, Mesosphere, Kubernetes. It provides container performance management and Machine learning based predictive, forecasting, anormaly detection.
+There are two different version of NexClipper, NexClipper Cloud is for cluster level service and collect customer metric to NexCliper's cloud server. NexClipepr light is an open soure version which installs module for agent and web ui on host machine.
+
+NexClipper is the container monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especilly support machine learning based predictive, forecasting, anormaly detection.
 
 
 ![GUI1](images/logo1.png) 
