@@ -67,5 +67,5 @@ NexClipper is licensed under the Apache License, Version 2.0. See
 license text.
 
 # Contact
-http://www.nexcloud.co.kr/  
-nexcloud@nexcloud.co.kr 
+http://www.nexclipper.com/  
+nexclipper@nexclipper.com
