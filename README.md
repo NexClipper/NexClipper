@@ -1,7 +1,7 @@
 # What is NexClipper?  
-There are two different version of NexClipper, NexClipper Cloud is for cluster level service and collect customer metric to NexCliper's cloud server. NexClipepr light is an open soure version which installs module for agent and web ui on host machine.
+There are two different versions of NexClipper, NexClipper Cloud is for cluster level service and collecting customer metric to NexClipper's cloud server. NexClipper light is an open soure version which installs a module for agent and web ui on host machine.
 
-NexClipper is the container monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especilly support machine learning based predictive, forecasting, anormaly detection.
+NexClipper is the container monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especilly supports machine learning based predictive, forecasting, anormaly detection.
 
 
 ![GUI1](images/logo1.png) 
@@ -22,7 +22,7 @@ For try beta service, visit http://server.nexclipper.com
 
 
 # NexClipper Light 
-NexClipper light is host level monitoring tool for docker, DC/OS and Kubernetes without additional longterm data store, and not for container cluster level. But it provide almost necessary information to monitor docker instanty.
+NexClipper light is a host level monitoring tool for Docker, DC/OS and Kubernetes without additional longterm data store, and not for container cluster level. But it provide almost necessary information to monitor Docker instantly.
 NexClipper Light features the following capabilities:
 * Dashboard
 * Container list
@@ -32,7 +32,7 @@ NexClipper Light features the following capabilities:
 * Container process, network , environment, network, log
 
 # Quick Start: Running NexClipper Light in a Docker Container
-You can run NexClipper to monitor the docker containers.  
+You can run NexClipper to monitor the Docker containers.  
 Simply run:
 
 ```
