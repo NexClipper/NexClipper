@@ -19,7 +19,7 @@ import com.nexcloud.docker.resource.ResourceLoader;
 import com.nexcloud.docker.util.Util;
 
 public class ContainerListThreadService implements Runnable {
-	private static final Logger logger = LoggerFactory.getLogger(Container.class);
+	private static final Logger logger = LoggerFactory.getLogger(ContainerListThreadService.class);
 	private Container con;
 
 	public static int thread_cnt;
@@ -58,7 +58,7 @@ public class ContainerListThreadService implements Runnable {
 	@Override
 	public synchronized void run() {
 		if (con.getState().equals("running")) {
-			ContainerStat conStat = getContainerStat(Util.uri_container_stat, con.getId());
+			ContainerStat conStat = getContainerStat(Util.URI_CONTAINER_STAT, con.getId());
 			con.setCpuPercent(calculateCPUPercent(conStat));
 			con.setMemPercent(calculateMEMPercent(conStat));
 			con.setUsed_mem(conStat.getMemory_stats().getUsage());
@@ -133,7 +133,7 @@ public class ContainerListThreadService implements Runnable {
 	}
 
 	public ContainerStat getContainerStat(String api_name, String id) {
-		String uri = String.format(Util.uri_container_stat, id);
+		String uri = String.format(Util.URI_CONTAINER_STAT, id);
 		String result = Util.procDockerApi(uri);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();

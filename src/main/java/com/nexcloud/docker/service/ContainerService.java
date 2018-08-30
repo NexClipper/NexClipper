@@ -29,12 +29,12 @@ public class ContainerService {
 	private static final int log_cnt = 10000;
 	
 	public String getContainerInspect(String id) {
-		String uri = String.format(Util.uri_container_inspect, id);
+		String uri = String.format(Util.URI_CONTAINER_INSPECT, id);
 		return Util.procDockerApi(uri);
 	}
 	
 	public String getContainerProcess(String id) {
-		String uri = String.format(Util.uri_container_process, id);
+		String uri = String.format(Util.URI_CONTAINER_PROCESS, id);
 		return Util.procDockerApi(uri);
 	}
 	

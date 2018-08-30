@@ -7,7 +7,7 @@ public class ContainerService {
 
 	public void getContainerSystemInfo(){
 		// Get system data
-		String uri = String.format(Util.uri_system_info);
+		String uri = String.format(Util.URI_SYSTEM_INFO);
 		String data = Util.procDockerApi(uri);
 		
 		// Set system data
