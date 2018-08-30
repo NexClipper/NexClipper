@@ -1,10 +1,22 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<div id="tlog">
-
+<style type="text/css">
+h6 { font-family: 'Nanum Gothic'}
+</style>
+<div class="col-md-12">
+	<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
+		<div class="m-portlet__head">
+			<div class="m-portlet__head-caption">
+				<div class="m-portlet__head-title">
+					<h3 class="m-portlet__head-text">Logs</h3>
+				</div>
+			</div>
+		</div>
+		<div id = "scrollController" class="m-portlet__body m-portlet__body--no-padding" style="height: 700px; overflow: scroll; margin: 3px 0px 0px 9px;">
+			<div id="tlog"></div>
+		</div>
+	</div>
 </div>
-
 <script>
 	
 ///////////////////////////////////////////////////////
@@ -47,7 +59,7 @@ function fnLog (){
 				}
 				
 				m_log_last_time = obj.time;
-				$('html, body').animate({ scrollTop: document.body.scrollHeight }, 1000);
+				$("#scrollController").animate({ scrollTop: $("#tlog").height() }, "slow");
 			}
 		},
 		error		: function(request, status, error) {
@@ -68,42 +80,27 @@ var log_timer;
 function start(){
 	log_timer = setInterval("fnAjaxLog()", 100);
 }
- 
 function stop(){
 	clearInterval(log_timer);
 }
-
-jQuery(document).ready(
-		function() {
-			var con_log = ${con_log};
-			var html="";
-			
-			html += "<!DOCTYPE html>";
-			html += "<html>";
-			html += "<body>";
-			
-			html += "<style>";
-			html += "h6 { font-family: 'Nanum Gothic'}";
-			html += "</style>";
-				
-			for (var i=0; i<con_log.length; i++) {
-				if(con_log[i].stream == "stderr") {
-					html += "<font color=red>";
-					html += "<h6>" +con_log[i].log +"</h6>";
-					html += "</font>";
-				}
-				else {
-					html += "<h6>" +con_log[i].log +"</h6>";
-				}
-			}
-			html += "</body>";
-			html += "</html>";
-			
-			$("#tlog").html(html);
-			$('html, body').animate({ scrollTop: document.body.scrollHeight }, 1000);
-			m_log_last_time = con_log[con_log.length-1].time;
-			
-			stop();
-			start();
-		});
+jQuery(document).ready(function() {
+	var con_log = ${con_log};
+	var html="";
+	
+	for (var i=0; i<con_log.length; i++) {
+		if(con_log[i].stream == "stderr") {
+			html += "<font color=red>";
+			html += "<h6>" +con_log[i].log +"</h6>";
+			html += "</font>";
+		} else {
+			html += "<h6>" +con_log[i].log +"</h6>";
+		}
+	}
+	$("#tlog").html(html);
+	$('html, body').animate({ scrollTop: document.body.scrollHeight }, 1000);
+	m_log_last_time = con_log[con_log.length-1].time;
+	
+	stop();
+	start();
+});
 </script>

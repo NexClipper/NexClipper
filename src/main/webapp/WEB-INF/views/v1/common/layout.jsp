@@ -74,7 +74,7 @@
 </head>
 <body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--fixed m-aside-left--skin-light m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
 	<input type="hidden" id="time" name="time" value="1h:5s"/>
-	<div class="m-grid m-grid--hor m-grid--root m-page" style="padding: 35px 15px 0 15px;">
+	<div class="m-grid m-grid--hor m-grid--root m-page">
 		<div>
 			<div class="m-grid__item m-grid__item--fluid m-wrapper">
 				<jsp:include page="/WEB-INF/views/${body}.jsp"/>
