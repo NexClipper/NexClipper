@@ -22,117 +22,30 @@
             </div>					
 <script>
 
- 	$(document).ready(function(){ 		
- 		var con = ${con}; 
- 		$("#container_name").html(con.Name.substr(1));
- 		$("#container_id").html(con.Id.substr(0, 20));
- 		$("#container_status").html(con.State.Status);
- 		
-		$('#containerButtons a').on('click', function(e){
-	        e.preventDefault();
-	        $(this).attr('class', 'btn btn-primary').siblings().attr('class', 'btn btn-default');
-	        
-	        var select_val = $(this).attr('id');
-			
-	        
-			if		(select_val == "stat")	fnStat();
-			else if	(select_val == "proc")	fnProcess();
-			else if	(select_val == "net") 	fnNet();
-			else if	(select_val == "env") 	fnEnv();
-			else if	(select_val == "vol") 	fnVolume();
-			else if	(select_val == "log") 	fnLogs();
-	    });
+$(document).ready(function(){ 		
+	var con = ${con}; 
+	$("#container_name").html(con.Name.substr(1));
+	$("#container_id").html(con.Id.substr(0, 20));
+	$("#container_status").html(con.State.Status);
+	$('#containerButtons a').on('click', function(e){
+		e.preventDefault();
+		$(this).attr('class', 'btn btn-primary').siblings().attr('class', 'btn btn-default');
+		var select_val = $(this).attr('id');
+		getContainerById(select_val);
+    });
+});
+ 	
+function getContainerById (type) {
+	$.ajax({
+		url: "${prefix}/containers/${container_id}/" + type,
+		type: "GET",
+		dataType: "html",
+		success: function(data){
+			$('#body').html(data);
+		},
+		error: function(request, status, error){
+	        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
+	    }
 	});
- 	
- 	function fnStat()
- 	{
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/stat",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 	
- 	function fnProcess()
- 	{
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/proc",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 	
- 	function fnNet()
- 	{
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/net",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 	
- 	function fnEnv()
- 	{
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/env",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 	
- 	function fnVolume()
- 	{
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/vol",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 	
- 	function fnLogs()
- 	{ 		
- 		$.ajax({
- 			url: "${prefix}/containers/${container_id}/log",
- 			type: "GET",
- 			dataType: "html",
- 			success: function(data){
- 				$('#body').html(data);
- 			},
- 	
- 			error: function(request, status, error){
- 		        alert("code:"+request.status+"\n\n"+"message:"+request.responseText+"\n\n"+"error:"+error);
- 		    }
- 		});
- 	}
- 
+}
 </script>
