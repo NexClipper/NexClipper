@@ -177,7 +177,7 @@
 <input type="hidden" id="time" name="time" value="1h:5s"/>
 
 <!-- begin:: Page -->
-<div class="m-grid m-grid--hor m-grid--root m-page">
+<div class="m-grid m-grid--hor m-grid--root m-page" style="padding: 35px 35px 0 35px;">
     <!-- begin::Body -->
     <div>
         <!-- END: Left Aside -->
