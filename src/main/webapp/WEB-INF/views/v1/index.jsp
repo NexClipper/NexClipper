@@ -5,9 +5,9 @@
 <!-- <script src="/resources/v1/assets/js/vendors.bundle.js" type="text/javascript"></script> -->
 
             <div class="m-content">
-                <h2 class="m--font-success m--margin-bottom-10"><span>Docker Container (Host: <span id="host_name"></span> ) </span></h2>
+                <h2 class="m--font-success m--margin-bottom-10" style="padding: 20px 20px 0 20px;"><span>Docker Container (Host: <span id="host_name"></span> ) </span></h2>
                 <!--Begin:: Widget-->
-                <div class="row">
+                <div class="row" style="padding: 20px 20px 0 20px;">
                     <div class="col-md-6">
                         <!--begin:: Container Status-->
                         <div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
@@ -94,7 +94,7 @@
                 <!--End:: Widget-->
 
                 <!--Begin:: Widget-->
-                <div class="row">
+                <div class="row" style="padding: 20px 20px 0 20px;">
                     <div class="col-md-12">
                         <!--begin:: Container List-->
                         <div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
