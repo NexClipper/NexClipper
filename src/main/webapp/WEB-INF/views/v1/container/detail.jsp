@@ -1,25 +1,23 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-             <div class="m-content">                
-                <h2 class="m--font-success m--margin-bottom-10" style="padding: 20px 20px 0 20px;">
-                	<span id="container_name"></span>
-                	(<span id="container_id"></span>)
-                	 - <span id="container_status"></span>
-                </h2>
-                
-                <div class="btn-group m--margin-top-20" id="containerButtons" style="padding: 20px 20px 0 20px;">
-					<a href="#" class="btn btn-primary" id="stat">Stats</a>
-					<a href="#" class="btn btn-default" id="proc">Process</a>
-					<a href="#" class="btn btn-default" id="net">Networks</a>
-					<a href="#" class="btn btn-default" id="env">Environment</a>
-					<a href="#" class="btn btn-default" id="vol">Volumes</a>
-					<a href="#" class="btn btn-default" id="log">Logs</a>
-				</div>
-				<div id="body" style="padding: 20px 20px 0 20px;">
-					<jsp:include page="/WEB-INF/views/v1/container/stat.jsp"/>
-				</div>
-            </div>					
+	<div class="m-content">                
+		<h2 class="m--font-success m--margin-bottom-10" style="padding: 20px 20px 0 20px;">
+			<span id="container_name"></span>
+			(<span id="container_id"></span>)
+			- <span id="container_status"></span>
+		</h2>
+		<div class="btn-group m--margin-top-20" id="containerButtons" style="padding: 20px 20px 0 20px;">
+			<a href="#" class="btn btn-default" id="log">Logs</a>
+			<a href="#" class="btn btn-primary" id="stat">Stats</a>
+			<a href="#" class="btn btn-default" id="proc">Process</a>
+			<a href="#" class="btn btn-default" id="net">Networks</a>
+			<a href="#" class="btn btn-default" id="env">Environment</a>
+			<a href="#" class="btn btn-default" id="vol">Volumes</a>
+		</div>
+		<div id="body" style="padding: 20px 20px 0 20px;">
+			<jsp:include page="/WEB-INF/views/v1/container/log.jsp"/>
+		</div>
+	</div>					
 <script>
 
 $(document).ready(function(){ 		
