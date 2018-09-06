@@ -16,7 +16,7 @@ NexClipper Cloud features the following capabilities:
 * Incidents Management
 * AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For more detail visit  https://www.nexclipper.com
+For more detail visit  https://www.nexclipper.com/
 For try beta service, visit https://server.nexclipper.com
 
 
@@ -67,9 +67,13 @@ NexClipper is licensed under the Apache License, Version 2.0. See
 license text.
 
 # Contact
-Homepage: https://www.nexclipper.com/  
 Email: nexclipper@nexclipper.com
+
+Homepage: https://www.nexclipper.com/ 
+
 Facebook : https://www.facebook.com/nexclipper/
+
 Linkedin: https://www.linkedin.com/company/nexcloud/
+
 Twitter: https://twitter.com/NexClipper
 
