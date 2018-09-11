@@ -141,7 +141,7 @@
                                                 <div class="col-lg-10 col-xl-4">
                                                     <div class="form-group m-form__group">
                                                         <div class="input-group">
-                                                            <input type="text" class="form-control" placeholder="Search Cotainer Name or ID" aria-label="Search for..." aria-describedby="basic-addon2" id="searchTxt" OnKeyDown="f_fnSearch();">
+                                                            <input type="text" class="form-control" placeholder="Search Container Name or ID" aria-label="Search for..." aria-describedby="basic-addon2" id="searchTxt" OnKeyDown="f_fnSearch();">
                                                             <div class="input-group-append">
                                                                 <button class="btn btn-success" type="button" onClick="fnSearch()">Search</button>
                                                             </div>
