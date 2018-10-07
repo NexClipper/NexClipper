@@ -50,9 +50,8 @@ spec:
         securityContext:
          privileged: true
         env:
-        # Please insert NexClipepr agent key 
         - name: agent_key 
-          value:    
+          value: **********   
         - name: agent_endpoint 
           value: agent.nexclipper.com
         - name: k8s_apiserver_endpoint 
