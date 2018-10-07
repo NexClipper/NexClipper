@@ -31,7 +31,8 @@ NexClipper Light features the following capabilities:
 * Container resource usage (cpu, memory, network, block i/o)
 * Container process, network , environment, network, log
 
-# Quick Start: Running NexClipper Light in a Docker Container
+# Quick Start: 
+# Running NexClipper Light in a Docker Container
 You can run NexClipper to monitor the Docker containers.  
 Simply run:
 
@@ -48,6 +49,13 @@ sudo docker run \
 	     --volume /var/lib/docker:/var/lib/docker \
 	     nexclipper/nexclipper;
 ```
+
+# Running NexClipper Light on Kubernetes
+
+```
+kubectl create -f nexclipperlight.yaml
+```
+
 
 **NexClipper light is now running (in the background) on http://localhost:10001.**
 
