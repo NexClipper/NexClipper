@@ -53,7 +53,7 @@ sudo docker run \
 # Running NexClipper Light on Kubernetes
 
 ```
-kubectl create -f nexclipper_light.yaml
+kubectl create -f nexclipperlight.yaml
 ```
 
 
