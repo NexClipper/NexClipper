@@ -1,0 +1,70 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nexclipper
+  namespace: default
+  labels:
+    app: nexclipper
+spec:
+  selector:
+    matchLabels:
+      name: nexclipper
+  updateStrategy:
+      type: RollingUpdate 
+  template:
+    metadata:
+      labels:
+        name: nexclipper
+      annotations:
+        scheduler.alpha.kubernetes.io/tolerations: |
+          [{"operator": "Exists", "effect": "NoSchedule"},{"operator": "Exists", "effect": "NoExecute"}]
+    spec:
+      volumes:
+      - name: dockersocket
+        hostPath:
+         path: /var/run/docker.sock
+         type: Socket
+      - name: docker
+        hostPath:
+         path: /var/lib/docker
+      - name: dev
+        hostPath:
+         path: /dev
+      - name: sys
+        hostPath:
+         path: /sys
+      - name: log
+        hostPath:
+         path: /var/log
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+      - operator: "Exists"
+        effect: "NoExecute"
+      containers:
+      - name: nexclipper
+        image: nexclipper/nexagent
+        securityContext:
+         privileged: true
+        env:
+        # Please insert NexClipepr agent key 
+        - name: agent_key 
+          value:    
+        - name: agent_endpoint 
+          value: agent.nexclipper.com
+        - name: k8s_apiserver_endpoint 
+          value: http://localhost:8080
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: dockersocket
+        - mountPath: /var/lib/docker
+          name: docker
+        - mountPath: /dev
+          name: dev
+        - mountPath: /sys
+          name: sys
+        - mountPath: /var/log
+          name: log
