@@ -1,0 +1,363 @@
+/* ---------------------------------------------------------------------------
+   (c) Telefónica I+D, 2013
+   Author: Paulo Villegas
+   ------------------------------------------------------------------------- */
+
+
+body {
+    background-color: #f6f6f6;
+}
+
+/* HREF links */
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: blue;
+}
+
+/* ....................................................................... */
+/* The top-right side panel and its title child */
+
+div#sidepanel {
+    position: absolute;
+    pointer-events: none;
+    top: 0px;
+    right: 0px;
+}
+
+div#title {
+    margin: 4px 2px 6px 0px;
+    border-width: 0px;
+    padding: 0px;
+    text-align: right;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 18px;    
+    line-height: 18px;
+    color: #5D1D4D;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+div#title img {
+    border-width: 0px;
+    margin: 0px;
+}
+
+
+img#helpIcon {
+    position: absolute; 
+    right: 6px; 
+    top: 100px; 
+    pointer-events: all; 
+    cursor: help;
+} 
+
+
+/* ....................................................................... */
+/* On/off toggles for the help/info panels */
+
+div.panel_off {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+div.panel_on {
+    visibility: visible;
+    pointer-events: all;
+}
+
+
+/* ....................................................................... */
+/* Help boxes */
+
+div#help {
+    margin: 6px;
+    padding: 4px;
+    background-color: #DEDFA3;
+    position: absolute;
+    width: 420px;
+    right: 0px;
+    z-index: 1001;
+    border: 1px solid #989970;
+
+    font-family: Georgia, Times New Roman, Times, serif;
+    font-size: 11pt;
+
+    -moz-transition: visibility 1.2s;
+    -o-transition: visibility 1.2s;
+    -webkit-transition: visibility 1.2s;
+    transition: visibility 1.2s;
+
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+div#help ul {
+    margin: 0.5em 0em 0.5em 0em;
+    padding-left: 1.5em;
+    
+}
+
+div#help li {
+    margin: 0em;
+    padding: 0px;
+}
+
+div#faq {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 4px;
+    width: 860px;
+    height: 600px;
+    overflow-y: auto;
+    z-index: 1002;
+    background: #E5E4D6;
+
+    font-size: 11pt;
+
+    border: solid 1px #aaa;
+    border-radius: 8px;    
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+div#faq dt {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 13pt;    
+    color: #5D1D4D;
+    font-weight: bold;
+    margin-top: .4em;
+}
+
+div#faq dd {
+    font-family: Georgia, Times New Roman, Times, serif;
+    padding-left: 0px;
+    margin-left: 0.7em;
+}
+
+div#close_faq {
+    position: fixed; 
+    margin-left: 820px; 
+    margin-top: 0px;
+    padding: 0px;
+}
+
+
+/* ....................................................................... */
+
+div#nocontent {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    width: 600px;
+    height: 200px;
+    top: 200px;
+    left: 200px;
+    background: #C3B091;
+    border: solid 2px #a00;
+    border-radius: 8px;    
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 20px;    
+    text-align: center;
+    vertical-align: center;
+    padding: 12px;
+}
+
+div#nocontent h1 {
+    margin: 1em;
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* ....................................................................... */
+/* Movie details panel */
+
+div#movieInfo {
+    position: relative;
+    right: 4px;
+    cursor: text;
+    width: 300px;
+    z-index: 1000;
+    background: #E5E4D6;
+    border: solid 1px #aaa;
+    border-radius: 8px;    
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;    
+    padding: 4px;
+    text-align: right;
+}
+
+div#movieInfo div#cover {
+    text-align: left; 
+    height: 300px;
+}
+
+div#movieInfo div.t {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+div#movieInfo img.cover {
+    margin-bottom: 6px;
+    position: absolute;
+    right: 3px;
+}
+
+div#movieInfo img.action {
+    cursor: pointer;
+    position: absolute;
+}
+
+div#movieInfo div.f {
+    border-top: 1px dotted #8E5981;
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
+div#movieInfo span.d {
+    font-weight: bold;
+}
+
+div#movieInfo span.c {
+    font-style: italic;
+}
+
+div#movieInfo span.l {
+    font-size: 11px;
+    color: #24553E;
+    font-variant: small-caps;
+}
+
+/* ....................................................................... */
+/* SVG elements */
+
+div#movieNetwork svg {
+    background-color: white;
+    cursor: move;
+}
+
+line.link {
+    stroke: #B2D9D8;
+}
+
+circle {
+    cursor: crosshair;
+    fill: #EBC763;
+}
+
+circle.level1 {
+    stroke: #f00;
+}
+
+circle.level2 {
+    fill-opacity: 0.8;
+    stroke-opacity: 0.8;
+    stroke: #777;
+}
+
+circle.level3 {
+    fill-opacity: 0.5;
+    stroke-opacity: 0.5;
+}
+
+circle.sibling {
+    /*fill: blue;*/
+    fill: #455EE8;
+}
+
+circle.main {
+    /*fill: red;*/
+    fill: #732A9A;
+    fill-opacity: 1.0;
+}
+
+/* ....................................................................... */
+/* Graph labels */
+
+g.gLabel {
+    font: 10px sans-serif;
+    font-weight: normal;
+    visibility: hidden;
+}
+
+g.on {
+    visibility: visible;    
+}
+
+g.zoomed {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    text-align: center;
+    color: #000;
+    border: none;
+    z-index: 0;
+}
+
+text {
+    font: 10px sans-serif;
+    font-weight: normal;
+    stroke-opacity: 1.0;
+}
+
+text.nlabel {
+    /*stroke: #000000;*/
+}
+
+text.nshadow {
+    stroke: #fff;
+    stroke-width: 3px;
+    /*stroke-opacity: 0.5;*/
+    /*visibility: hidden;*/
+}
+
+text.main {
+    font: 12px sans-serif;
+    font-weight: bold;
+}
+
+
+/* ....................................................................... */
+
+/* no longer used */
+
+.nlabel_on {
+    visibility: visible;
+    font-size: 12px;
+    opacity: 1.0;
+    fill: #101000;
+    stroke: #ffffff;
+    font-weight: bold;
+}
+
+.tooltip{
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    padding: 8px;
+    font: 15px Helvetica Neue;
+    background: #FFF;
+    border: solid 1px #aaa;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index:1000;
+    text-align:center;
+    background: rgba(222,223,163,0.8);
+}
+

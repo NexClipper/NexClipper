@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns:if="ant:if"  xmlns:unless="ant:unless" name="Nexcloud" basedir="." default="package">
+		<input  message="Enter Version:" addproperty="version" />
+  <target name="clean">
+    <exec osfamily="windows" executable="cmd">
+      <arg line="/c" />
+      <arg line="mvn clean" />
+    </exec>
+  </target>
+  <target name="package">
+    <exec osfamily="windows" executable="cmd">
+      <arg line="/c" />
+      <arg line="mvn install" />
+    </exec>
+  </target>
+
+  <target name="cleanAndPackage" depends="clean">
+    <exec osfamily="windows" executable="cmd">
+      <arg line="/c" />
+      <arg line="mvn install" />
+    </exec>
+  </target>
+	
+  <target name="packageAndBuild" depends="cleanAndPackage">
+  	<exec osfamily="windows" executable="cmd">
+      <arg line="/c" />
+      <arg line="docker build -t nexclipper/opensourceui:${version} ." />
+    </exec>
+  </target>
+	
+  <target name="Push">
+		<exec osfamily="windows" executable="cmd">
+	      <arg line="/c" />
+	      <arg line="docker push nexclipper/opensourceui:${version}" />
+	    </exec>
+  </target>
+  
+</project>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+ 
+<mapper namespace="com.nexcloud.rdb.mapper.mysql.MetricRepository">
+	<select id="getMetricList" resultType="Metric">
+		SELECT
+			idx,
+			target_system targetSystem,
+			target,
+			data_source dataSource,
+			`table`,
+			metric,
+			alias,
+			math,
+			group_by groupBy,
+			new_engine newEngine,
+			regdt
+		FROM
+			nexclipper_metric
+	</select>
+</mapper>
