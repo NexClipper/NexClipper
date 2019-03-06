@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="EUC-KR"?>
+<!-- 
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %class{36}.%method:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <logger name="org.springframework" level="error" />
+ 
+    <root level="error">
+        <appender-ref ref="console" />
+    </root>
+</configuration>
+-->
+
+<configuration error="true">
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.txt.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</Pattern>
+        </layout>
+    </appender>
+    
+    <!-- Loggers -->
+    <logger name="org.springframework.core">
+        <level value="error" />
+    </logger>
+    <logger name="org.springframework.beans">
+        <level value="error" />
+    </logger>
+    <logger name="org.springframework.context">
+        <level value="error" />
+    </logger>
+    <logger name="org.springframework.web">
+        <level value="error" />
+    </logger>
+    <logger name="com.example.web">
+        <level value="error" />
+    </logger>
+    <logger name="java.sql">
+        <level value="error" />
+    </logger>
+    <logger name="org.mybatis.spring">
+        <level value="error" />
+    </logger>
+    <logger name="com.example.web.sqlmappers">
+        <level value="error" />
+    </logger>
+
+    <root level="error">
+       <!-- <appender-ref ref="ROLLING"/>  -->
+       <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
