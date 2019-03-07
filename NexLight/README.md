@@ -8,7 +8,6 @@ NexClipper Light features the following capabilities:
 * Container resource usage (cpu, memory, network, block i/o)
 * Container process, network , environment, network, log
 
-# NexClipper Architeture 
 
 # Quick Start: 
 # Running NexClipper Light in a Docker Container
