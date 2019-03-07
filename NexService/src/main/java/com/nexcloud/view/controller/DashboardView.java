@@ -12,8 +12,12 @@ public class DashboardView {
 	static final Logger logger = LoggerFactory.getLogger(DashboardView.class);
 
 	@RequestMapping(value="/default", method=RequestMethod.GET)
-	public String defaults() {
+	public String defaultDashboard() {
 		return "dashboard/default";
+	}
+	@RequestMapping(value="/new", method=RequestMethod.GET)
+	public String newDashboard() {
+		return "dashboard/new";
 	}
 	
 }

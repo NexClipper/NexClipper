@@ -47,4 +47,7 @@ public class K8sSnapShotService {
 	public String getReplicaset() {
 		return redisClient.get(REDIS.HASH.K8S, REDIS.KEY.REPLICASET);
 	}
+	public String getComponentStatus() {
+		return redisClient.get(REDIS.HASH.K8S, REDIS.KEY.COMPONENT_STATUS);
+	}
 }

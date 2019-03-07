@@ -86,8 +86,9 @@
 				</div>
 				<div class="m-portlet__body">
 					<div class="m-widget14">
-						<div class="m-widget4 m-dashboard-widget4" id="agentListArea" 
-						data-scrollbar-shown="true" data-scrollable="true" style="overflow: visible; height: 200px; "></div>
+						
+					<div class="m-widget4" style="overflow-x: hidden; height: 200px;" id="agentListArea" >
+					</div>
 					</div>
 				</div>
 			</div>
@@ -152,58 +153,10 @@
 <script src="/resources/js/module/chart/donut.js" type="text/javascript"></script>
 <script src="/resources/js/module/chart/tilemap.js" type="text/javascript"></script>
 <script type="text/javascript">
-var AGENT_LIST = [
-	{
-		"host_ip":"192.168.0.178",
-		"host_name":"kubenode7",
-		"status":"ACTIVE",
-		"start_time":"2019-02-18 02:05:56",
-		"version":"V1.0",
-		"timestamp":2998,
-		"last_update":1550472038923
-	},
-	{
-		"host_ip":"192.168.0.178",
-		"host_name":"kubenode1",
-		"status":"ACTIVE",
-		"start_time":"2019-02-18 02:05:56",
-		"version":"V1.0",
-		"timestamp":2998,
-		"last_update":1550472038923
-	},
-	{
-		"host_ip":"192.168.0.178",
-		"host_name":"kubenode7",
-		"status":"ACTIVE",
-		"start_time":"2019-02-18 02:05:56",
-		"version":"V1.0",
-		"timestamp":2998,
-		"last_update":1550472038923
-	},
-	{
-		"host_ip":"192.168.0.178",
-		"host_name":"kubenode3",
-		"status":"ACTIVE",
-		"start_time":"2019-02-18 02:05:56",
-		"version":"V1.0",
-		"timestamp":2998,
-		"last_update":1550472038923
-	},
-	{
-		"host_ip":"192.168.0.178",
-		"host_name":"kubenode4",
-		"status":"ACTIVE",
-		"start_time":"2019-02-18 02:05:56",
-		"version":"V1.0",
-		"timestamp":2998,
-		"last_update":1550472038923
-	}
-];
-function drawAgents() {
-	var fields = ['host_name','host_ip'];
-	//new StatusList().area("agentListArea").fields(fields).data(AGENT_LIST).draw();
+function drawAgents(data) {
+	var fields = ['host_name','host_ip', 'status'];
+	new StatusList().area("agentListArea").fields(fields).data(data).draw();
 }
-drawAgents();
 function drawNodeCount (data) {
 	$("#nodeCount").text(data.items.length);
 }
@@ -219,10 +172,15 @@ function drawInfrastructureMap (data) {
 	var tilemapData = [];
 	data.forEach(function (item){
 		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
+		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
+		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
+		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
+		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
 	})
 	new Tilemap().area("infrastructureMapChartArea").data(tilemapData).draw();
 }
 new Client().url("/api/v1/kubernetes/node/snapshot").callback(drawNodeCount).get();
 new Client().url("/api/v1/kubernetes/pod/snapshot").callback(drawPodCount).get();
 new Client().url("/api/v1/host/snapshot").callback(drawHost).get();
+new Client().url("/api/v1/host/agent/status").callback(drawAgents).get();
 </script>

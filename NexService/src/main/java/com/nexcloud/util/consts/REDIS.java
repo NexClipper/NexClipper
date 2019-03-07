@@ -25,5 +25,6 @@ public interface REDIS {
 		final String NODE 			= "node";
 		final String NAMESPACE 		= "namespace";
 		final String REPLICASET 	= "replicaset";
+		final String COMPONENT_STATUS 	= "component_status";
 	}
 }

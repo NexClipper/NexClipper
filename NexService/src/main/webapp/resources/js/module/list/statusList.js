@@ -32,10 +32,13 @@ StatusList.prototype.draw = function(){
 		html += "<span class='m-badge m-badge--"+color+" m-badge--wide'></span></div>";
 		
 		_this.fields.forEach (function (field){
-			html += "<div class='m-widget4__info'><strong>"+item[field]+"</strong></div>";
+			if (field == "status")
+				html += "<div class='m-widget4__info'><strong class='m--font-bold m--font-"+color+"'>"+item[field]+"</strong></div>";
+			else
+				html += "<div class='m-widget4__info'><strong>"+item[field]+"</strong></div>";
 		})
 		
-		html += "<div class='m-widget4__info'><strong class='m--font-bold m--font-"+color+"'>"+item.status+"</strong></div></div>";
+		html += "</div>";
 	})
 	$("#" + this.area).append(html);
 }

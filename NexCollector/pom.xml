@@ -173,7 +173,7 @@
 		<!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
-			<artifactId>akka-actor_2.11</artifactId>
+			<artifactId>akka-actor_2.12</artifactId>
 			<version>2.5.1</version>
 		</dependency>
 
@@ -187,19 +187,20 @@
 		</dependency>
 		<!-- JWT Stop -->
 		
-		<!-- Slack -->
-		<!-- 
+		<!-- Pushgateway exposition-->
 		<dependency>
-		    <groupId>com.kifi</groupId>
-		    <artifactId>slack-client_2.11</artifactId>
-		    <version>0.2</version>
+		  <groupId>io.prometheus</groupId>
+		  <artifactId>simpleclient_pushgateway</artifactId>
+		  <version>0.6.0</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
 		<dependency>
-		    <groupId>com.typesafe.play</groupId>
-		    <artifactId>play-json_2.11</artifactId>
-		    <version>2.3.10</version>
+		    <groupId>org.eclipse.paho</groupId>
+		    <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+		    <version>1.2.1</version>
 		</dependency>
-		-->
+				
 	</dependencies>
 
 	<build>

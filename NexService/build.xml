@@ -24,14 +24,14 @@
   <target name="packageAndBuild" depends="cleanAndPackage">
   	<exec osfamily="windows" executable="cmd">
       <arg line="/c" />
-      <arg line="docker build -t nexclipper/opensourceui:${version} ." />
+      <arg line="docker build -t nexclipper/nexservice:${version} ." />
     </exec>
   </target>
 	
   <target name="Push">
 		<exec osfamily="windows" executable="cmd">
 	      <arg line="/c" />
-	      <arg line="docker push nexclipper/opensourceui:${version}" />
+	      <arg line="docker push nexclipper/nexservice:${version}" />
 	    </exec>
   </target>
   

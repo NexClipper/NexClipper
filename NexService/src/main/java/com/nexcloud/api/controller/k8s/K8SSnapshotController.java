@@ -102,12 +102,18 @@ public class K8SSnapshotController {
 	public String getNamespace() {
 		return k8sSnapShotService.getNamespace();
 	}
-	
+
 	@ApiOperation(value="Replicaset Snapshot", httpMethod="GET", notes="Replicaset Snapshot")
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/replicaset/snapshot", method=RequestMethod.GET)
 	public String getReplicaset() {
 		return k8sSnapShotService.getReplicaset();
+	}
+	@ApiOperation(value="Replicaset Snapshot", httpMethod="GET", notes="Replicaset Snapshot")
+	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
+	@RequestMapping(value="/component/status/snapshot", method=RequestMethod.GET)
+	public String getComponentStatus() {
+		return k8sSnapShotService.getComponentStatus();
 	}
 	
 }
