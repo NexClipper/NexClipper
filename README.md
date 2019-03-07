@@ -19,6 +19,10 @@ NexClipper Cloud features the following capabilities:
 For more details visit  https://www.nexclipper.com/
 For beta service, visit https://server.nexclipper.com
 
+# NexClipper Architeture 
+
+![GUI1](NexLight/images/NexClipper_Architecture.png) 
+
 # Licensing
 NexClipper is licensed under the Apache License, Version 2.0. See 
 [LICENSE](https://github.com/TheNexCloud/NexClipper/blob/master/LICENSE) for the full
