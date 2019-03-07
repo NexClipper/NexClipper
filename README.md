@@ -28,7 +28,7 @@ NexClipper features the following capabilities:
 * Infrastruture Monitoring (Container, Host, Resource)
 * Incidents Management
 
-# NexClipper Architeture Overview
+# Architeture Overview
 
 ![GUI1](docs/images/NexClipper_Architecture.png) 
 
