@@ -3,7 +3,7 @@ NexClipper is the container and container orchestration monitoring and performan
 
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
-Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight)directory.
+Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
 
 ![GUI1](docs/images/logo1.png) 
 
@@ -20,7 +20,15 @@ NexClipper Cloud features the following capabilities:
 For more details visit  https://www.nexclipper.com/
 For beta service, visit https://server.nexclipper.com
 
-# NexClipper Architeture 
+# NexClipper  
+NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker andKubernetes.
+NexClipper features the following capabilities:
+* Fullstack dashboard (Infrastructure, Kubernetes)
+* Container Cluster (Kuberentes)
+* Infrastruture Monitoring (Container, Host, Resource)
+* Incidents Management
+
+# NexClipper Architeture Overview
 
 ![GUI1](docs/images/NexClipper_Architecture.png) 
 
