@@ -2,17 +2,19 @@ package com.nexcloud.util.response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.nexcloud.util.Util;
 import com.nexcloud.util.consts.HTTP;
 
+@Component
 public class Mysql{
 	static final Logger logger = LoggerFactory.getLogger(Mysql.class);
-	private static Gson gson = new Gson();
+	private Gson gson = new Gson();
 	
 
-	public static String resultToResponse (Object o) {
+	public String resultToResponse (Object o) {
 		try{
 			String resultStr = gson.toJson(o);
 			logger.debug("[Mysql response]" + "\n" + resultStr);

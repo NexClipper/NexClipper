@@ -6,8 +6,9 @@ import com.nexcloud.util.response.Mysql;
 @Service
 public class RuleService{
 	@Autowired private RuleRepository ruleRepository;
+	@Autowired private Mysql mysql;
 	
 	public String getRuleList(){
-		return Mysql.resultToResponse(ruleRepository.getRuleList());
+		return mysql.resultToResponse(ruleRepository.getRuleList());
 	}
 }

@@ -60,5 +60,5 @@ MDT.prototype.event = function (event) {
 MDT.prototype.draw = function () {
 	$("#" + this.area).mDatatable(this.options);
 	this.event();
-	$(window).trigger('resize');
+	//$(window).trigger('resize');
 }

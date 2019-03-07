@@ -30,9 +30,6 @@
 		<tiles:insertAttribute name="header" />
 	</header>
 	<div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body">
-		<button class="m-aside-left-close  m-aside-left-close--skin-light " id="m_aside_left_close_btn">
-			<i class="la la-close"></i>
-		</button>
 		<tiles:insertAttribute name="leftSide" />
 		<div class="m-grid__item m-grid__item--fluid m-wrapper" id="body">
 			<tiles:insertAttribute name="body" />

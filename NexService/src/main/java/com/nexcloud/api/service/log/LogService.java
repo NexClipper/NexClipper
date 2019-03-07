@@ -6,8 +6,8 @@ import com.nexcloud.util.response.Mysql;
 @Service
 public class LogService{
 	@Autowired private LogRepository logRepository;
-	
+	@Autowired private Mysql mysql;
 	public String getLogList(){
-		return Mysql.resultToResponse(logRepository.getLogList());
+		return mysql.resultToResponse(logRepository.getLogList());
 	}
 }

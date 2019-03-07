@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
 <mapper namespace="com.nexcloud.rdb.mapper.mysql.LogRepository">
-	<select id="getLogList" resultType="Log">
+	<select id="getLogList" resultType="com.nexcloud.rdb.domain.mysql.Log">
 		SELECT
 			idx,
 			host_ip hostIp,

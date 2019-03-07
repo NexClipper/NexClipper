@@ -21,7 +21,7 @@ public class MapperSessionFactory {
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource)throws Exception{
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
-        sessionFactory.setTypeAliasesPackage("com.nexcloud.rdb.domain.mysql");
+        //sessionFactory.setTypeAliasesPackage("com.nexcloud.rdb.domain.mysql");
         Resource[] res = new PathMatchingResourcePatternResolver()
         		.getResources("classpath:mapper-xml/mysql/*Mapper.xml");
         

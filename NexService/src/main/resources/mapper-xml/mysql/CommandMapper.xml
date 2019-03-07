@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
 <mapper namespace="com.nexcloud.rdb.mapper.mysql.CommandRepository">
-	<select id="getCommandList" resultType="Command">
+	<select id="getCommandList" resultType="com.nexcloud.rdb.domain.mysql.Command">
 		SELECT
 			idx,
 			type,

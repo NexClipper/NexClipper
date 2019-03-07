@@ -8,9 +8,10 @@ import com.nexcloud.util.response.Mysql;
 @Service
 public class UserService{
 	@Autowired private UserRepository userRepository;
+	@Autowired private Mysql mysql;
 
 	public String getUserList(){
-		return Mysql.resultToResponse(userRepository.getUserList());
+		return mysql.resultToResponse(userRepository.getUserList());
 	}
 	public User getUser(String userId){
 		return userRepository.getUser(userId);

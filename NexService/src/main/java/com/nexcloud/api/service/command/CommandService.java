@@ -6,8 +6,9 @@ import com.nexcloud.util.response.Mysql;
 @Service
 public class CommandService{
 	@Autowired private CommandRepository commandRepository;
+	@Autowired private Mysql mysql;
 	
 	public String  getCommandList(){
-		return Mysql.resultToResponse(commandRepository.getCommandList());
+		return mysql.resultToResponse(commandRepository.getCommandList());
 	}
 }

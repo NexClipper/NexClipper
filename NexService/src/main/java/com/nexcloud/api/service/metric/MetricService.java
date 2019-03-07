@@ -8,8 +8,9 @@ import com.nexcloud.util.response.Mysql;
 @Service
 public class MetricService{
 	@Autowired private MetricRepository metricRepository;
+	@Autowired private Mysql mysql;
 	
 	public String getMetricList(){
-		return Mysql.resultToResponse(metricRepository.getMetricList());
+		return mysql.resultToResponse(metricRepository.getMetricList());
 	}
 }

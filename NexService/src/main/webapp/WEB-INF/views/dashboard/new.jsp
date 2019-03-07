@@ -422,7 +422,7 @@
 							<div class="m-portlet__head-tools"></div>
 						</div>
 						<div class="m-portlet__body">
-							<div class="m-widget14" style="height: 254px;" id = "infrastructureMapChartArea">
+							<div class="m-widget14" style="height: 245px;" id = "infrastructureMapChartArea">
 							</div>
 						</div>
 					</div>
@@ -431,7 +431,7 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-lg-4">
+		<!-- <div class="col-lg-4">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -446,8 +446,8 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col-lg-4">
+		</div> -->
+		<div class="col-lg-3">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -463,7 +463,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-4">
+		<div class="col-lg-3">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -479,9 +479,9 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div class="col-lg-4">
+	<!-- </div>
+	<div class="row"> -->
+		<div class="col-lg-3">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -497,7 +497,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-4">
+		<div class="col-lg-3">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -513,7 +513,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-lg-4">
+		<!-- <div class="col-lg-4">
 			<div class="m-portlet m-portlet--head-sm m-portlet--full-height ">
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
@@ -528,7 +528,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 </div>
 
@@ -599,13 +599,13 @@ function drawInfrastructureMap (data) {
 
 function drawAgents(data) {
 	var fields = ['host_name','host_ip', 'status'];
-	new StatusList().area("agentListArea").fields(fields).data(data).draw();
+	//new StatusList().area("agentListArea").fields(fields).data(data).draw();
 }
 function drawTopChart(data) {
 	var formatHistogramData = formatHistogramChartData(data);
 	drawHistogramChart("topCpuChart", formatHistogramData, "cpu");
 	drawHistogramChart("topMemChart", formatHistogramData, "mem");
-	drawHistogramChart("topDiskChart", formatHistogramData, "disk");
+	//drawHistogramChart("topDiskChart", formatHistogramData, "disk");
 }
 function drawHistogramChart (chartArea, chartData, key){
 	var categories = [];

@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
  
 <mapper namespace="com.nexcloud.rdb.mapper.mysql.UserRepository">
-	<select id="getUserList" resultType="User">
+	<select id="getUserList" resultType="com.nexcloud.rdb.domain.mysql.User">
 		SELECT   
 			user_id userId,
 			user_name userName,
@@ -20,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		FROM
 			nexclipper_user
     </select>
-	<select id="getUser" resultType="User">
+	<select id="getUser" resultType="com.nexcloud.rdb.domain.mysql.User">
 		SELECT   
 			user_id userId,
 			user_passwd userPasswd,

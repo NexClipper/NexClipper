@@ -65,7 +65,7 @@
 				</div>
 				<div class="m-portlet__body">
 					<div class="m-widget14" style="text-align: center;">
-						<div id = "infrastructureMapChartArea" style="height: 456px;">
+						<div id = "infrastructureMapChartArea" style="height: 445px;">
 						</div>
 					</div>
 				</div>
@@ -171,10 +171,6 @@ function drawHost (data) {
 function drawInfrastructureMap (data) {
 	var tilemapData = [];
 	data.forEach(function (item){
-		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
-		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
-		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
-		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
 		tilemapData.push({'hc-a2' : item.host_name, name : item.host_ip, value: item.cpu.cpu_per });
 	})
 	new Tilemap().area("infrastructureMapChartArea").data(tilemapData).draw();

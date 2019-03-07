@@ -13,13 +13,13 @@
 					<span class="m-menu__link-text">New Dashboard</span>
 				</a>
 			</li>
-			<li class="m-menu__item  m-menu__item--submenu " aria-haspopup="true"  data-menu-submenu-toggle="hover">
+			<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
 				<a href="#" class="m-menu__link m-menu__toggle">
 					<i class="m-menu__link-icon flaticon-network"></i>
 					<span class="m-menu__link-text">Infrastructure</span>
 					<i class="m-menu__ver-arrow la la-angle-right"></i>
 				</a>
-				<div class="m-menu__submenu ">
+				<div class="m-menu__submenu">
 					<span class="m-menu__arrow"></span>
 					<ul class="m-menu__subnav">
 						<li class="m-menu__item  m-menu__item--parent" aria-haspopup="true" >
@@ -30,24 +30,24 @@
 							</span>
 						</li>
 													   
-						<li class="m-menu__item " aria-haspopup="true" >
-							<a  href="/infrastructure/dashboard" class="m-menu__link ">
+						<li class="m-menu__item" aria-haspopup="true" >
+							<a  href="/infrastructure/dashboard" class="m-menu__link">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
 									<span></span>
 								</i>
 								<span class="m-menu__link-text">Dashboard</span>
 							</a>
 						</li>   
-						<li class="m-menu__item " aria-haspopup="true" >
-							<a  href="/infrastructure/host" class="m-menu__link ">
+						<li class="m-menu__item" aria-haspopup="true" >
+							<a href="/infrastructure/host" class="m-menu__link">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
 									<span></span>
 								</i>
 								<span class="m-menu__link-text">Host</span>
 							</a>
 						</li>
-						<li class="m-menu__item " aria-haspopup="true" >
-							<a href="/infrastructure/container" class="m-menu__link ">
+						<li class="m-menu__item" aria-haspopup="true" >
+							<a href="/infrastructure/container" class="m-menu__link">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
 									<span></span>
 								</i>
@@ -193,17 +193,27 @@
 								<span class="m-menu__link-text">Account</span>
 							</a>
 						</li>
-						<li class="m-menu__item" aria-haspopup="true" >
-							<a  href="/admin/role" class="m-menu__link ">
-								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
-									<span></span>
-								</i>
-								<span class="m-menu__link-text">Role & Responsibility</span>
-							</a>
-						</li>
 					</ul>
 				</div>
 			</li>
 		</ul>
 	</div>
 </div>
+<script type="text/javascript">
+$(function(){
+	var winLocation = window.location.href;
+	console.log(winLocation);
+	var aList = $("ul.m-menu__nav--dropdown-submenu-arrow").find("a.m-menu__link");
+	aList.each(function(idx, item) {
+		var itemHref = $(item).attr("href");
+		if (winLocation.indexOf(itemHref) != -1) {
+			var parents = $(item).parents("li");
+			parents.each(function(i, p){
+				$(p).addClass("m-menu__item--open");
+			})
+		}
+			
+	})
+	
+})
+</script>

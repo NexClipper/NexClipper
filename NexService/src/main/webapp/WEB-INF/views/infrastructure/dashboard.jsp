@@ -79,7 +79,7 @@
 				</div>
 				<div class="m-portlet__body">
 					<div class="m-widget14" style="text-align: center;">
-						<div id = "infrastructureMapChartArea" style="height: 456px;">
+						<div id = "infrastructureMapChartArea" style="height: 446px;">
 						</div>
 					</div>
 				</div>
