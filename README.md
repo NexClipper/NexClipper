@@ -20,7 +20,7 @@ For beta service, visit https://server.nexclipper.com
 
 # NexClipper Architeture 
 
-![GUI1](docks/images/NexClipper_Architecture.png) 
+![GUI1](docs/images/NexClipper_Architecture.png) 
 
 # Licensing
 NexClipper is licensed under the Apache License, Version 2.0. See 
