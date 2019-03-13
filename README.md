@@ -32,6 +32,9 @@ NexClipper features the following capabilities:
 
 ![GUI1](docs/images/NexClipper_Architecture.png) 
 
+# NexClipper Dashboard
+![GUI1](docs/images/NexClipper_dashboard.png)  
+
 # Licensing
 NexClipper is licensed under the Apache License, Version 2.0. See 
 [LICENSE](https://github.com/TheNexCloud/NexClipper/blob/master/LICENSE) for the full
