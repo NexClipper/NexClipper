@@ -99,7 +99,7 @@ Docker image
 
     $nexclipper/nexagent
 
-NexClipper will...
+NexClipper will... 
 
 ## Licensing
 
