@@ -109,7 +109,7 @@ NexClipper is licensed under the Apache License, Version 2.0. See [LICENSE](http
 
 Email: nexclipper@nexclipper.com
 
-Homepage: https://www.nexclipper.com/
+Homepage: https://www.nexclipper.io/
 
 Facebook : https://www.facebook.com/nexclipper/
 
