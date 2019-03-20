@@ -4,7 +4,7 @@ NexClipper is the container and container orchestration monitoring and performan
 
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
-Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
+Please note that previsous NexClipper Light project which was a host level container monitoring tool has been moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
 
 ![](docs/images/logo1.png)
 
