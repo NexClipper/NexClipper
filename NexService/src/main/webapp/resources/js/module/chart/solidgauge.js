@@ -1,3 +1,18 @@
+/*
+* Copyright 2019 NexCloud Co.,Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 // https://jsfiddle.net/0n2Lt1m7/4/
 function SolidGauge () {
 	this.chart;
@@ -26,9 +41,9 @@ function SolidGauge () {
 			min: 0,
 			max: 100,
 			stops: [
-				[0.1, '#55BF3B'], // green
-				[0.5, '#DDDF0D'], // yellow
-				[0.9, '#DF5353'] // red
+				[0.1, '#00c5dc'], // green
+				[0.4, '#ffb822'], // yellow
+				[0.7, '#f4516c'] // red
 			],
 			lineWidth: 0,
 			minorTickInterval: null,
@@ -85,6 +100,7 @@ SolidGauge.prototype.event = function(event){
 	return this;
 }
 SolidGauge.prototype.draw = function(){
+	$("#" + this.area).empty();
 	this.chart = Highcharts.chart(this.area, this.option);
 	return this;
 }

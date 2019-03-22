@@ -1,3 +1,18 @@
+<!-- 
+  Copyright 2019 NexCloud Co.,Ltd.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <div class="m-content">
 	<div class="row">
 		<div class="col-lg-8">
@@ -543,12 +558,12 @@ strong { color: black; font-weight: bold; }
 .titleA {color: black; }
 .titleA:hover {color: black; }
 </style>
-<script src="/resources/js/module/common/client.js" type="text/javascript"></script>
+<script src="/resources/js/module/common/client.js?22" type="text/javascript"></script>
 <script src="/resources/js/module/common/colors.js" type="text/javascript"></script>
 <script src="/resources/js/module/list/statusList.js" type="text/javascript"></script>
 <script src="/resources/js/module/chart/donut.js" type="text/javascript"></script>
 <script src="/resources/js/module/chart/tilemap.js" type="text/javascript"></script>
-<script src="/resources/js/module/chart/solidgauge.js" type="text/javascript"></script>
+<script src="/resources/js/module/chart/solidgauge.js?2" type="text/javascript"></script>
 <script src="/resources/js/lib/billboard/d3.min.js" type="text/javascript"></script>
 <script src="/resources/js/lib/billboard/billboard.min.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -647,11 +662,17 @@ function drawAgents(data) {
 		else notActiveCount++;
 	})
 	$("#agentTotal").text(activeCount + "/" + (activeCount+notActiveCount));
-	if (activeCount != (activeCount+notActiveCount)) $("#agentTotal").css("color","#f4516c");
+	$("#nodeTotal").text(activeCount + "/" + (activeCount+notActiveCount));
+	$("#hostTotal").text(activeCount + "/" + (activeCount+notActiveCount));
+	if (activeCount != (activeCount+notActiveCount)) {
+		$("#agentTotal").css("color","#f4516c");
+		$("#nodeTotal").css("color","#f4516c");
+		$("#hostTotal").css("color","#f4516c");
+	}
+	new Client().url("/api/v1/host/snapshot").refreshFlag(rf).callback(drawHost).bindData(data).get();
 }
 //1 row - 1 col - 3 row
 function drawClusterUtilization(data){
-	console.log(data);
 	new SolidGauge().area("clusterCpuUtilizationChartArea").data(data.used_percent_cpu, "Cpu(%)").draw();
 	new SolidGauge().area("clusterMemoryUtilizationChartArea").data(data.used_percent_mem, "Memory(%)").draw();
 	new SolidGauge().area("clusterPodUtilizationChartArea").data(data.used_percent_pod, "Pod(%)").draw();
@@ -663,9 +684,8 @@ function drawClusterUtilization(data){
 	$("#clusterPodUtilizationTotal").text(data.pod);
 }
 //1 row - 2 col - 1 row
-function drawHost (data) {
-	$("#hostTotal").text(data.length);
-	drawInfrastructureMap(data);
+function drawHost (data, agents) {
+	drawInfrastructureMap(data, agents);
 	drawTopChart(data);
 }
 function drawDockerContainer(data) {
@@ -680,10 +700,15 @@ function drawDockerContainer(data) {
 	$("#containerTotal").text(containersRunningCount);
 }
 //1 row - 2 col - 2 row
-function drawInfrastructureMap (data) {
+function drawInfrastructureMap (data, agents) {
 	var tilemapData = [];
 	data.forEach(function (item){
-		tilemapData.push({'hc-a2' : item.host_ip, name : item.host_ip, value: item.cpu.cpu_per });
+		agents.forEach(function(agent){
+			if (item.host_ip == agent.host_ip) {
+				if (agent.status == "ACTIVE") tilemapData.push({'hc-a2' : item.host_ip, name : item.host_ip, value: item.cpu.cpu_per });
+				else tilemapData.push({'hc-a2' : item.host_ip, name : item.host_ip, value: -1 });
+			} 
+		})
 	})
 	new Tilemap().area("infrastructureMapChartArea").data(tilemapData).draw();
 }
@@ -820,20 +845,20 @@ function formatHistogramChartData (data) {
 	});
 	return result;
 }
+var rf = true;
 function refresh() {
-	new Client().url("/api/v1/kubernetes/component/status/snapshot").callback(drawStatus).get();
-	new Client().url("/api/v1/kubernetes/node/snapshot").callback(drawNode).get();
-	new Client().url("/api/v1/kubernetes/namespace/snapshot").callback(drawNamespace).get();
+	rf = false;
+	new Client().url("/api/v1/kubernetes/component/status/snapshot").refreshFlag(rf).callback(drawStatus).get();
+	new Client().url("/api/v1/kubernetes/namespace/snapshot").refreshFlag(rf).callback(drawNamespace).get();
 	// event error code
-	new Client().url("/api/v1/kubernetes/daemonset/snapshot").callback(drawDaemonSet).get();
-	new Client().url("/api/v1/kubernetes/deployment/snapshot").callback(drawDeployments).get();
-	new Client().url("/api/v1/kubernetes/replicaset/snapshot").callback(drawReplicaSets).get();
-	new Client().url("/api/v1/kubernetes/statefulset/snapshot").callback(drawStatefulSets).get();
-	new Client().url("/api/v1/kubernetes/pod/snapshot").callback(drawPod).get();
-	new Client().url("/api/v1/host/agent/status").callback(drawAgents).get();
-	new Client().url("/api/v1/kubernetes/cluster/snapshot").callback(drawClusterUtilization).get();
-	new Client().url("/api/v1/host/snapshot").callback(drawHost).get();
-	new Client().url("/api/v1/host/docker/snapshot").callback(drawDockerContainer).get();
+	new Client().url("/api/v1/kubernetes/daemonset/snapshot").refreshFlag(rf).callback(drawDaemonSet).get();
+	new Client().url("/api/v1/kubernetes/deployment/snapshot").refreshFlag(rf).callback(drawDeployments).get();
+	new Client().url("/api/v1/kubernetes/replicaset/snapshot").refreshFlag(rf).callback(drawReplicaSets).get();
+	new Client().url("/api/v1/kubernetes/statefulset/snapshot").refreshFlag(rf).callback(drawStatefulSets).get();
+	new Client().url("/api/v1/kubernetes/pod/snapshot").refreshFlag(rf).callback(drawPod).get();
+	new Client().url("/api/v1/host/agent/status").refreshFlag(rf).callback(drawAgents).get();
+	new Client().url("/api/v1/kubernetes/cluster/snapshot").refreshFlag(rf).callback(drawClusterUtilization).get();
+	new Client().url("/api/v1/host/docker/snapshot").refreshFlag(rf).callback(drawDockerContainer).get();
 }
 refresh();
 refreshInterval = setInterval("refresh()", 10000); 

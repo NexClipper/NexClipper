@@ -1,3 +1,18 @@
+<!-- 
+  Copyright 2019 NexCloud Co.,Ltd.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <div class="m-subheader">
 	<div class="d-flex align-items-center">
 		<div class="mr-auto">
@@ -130,7 +145,7 @@
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
 						<div class="m-portlet__head-title">
-							<div class="m-portlet__head-text">Namespaces</div>
+							<div class="m-portlet__head-text">Namespaces <span id ="namespaceCountArea"></span></div>
 						</div>
 					</div>
 					<div class="m-portlet__head-tools"></div>
@@ -145,7 +160,7 @@
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
 						<div class="m-portlet__head-title">
-							<div class="m-portlet__head-text">Daemon Sets</div>
+							<div class="m-portlet__head-text">Daemon Sets <span id ="daemonCountArea"></span></div>
 						</div>
 					</div>
 					<div class="m-portlet__head-tools"></div>
@@ -160,7 +175,7 @@
 				<div class="m-portlet__head">
 					<div class="m-portlet__head-caption">
 						<div class="m-portlet__head-title">
-							<div class="m-portlet__head-text">Deployments</div>
+							<div class="m-portlet__head-text">Deployments <span id ="deploymentsCountArea"></span></div>
 						</div>
 					</div>
 					<div class="m-portlet__head-tools"></div>
@@ -221,45 +236,61 @@ function drawPodTotal (data, bindData) {
 }
 
 function drawNamespace (data) {
+	var activeCount = 0;
 	var listData = [];
 	data.items.forEach(function(item){
+		if (item.status.phase == "Active") activeCount++;
 		listData.push({
 			name : item.metadata.name,
 			status : item.status.phase,
 			creationTimestamp : item.metadata.creationTimestamp
 		});
 	});
+	$("#namespaceCountArea").text("[" + activeCount + "/" + data.items.length + "]")
 	var fields = ['name','creationTimestamp'];
 	new StatusList().area("namespaceListArea").fields(fields).data(listData).draw();
 }
 function drawDaemonsets (data) {
 	var listData = [];
+	var runningCount = 0;
 	data.items.forEach(function(item){
 		var status = '';
-		if (item.status.numberUnavailable == 0) status = "ACTIVE";
+		if (item.status.numberUnavailable == 0) {
+			runningCount++;
+			status = "ACTIVE";
+		}
 		listData.push({
 			name : item.metadata.name,
 			status : status,
 			namespace : item.metadata.namespace,
+			count : "[" + item.status.numberReady + "/" + item.status.numberAvailable + "]",
 			creationTimestamp : item.metadata.creationTimestamp
 		});
 	});
-	var fields = ['name','namespace','creationTimestamp'];
+	$("#daemonCountArea").text("[" + runningCount + "/" + data.items.length + "]");
+	var fields = ['name','namespace','count','creationTimestamp'];
 	new StatusList().area("daemonsetsListArea").fields(fields).data(listData).draw();
 }
 function drawDeployment (data) {
+	console.log(data);
 	var listData = [];
+	var trueCount = 0;
 	data.items.forEach(function(item){
 		var status = '';
-		if (item.status.replicas == item.status.availableReplicas) status = "ACTIVE";
+		if (item.status.replicas == item.status.availableReplicas) {
+			trueCount++;
+			status = "ACTIVE";
+		}
 		listData.push({
 			name : item.metadata.name,
 			status : status,
 			namespace : item.metadata.namespace,
+			count : "[" + item.status.availableReplicas + "/" + item.status.replicas + "]",
 			creationTimestamp : item.metadata.creationTimestamp
 		});
 	});
-	var fields = ['name','namespace','creationTimestamp'];
+	$("#deploymentsCountArea").text("[" + trueCount + "/" + data.items.length + "]");
+	var fields = ['name','namespace','count','creationTimestamp'];
 	new StatusList().area("deploymentListArea").fields(fields).data(listData).draw();
 }
 new Client().url("/api/v1/kubernetes/version/snapshot").callback(drawVersion).get();

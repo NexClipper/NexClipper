@@ -1,10 +1,25 @@
+ <!-- 
+  Copyright 2019 NexCloud Co.,Ltd.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <div class="m-container m-container--fluid m-container--full-height">
 	<div class="m-stack m-stack--ver m-stack--desktop">
 		<div class="m-stack__item m-brand  m-brand--skin-light ">
 			<div class="m-stack m-stack--ver m-stack--general">
 				<div class="m-stack__item m-stack__item--middle m-brand__logo">
 					<a href="/" class="m-brand__logo-wrapper">
-						<img alt="NEXCLOUD" src="/resources/image/logo10.png" height="60px">
+						<img alt="NEXCLOUD" src="/resources/image/logo1_blackwall2.png" height="60px">
 					</a>
 				</div>
 				<div class="m-stack__item m-stack__item--middle m-brand__tools">
@@ -53,7 +68,7 @@
 					</li>
 				</ul>
 			</div>
-			<div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general m-stack--fluid">
+			<!-- <div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general m-stack--fluid">
 				<div class="m-stack__item m-topbar__nav-wrapper">
 					<ul class="m-topbar__nav m-nav m-nav--inline">
 						<li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
@@ -73,7 +88,7 @@
 						</li>						
 					</ul>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </div>

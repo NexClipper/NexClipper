@@ -1,7 +1,23 @@
+/*
+* Copyright 2019 NexCloud Co.,Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 var spinnerCount = 0;
 function Client () {
 	this.url;
 	this.type = 'get';
+	this.refresh = true;
 	this.param;
 	this.callback;
 	this.bindData;
@@ -27,6 +43,10 @@ Client.prototype.param = function(param) {
 	this.param = param;
 	return this;
 }
+Client.prototype.refreshFlag = function(rf) {
+	this.refresh = rf;
+	return this;
+}
 Client.prototype.callback = function(callback) {
 	this.callback = callback;
 	return this;
@@ -37,7 +57,7 @@ Client.prototype.bindData = function(bindData) {
 }
 Client.prototype.get = function() {
 	var _this = this;
-	if (spinnerCount === 0) {
+	if (spinnerCount === 0 && this.refresh) {
 		_this.startSpinner();
 	}
 	spinnerCount++;
