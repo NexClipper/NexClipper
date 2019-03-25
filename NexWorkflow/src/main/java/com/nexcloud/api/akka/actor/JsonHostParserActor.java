@@ -1,8 +1,22 @@
 package com.nexcloud.api.akka.actor;
+/*
+* Copyright 2019 NexCloud Co.,Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,13 +37,7 @@ import com.nexcloud.api.redis.RedisCluster;
 import com.nexcloud.util.Const;
 import com.nexcloud.util.Util;
 import com.nexcloud.workflow.host.domain.CPU;
-import com.nexcloud.workflow.host.domain.Disk;
 import com.nexcloud.workflow.host.domain.Host;
-import com.nexcloud.workflow.host.domain.HostMap;
-import com.nexcloud.workflow.host.domain.Memory;
-import com.nexcloud.workflow.host.domain.Network;
-import com.nexcloud.workflow.host.domain.ProcessStatus;
-import com.nexcloud.workflow.host.domain.SwapMemory;
 
 import akka.actor.UntypedActor;
 
@@ -46,10 +54,41 @@ public class JsonHostParserActor extends UntypedActor{
 	public void onReceive(Object message){
 		// TODO Auto-generated method stub
 		SendData sendData						= null; 
-		RedisCluster redisCluster				= null;
-		String msg								= null;
-		String old_msg							= null;
+        ConsumerRecords<String, String> records = null;
 		
+		try{
+	        sendData							= (SendData)message;
+
+	        // kafka
+			if( "kafka".equals(sendData.getBroker()) )
+			{
+				records							= sendData.getRecords();
+		        for (ConsumerRecord<String, String> record : records)
+		        {
+	    			if( record.value() == null || "".equals(record.value())) continue;
+			        
+	    			exec( sendData, record.value() );
+				}
+			}
+			
+			// Rabbit MQ
+			else
+			{
+				exec( sendData, sendData.getJson() );
+			}
+			// End of First Time Check
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println(Util.makeStackTrace(e));
+			
+		}
+	}
+	
+	public void exec( SendData sendData, String data )
+	{
+		// TODO Auto-generated method stub
+		RedisCluster redisCluster				= null;
+
 		ResponseData resData					= null;
         Header header							= null;
         String body								= null;
@@ -57,30 +96,14 @@ public class JsonHostParserActor extends UntypedActor{
         String pattern 							= "#####.###";
         DecimalFormat dformat 					= new DecimalFormat( pattern );
         
-        ConsumerRecords<String, String> records = null;
-        
         Gson gson 								= new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 		
 		try{
-			/**
-	         * Kafka receive data
-	         */
-	        sendData							= (SendData)message;
 	        // Redis Cluster connection
 	        redisCluster						= RedisCluster.getInstance(sendData.getRedis_host(), Integer.parseInt(sendData.getRedis_port()));
 	        
-	        records								= sendData.getRecords();
-	        msg									= "";
-	        
 			Host host							= null; 
 			
-			CPU cpu								= null;
-			Memory mem							= null;
-			Network net							= null;
-			ProcessStatus procStatus			= null;
-			SwapMemory swap						= null;
-
-			List<Disk> disks					= null;
 			List<com.nexcloud.workflow.host.domain.Process> processes			= null;
 
 			List<String> ips					= null;
@@ -88,89 +111,75 @@ public class JsonHostParserActor extends UntypedActor{
 			// CPU Core별 사용량
 			List<CPU> cpus						= null;
 			Map<String, Host> hMap				= null; 
-			
-	        for (ConsumerRecord<String, String> record : records)
-	        {
-    			if( record.value() == null || "".equals(record.value())) continue;
-		        /**
-		         * Agent metric data
-		         */
-    			resData							= Util.JsonTobean(record.value(), ResponseData.class);
-		        header							= resData.getHeader();
-				body							= resData.getBody();
-				body							= new String(Util.decompress(Util.hexStringToByteArray(body)));
-					
-				host							= Util.JsonTobean(body, Host.class);
-				host.setHost_ip(header.getNode_ip());
-				host.setHost_name(header.getNode_name());
-				cpu								= host.getCpu();
-				mem								= host.getMem();
-				net								= host.getNet();
-				procStatus						= host.getProcessStatus();
-				swap							= host.getSwap();
+			/**
+	         * Agent metric data
+	         */
+			resData								= Util.JsonTobean(data, ResponseData.class);
+	        header								= resData.getHeader();
+			body								= resData.getBody();
+			body								= new String(Util.decompress(Util.hexStringToByteArray(body)));
+				
+			host								= Util.JsonTobean(body, Host.class);
+			host.setHost_ip(header.getNode_ip());
+			host.setHost_name(header.getNode_name());
 
-				disks							= host.getDisks();
-				processes						= host.getProcess();
-				
-				// CPU Core별 사용량
-				cpus							= host.getCpus();
-				
-				// Process 
-				for( com.nexcloud.workflow.host.domain.Process process : processes )
-				{
-					try{
-						if( process.getArgs() != null )
+			processes							= host.getProcess();
+			
+			// CPU Core별 사용량
+			cpus								= host.getCpus();
+			
+			// Process 
+			for( com.nexcloud.workflow.host.domain.Process process : processes )
+			{
+				try{
+					if( process.getArgs() != null )
+					{
+						String[] args			= new String[process.getArgs().length];
+						int idx					= 0;
+						for( String arg : process.getArgs() )
 						{
-							String[] args		= new String[process.getArgs().length];
-							int idx				= 0;
-							for( String arg : process.getArgs() )
-							{
-								if( arg == null )
-									arg			= "";
-								
-								arg				= arg.replaceAll("\\\\","");
-								arg				= arg.replaceAll("\"","");
-								arg				= arg.replaceAll("\r","");
-								arg				= arg.replaceAll("\n","");
-
-								args[idx]		= arg;
-								idx++;
-							}
+							if( arg == null )
+								arg				= "";
 							
-							process.setArgs(args);
-						}
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
+							arg					= arg.replaceAll("\\\\","");
+							arg					= arg.replaceAll("\"","");
+							arg					= arg.replaceAll("\r","");
+							arg					= arg.replaceAll("\n","");
 
-				
-				// Cpu Core별
-				int cpu_core = 0;
-				for( CPU coreCpu : cpus )
-				{
-					if( coreCpu.getCpu_per() >= 100 ) continue;
-					coreCpu.setCore(cpu_core);
-					
-					cpu_core++;
+							args[idx]			= arg;
+							idx++;
+						}
+						
+						process.setArgs(args);
+					}
+				}catch(Exception e){
+					e.printStackTrace();
 				}
-				// Host Mpa Redis In/Out
-				String data						= redisCluster.get(Const.HOST, Const.LIST);
-				ips					  			= gson.fromJson(data, new TypeToken<List<String>>(){}.getType());
-				if( ips == null )
-					ips							= new ArrayList<String>();
-				
-				if( !ips.contains(header.getNode_ip()))
-					ips.add(header.getNode_ip());
-				
-				redisCluster.put(Const.HOST, Const.LIST, Util.beanToJson(ips));
 			}
-			// End of First Time Check
-		}catch(Exception e){
-			logger.error("body::"+body);
-			e.printStackTrace();
-			System.out.println(Util.makeStackTrace(e));
+
 			
+			// Cpu Core별
+			int cpu_core = 0;
+			for( CPU coreCpu : cpus )
+			{
+				if( coreCpu.getCpu_per() >= 100 ) continue;
+				coreCpu.setCore(cpu_core);
+				
+				cpu_core++;
+			}
+			// Host Mpa Redis In/Out
+			String hostIPs						= redisCluster.get(Const.HOST, Const.LIST);
+			ips					  				= gson.fromJson(hostIPs, new TypeToken<List<String>>(){}.getType());
+			if( ips == null )
+				ips								= new ArrayList<String>();
+			
+			if( !ips.contains(header.getNode_ip()))
+				ips.add(header.getNode_ip());
+			
+			redisCluster.put(Const.HOST, Const.LIST, Util.beanToJson(ips));
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error(Util.makeStackTrace(e));
 		}
 	}
 }

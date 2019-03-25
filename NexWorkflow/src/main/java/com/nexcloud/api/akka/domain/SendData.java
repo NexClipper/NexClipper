@@ -1,4 +1,19 @@
 package com.nexcloud.api.akka.domain;
+/*
+* Copyright 2019 NexCloud Co.,Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 import java.util.List;
 
@@ -52,6 +67,36 @@ public class SendData {
 	private String influxdb_table;
 	
 	private ConsumerRecords<String, String> records; 
+	
+	private String broker;
+	
+	private String rabbitmq_host;
+	
+	private String rabbitmq_port;
+	
+	public String getRabbitmq_host() {
+		return rabbitmq_host;
+	}
+
+	public void setRabbitmq_host(String rabbitmq_host) {
+		this.rabbitmq_host = rabbitmq_host;
+	}
+
+	public String getRabbitmq_port() {
+		return rabbitmq_port;
+	}
+
+	public void setRabbitmq_port(String rabbitmq_port) {
+		this.rabbitmq_port = rabbitmq_port;
+	}
+
+	public String getBroker() {
+		return broker;
+	}
+
+	public void setBroker(String broker) {
+		this.broker = broker;
+	}
 
 	public List<String> getJsons() {
 		return jsons;

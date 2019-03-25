@@ -1,4 +1,19 @@
 package com.nexcloud.workflow;
+/*
+* Copyright 2019 NexCloud Co.,Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +70,15 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 
 	@Value("${spring.redis.port}")
 	private String redis_port;
+	
+	@Value("${spring.broker}")
+	private String broker;
+	
+	@Value("${spring.rabbitmq.host}")
+	private String rabbitmq_host;
+	
+	@Value("${spring.rabbitmq.port}")
+	private String rabbitmq_port;
 
 	static final Logger logger = LoggerFactory.getLogger(Workflow.class);
 	
@@ -102,20 +126,22 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		/**
     	 * Kafka Topic Create
     	 */
-    	System.out.println(" Kafka Topic Create Start.....");
-
-    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.INCIDENT_TOPIC);
-    	
-    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.HOST_TOPIC);
-    	
-    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.DOCKER_TOPIC);
-    	
-    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.K8SAPI_TOPIC);
-    	
-    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.LOG_TOPIC);
-    	
-    	System.out.println(" Kafka Topic Create End.....");
-    	
+		if( "kafka".equals(broker) )
+		{
+	    	System.out.println(" Kafka Topic Create Start.....");
+	
+	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.INCIDENT_TOPIC);
+	    	
+	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.HOST_TOPIC);
+	    	
+	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.DOCKER_TOPIC);
+	    	
+	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.K8SAPI_TOPIC);
+	    	
+	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.LOG_TOPIC);
+	    	
+	    	System.out.println(" Kafka Topic Create End.....");
+		}
     	
     	// Connection Redis
 		RedisCluster.getInstance(redis_host, Integer.parseInt(redis_port));
@@ -132,6 +158,10 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setKafka_zookeeper(kafka_zookeeper);
 		sendData.setKafka_host(kafka_host);
 		sendData.setKafka_port(kafka_port);
+		
+		sendData.setBroker(broker);
+		sendData.setRabbitmq_host(rabbitmq_host);
+		sendData.setRabbitmq_port(rabbitmq_port);
 		
 		
 		/**
@@ -156,6 +186,11 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setKafka_zookeeper(kafka_zookeeper);
 		sendData.setKafka_host(kafka_host);
 		sendData.setKafka_port(kafka_port);
+		
+		sendData.setBroker(broker);
+		sendData.setRabbitmq_host(rabbitmq_host);
+		sendData.setRabbitmq_port(rabbitmq_port);
+		
 		sendData.setKafka_topic(Const.DOCKER_TOPIC);
 		ActorSystem systemDocker		= ActorSystem.create("DockerConsumer");
 		ActorRef kafkaDockerConsumer 	= null;
@@ -175,6 +210,10 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setKafka_zookeeper(kafka_zookeeper);
 		sendData.setKafka_host(kafka_host);
 		sendData.setKafka_port(kafka_port);
+		
+		sendData.setBroker(broker);
+		sendData.setRabbitmq_host(rabbitmq_host);
+		sendData.setRabbitmq_port(rabbitmq_port);
 		
 		sendData.setKafka_topic(Const.K8SAPI_TOPIC);
 		ActorSystem systemK8SAPI		= ActorSystem.create("K8SAPIConsumer");
