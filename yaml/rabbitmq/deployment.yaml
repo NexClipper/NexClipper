@@ -1,0 +1,72 @@
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: nexclipper-sa
+  namespace: nexclipper
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nexclipper-sa-kube-system-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: nexclipper-sa
+  namespace: nexclipper
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: nexclipper
+  name: rabbitmq
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      serviceAccount: nexclipper-sa
+      containers:
+      - name: rabbitmq
+        image: kuberstack/kubernetes-rabbitmq-autocluster
+        ports:
+          - containerPort: 5672
+            name: port-5672
+          - containerPort: 4369
+            name: port-4369
+          - containerPort: 5671
+            name: port-5671
+          - containerPort: 15672
+            name: port-15672
+          - containerPort: 25672
+            name: port-25672
+        env:
+          - name: HOSTNAME
+            valueFrom:
+             fieldRef:
+              fieldPath: status.podIP
+          - name: MY_POD_IP
+            valueFrom:
+             fieldRef:
+              fieldPath: status.podIP
+          - name: AUTOCLUSTER_CLEANUP
+            value: "true"
+          - name: CLEANUP_INTERVAL
+            value: "60"
+          - name: CLEANUP_WARN_ONLY
+            value: "false"
+          # start.sh will store this value to a proper location in filesystem
+          # - name: RABBITMQ_ERLANG_COOKIE
+          #   valueFrom:
+          #    secretKeyRef:
+          #     name: erlang.cookie
+          #     key: erlang.cookie

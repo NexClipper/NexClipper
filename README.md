@@ -4,7 +4,7 @@ NexClipper is the container and container orchestration monitoring and performan
 
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
-Please note that previsous NexClipper Light project which was a host level container monitoring tool has been moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
+Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
 
 ![](docs/images/logo1.png)
 
@@ -19,7 +19,7 @@ NexClipper Cloud features the following capabilities:
 - Incidents Management
 - AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For more details visit  https://www.nexclipper.io/
+For more details visit  https://www.nexclipper.com/
 For beta service, visit https://server.nexclipper.com
 
 ## NexClipper  
@@ -48,58 +48,89 @@ There are various ways of installing NexClipper.
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
 - Installed Apache Kafka on kubernetes Cluster (including Zookeeper)
 - An SSH key pair on your local Linux/macOS/BSD machine.
+- Create namespace `nexclipper'
 
 ### Prepare deployment
 
 On Kubernetes Master
 
-- redis
+> #### redis
 
-      $kubectl create -f redis.yaml  
-      $kubectl create -f redisservice.yaml
+      $ kubectl create -f <yaml/redis/deployment.yaml>
+      $ kubectl create -f <yaml/redis/service.yaml>
 
-- mysql
+> #### mysql
 
-      $kubectl create -f mysql.yaml  
-      $kubectl create -f mysqlservice.yaml
+본인이 원하는 db가 있을시에 변경해야 할 부분들.
 
-- influxdb
+- load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
+- deployment.yaml에서 env 변경
 
-      $kubectl create -f influx.yaml   
-      $kubectl create -f influxservice.yaml
+`hostPath` 각자 클러스터 환경에 맞게 변경
 
+      $ kubectl create -f <yaml/mysql/deployment.yaml>
+      $ kubectl create -f <yaml/mysql/service.yaml>
+
+> #### influxdb
+
+`hostPath` 각자 클러스터 환경에 맞게 변경
+
+      $ kubectl create -f <yaml/influxdb/deployment.yaml>
+      $ kubectl create -f <yaml/influxdb/service.yaml>
+
+> #### rabbitmq
+
+      $ kubectl create -f <yaml/rabbitmq/deployment.yaml>
+      $ kubectl create -f <yaml/rabbitmq/service.yaml>
 
 ### Nexclipper service deployment
+First, create an arbitrary folder on the master of the cluster.
 
-- workflow
+      eg. mkdir -p /tmp/nexclipper/yaml
 
-      $kubectl create -f workflow_deployment.yaml  
-      $kubectl create -f workflow_service.yaml
+Download all `yaml`, subfolders, and files
+
+> #### workflow
+
+deployment.yaml 파일 수정
+- replicas
+      - 개수는 2~4개
+      
+- env
+  - kafka 정보 수정
+  - MYSQL은 제공되는 mysql yaml 파일을 사용한다면 수정 안해도 되지만 본인이 사용하는 db가 따로 있으면 수정이 필요함
+  - BROKER 정보도 제공되는 rabbitmq를 사용한다면 수정 안해도 되지만 본인이 사용하는 broker가 따로 있으면 수정이 필요함
+```
+  $ kubectl create -f <yaml/workflow/deployment.yaml>
+```
+> #### collector
+
+deployment.yaml 파일에 env 수정
+- kafka 정보 수정
+- MYSQL은 제공되는 mysql yaml 파일을 사용한다면 수정 안해도 되지만 본인이 사용하는 db가 따로 있으면 수정이 필요함
+- BROKER 정보도 제공되는 rabbitmq를 사용한다면 수정 안해도 되지만 본인이 사용하는 broker가 따로 있으면 수정이 필요함.
+
+```
+  $ kubectl create -f <yaml/collector/deployment.yaml>
+  $ kubectl create -f <yaml/collector/service.yaml>
+```
+> #### nexservice
+
+deployment.yaml 파일에 env 수정
+
+      $ kubectl create -f <yaml/nexservice/deployment.yaml>
+      $ kubectl create -f <yaml/nexservice/service.yaml>
 
 
-- collector
+### Nexclipper Agent daemonset/deployment
+Install the agent on the cluster node (master) to be monitored as follows
+- daemonset: get host and docker container's information
+- deployment: get kubernetes cluster's information
 
-      $kubectl create -f collectorapi_deployment.yaml  
-      $kubectl create -f collectorapi_service.yaml
+daemonset과 deployment의 env에서 agent_endpoint의 ip를 본인 클러스터의  ip로 변경해야 함.
 
-- ui
+      $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
 
-      $kubectl create -f deployment.yaml
-      $kubectl create -f service.yaml
-
-
-### Nexclipper Agent deployment
-
-    $kubectl create -f nexclipper-agent.yaml
-
-
-### Docker images
-
-Docker image
-
-    $nexclipper/nexagent
-
-NexClipper will... 
 
 ## Licensing
 
@@ -109,10 +140,11 @@ NexClipper is licensed under the Apache License, Version 2.0. See [LICENSE](http
 
 Email: nexclipper@nexclipper.com
 
-Homepage: https://www.nexclipper.io/
+Homepage: https://www.nexclipper.com/
 
 Facebook : https://www.facebook.com/nexclipper/
 
 Linkedin: https://www.linkedin.com/company/nexcloud/
 
 Twitter: https://twitter.com/NexClipper
+
