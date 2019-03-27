@@ -73,7 +73,10 @@ MDT.prototype.event = function (event) {
 	this.event = event;
 	return this;
 }
+
+
 MDT.prototype.draw = function () {
 	this.event();
+	$("#" + this.area).mDatatable("destroy");
 	this.table = $("#" + this.area).mDatatable(this.options);
 }

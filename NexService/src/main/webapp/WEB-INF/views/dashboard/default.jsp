@@ -888,6 +888,7 @@ function refresh() {
 	rf = false;
 	new Client().url("/api/v1/kubernetes/component/status/snapshot").refreshFlag(rf).callback(drawStatus).get();
 	new Client().url("/api/v1/kubernetes/namespace/snapshot").refreshFlag(rf).callback(drawNamespace).get();
+	
 	// event error code
 	new Client().url("/api/v1/kubernetes/daemonset/snapshot").refreshFlag(rf).callback(drawDaemonSet).get();
 	new Client().url("/api/v1/kubernetes/node/snapshot").refreshFlag(rf).callback(drawNode).get();
