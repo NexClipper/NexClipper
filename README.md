@@ -46,91 +46,305 @@ There are various ways of installing NexClipper.
 ### Prerequisites
 
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
-- Installed Apache Kafka on kubernetes Cluster (including Zookeeper)
 - An SSH key pair on your local Linux/macOS/BSD machine.
-- Create namespace `nexclipper'
+- ***Create namespace `nexclipper'***
 
 ### Prepare deployment
 
-On Kubernetes Master
+kubectl이 설치된 클러스터에서 진행
+
+먼저, `yaml` 디렉토리 밑의 모든 파일을 다운받아서 원하는 디렉토리에 저장한다.
 
 > #### redis
 
-      $ kubectl create -f <yaml/redis/deployment.yaml>
-      $ kubectl create -f <yaml/redis/service.yaml>
+- create
+```sh
+  $ kubectl create -f <yaml/redis/deployment.yaml>
+  $ kubectl create -f <yaml/redis/service.yaml>
+```
 
-> #### mysql
+> #### mysql(or mariaDB)
 
-본인이 원하는 db가 있을시에 변경해야 할 부분들.
+- 본인이 원하는 특정한 db가 있을시에 아래 부분을 변경해야함
 
-- load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
-- deployment.yaml에서 env 변경
+```yaml
+// yaml/mysql/deployment.yaml
+...
+spec:
+  containers:
+    - env:
+      - name: MYSQL_DATABASE
+        value: defaultdb
+      - name: MYSQL_PASSWORD
+        value: password
+      - name: MYSQL_ROOT_PASSWORD
+        value: root
+      - name: MYSQL_USER
+        value: admin
+...
+```
 
-`hostPath` 각자 클러스터 환경에 맞게 변경
+- 클러스터 환경에 맞게 저장경로 변경
 
-      $ kubectl create -f <yaml/mysql/deployment.yaml>
-      $ kubectl create -f <yaml/mysql/service.yaml>
+```yaml
+// yaml/mysql/deployment.yaml
+...
+volumes:
+  - name: mysql-data
+    hostPath:
+      path: /nfs/mysql        # 본인 클러스터 환경에 맞춰서 변경
+...
+```
+
+- create
+```sh
+  $ kubectl create -f <yaml/mysql/deployment.yaml>
+  $ kubectl create -f <yaml/mysql/service.yaml>
+```
+
+- 다른 db를 사용하였다면 load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
+```yaml
+// yaml/mysql/load.sql
+...
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `defaultdb` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `defaultdb`;        # 'defaultdb'를 사용하고자 하는 db명으로 변경
+...
+```
+
 
 > #### influxdb
 
-`hostPath` 각자 클러스터 환경에 맞게 변경
+- 클러스터 환경에 맞게 저장경로 변경
 
-      $ kubectl create -f <yaml/influxdb/deployment.yaml>
-      $ kubectl create -f <yaml/influxdb/service.yaml>
+```yaml
+// yaml/influx/deployment.yaml
+...
+volumes:
+  - name: influx-data
+    hostPath:
+      path: /nfs/influxdb        # 본인 클러스터 환경에 맞춰서 변경
+...
+```
 
-> #### rabbitmq
+- create
+```sh
+  $ kubectl create -f <yaml/influxdb/deployment.yaml>
+  $ kubectl create -f <yaml/influxdb/service.yaml>
+```
 
-      $ kubectl create -f <yaml/rabbitmq/deployment.yaml>
-      $ kubectl create -f <yaml/rabbitmq/service.yaml>
+> #### rabbitmq (or kafka)
+
+- rabbitmq는 바로 create
+```sh
+  $ kubectl create -f <yaml/rabbitmq/deployment.yaml>
+  $ kubectl create -f <yaml/rabbitmq/service.yaml>
+```
+
+- kafka로 설치를 진행 할 시 아래 부분을 본인 환경에맞게 변경해야함.
+
+```yaml
+// yaml/collector/deployment.yaml
+...
+env:
+  - name: KAFKA_ZOOKEEPER
+    value: "kafka-zookeeper.kafka-test-02:2181"
+  - name: KAFKA_PORT
+    value: '9092'
+  - name: KAFKA_HOST
+    value: "kafka-kafka.kafka-test-02"
+  - name: MYSQL_DBNAME
+    value: "defaultdb"
+  - name: MYSQL_URL
+    value: "mysql.nexclipper:3306"
+  - name: MYSQL_PASSWORD
+    value: "password"
+  - name: MYSQL_USERNAME
+    value: "admin"
+  - name: REDIS_HOST
+    value: redis.nexclipper
+  - name: REDIS_PORT
+    value: '6379'
+  - name: INFLUXDB_ENDPOINT
+    value: "http://influx.nexclipper:8087"
+  - name: INFLUXDB_DATASOURCE
+    value: "nexclipper"
+  - name: TDB
+    value: INFLUX
+  - name: PUSHGATEWAY_ENDPOINT
+    value: prometheus-h-pushgateway.prometheus:9091
+  - name: BROKER
+    value: rabbitmq
+  - name: RABBITMQ_HOST
+    value: rabbitmq.nexclipper
+  - name: RABBITMQ_PORT
+    value: '5672'
+...
+```
+
 
 ### Nexclipper service deployment
-First, create an arbitrary folder on the master of the cluster.
-
-      eg. mkdir -p /tmp/nexclipper/yaml
-
-Download all `yaml`, subfolders, and files
 
 > #### workflow
 
-deployment.yaml 파일 수정
-- replicas
-      - 개수는 2~4개
-      
-- env
-  - kafka 정보 수정
-  - MYSQL은 제공되는 mysql yaml 파일을 사용한다면 수정 안해도 되지만 본인이 사용하는 db가 따로 있으면 수정이 필요함
-  - BROKER 정보도 제공되는 rabbitmq를 사용한다면 수정 안해도 되지만 본인이 사용하는 broker가 따로 있으면 수정이 필요함
+- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
+```yaml
+// yaml/workflow/deployment.yaml
+...
+env:
+  - name: KAFKA_ZOOKEEPER
+    value: "kafka-zookeeper.kafka-test-02:2181"
+  - name: KAFKA_PORT
+    value: '9092'
+  - name: KAFKA_HOST
+    value: "kafka-kafka.kafka-test-02"
+  - name: MYSQL_DBNAME
+    value: "defaultdb"
+  - name: MYSQL_URL
+    value: "mysql.nexclipper:3306"
+  - name: MYSQL_PASSWORD
+    value: "password"
+  - name: MYSQL_USERNAME
+    value: "admin"
+  - name: REDIS_HOST
+    value: redis.nexclipper
+  - name: REDIS_PORT
+    value: '6379'
+  - name: INFLUXDB_ENDPOINT
+    value: "http://influx.nexclipper:8087"
+  - name: INFLUXDB_DATASOURCE
+    value: "nexclipper"
+  - name: BROKER
+    value: rabbitmq
+  - name: RABBITMQ_HOST
+    value: rabbitmq.nexclipper
+  - name: RABBITMQ_PORT
+    value: '5672'
+...
 ```
+      
+- create
+
+```sh
   $ kubectl create -f <yaml/workflow/deployment.yaml>
 ```
+
 > #### collector
 
-deployment.yaml 파일에 env 수정
-- kafka 정보 수정
-- MYSQL은 제공되는 mysql yaml 파일을 사용한다면 수정 안해도 되지만 본인이 사용하는 db가 따로 있으면 수정이 필요함
-- BROKER 정보도 제공되는 rabbitmq를 사용한다면 수정 안해도 되지만 본인이 사용하는 broker가 따로 있으면 수정이 필요함.
-
+- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
+```yaml
+// yaml/collector/deployment.yaml
+...
+spec:
+  replicas: 2           # default는 2개 이지만 노드 수에 맞춰주는게 가장 좋음
+...
+env:
+  - name: KAFKA_ZOOKEEPER
+    value: "kafka-zookeeper.kafka-test-02:2181"
+  - name: KAFKA_PORT
+    value: '9092'
+  - name: KAFKA_HOST
+    value: "kafka-kafka.kafka-test-02"
+  - name: MYSQL_DBNAME
+    value: "defaultdb"
+  - name: MYSQL_URL
+    value: "mysql.nexclipper:3306"
+  - name: MYSQL_PASSWORD
+    value: "password"
+  - name: MYSQL_USERNAME
+    value: "admin"
+  - name: REDIS_HOST
+    value: redis.nexclipper
+  - name: REDIS_PORT
+    value: '6379'
+  - name: INFLUXDB_ENDPOINT
+    value: "http://influx.nexclipper:8087"
+  - name: INFLUXDB_DATASOURCE
+    value: "nexclipper"
+  - name: TDB
+    value: INFLUX
+  - name: PUSHGATEWAY_ENDPOINT
+    value: prometheus-h-pushgateway.prometheus:9091
+  - name: BROKER
+    value: rabbitmq
+  - name: RABBITMQ_HOST
+    value: rabbitmq.nexclipper
+  - name: RABBITMQ_PORT
+    value: '5672'
+...
 ```
+- create
+```sh
   $ kubectl create -f <yaml/collector/deployment.yaml>
   $ kubectl create -f <yaml/collector/service.yaml>
 ```
+
 > #### nexservice
 
-deployment.yaml 파일에 env 수정
+- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
+```yaml
+// yaml/nexservice/deployment.yaml
+...
+env:
+  - name: MYSQL_DBNAME
+    value: "defaultdb"
+  - name: MYSQL_URL
+    value: "mysql.nexclipper"
+  - name: MYSQL_PORT
+    value: '3306'
+  - name: MYSQL_USERNAME
+    value: "admin"
+  - name: MYSQL_PASSWORD
+    value: "password"
+  - name: REDIS_ENDPOINT
+    value: "redis.nexclipper"
+  - name: REDIS_PORT
+    value: '6379'
+  - name: TSDB
+    value: "influx"
+  - name: INFLUXDB_ENDPOINT
+    value: "http://influx.nexclipper:8087"
+  - name: INFLUXDB_DATASOURCE
+    value: "nexclipper"
+  - name: ACTIVE
+    value: "dev"
+...
+```
 
-      $ kubectl create -f <yaml/nexservice/deployment.yaml>
-      $ kubectl create -f <yaml/nexservice/service.yaml>
-
+- create
+```sh
+  $ kubectl create -f <yaml/nexservice/deployment.yaml>
+  $ kubectl create -f <yaml/nexservice/service.yaml>
+```
 
 ### Nexclipper Agent daemonset/deployment
-Install the agent on the cluster node (master) to be monitored as follows
-- daemonset: get host and docker container's information
-- deployment: get kubernetes cluster's information
 
-daemonset과 deployment의 env에서 agent_endpoint의 ip를 본인 클러스터의  ip로 변경해야 함.
+-Install the agent on the cluster node (master) to be monitored as follows
+ - role of daemonset: get host and docker container's information
+ - role of deployment: get kubernetes cluster's information
 
-      $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
+- endpoint 변경
+```yaml
+// yaml/nexclipper-agent/nexclipper-agent.yaml
+...
+kind: DaemonSet
+...
+env:
+  - name: agent_endpoint
+    value: 192.168.0.180:32100      # 본인의 호스트 ip로 변경
+...
+kind: Deployment
+...
+env:
+  - name: agent_endpoint
+    value: 192.168.0.180:32100      # 본인의 호스트 ip로 변경
+...
+```
 
+- create
+```sh
+  $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
+```
 
 ## Licensing
 
