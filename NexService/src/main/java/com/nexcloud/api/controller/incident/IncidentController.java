@@ -50,7 +50,6 @@ public class IncidentController {
 		@ApiImplicitParam(
 	            name = "idx", 
 	            value = "이벤트 id(ex) 1 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -59,7 +58,7 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getStartEvents( @RequestParam("idx") String idx ) throws Exception {
+	public String getStartEvents( @RequestParam(value="idx", required = false) String idx ) throws Exception {
 		return incidentService.getStartEvents(idx);
 	}
 	
@@ -83,56 +82,48 @@ public class IncidentController {
 		@ApiImplicitParam(
 	            name = "start_time", 
 	            value = "이벤트 조회 시간 (ex) 한시가전 : 1h, 두시간전 :2h .. ", 
-	            required = true, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "id", 
 	            value = "이벤트가 발생한 Task(Container) ID (ex) nexclipper ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target_ip", 
 	            value = "이벤트가 발생한 Node(Agent) IP (ex) 192.168.0.1 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target_system", 
 	            value = "이벤트 발생 대상 (ex) Docker, Host, POD... ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target", 
 	            value = "이벤트 발생 metric  (ex) CPU, Memory... ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "status", 
 	            value = "이벤트  발생상태  (ex) S:발생중인 이벤트, F:종료된 이벤트 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "severity", 
 	            value = "이벤트 등급  (ex) Critical, Warning ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "searchTxt", 
 	            value = "조회 하고자 하는 내용  (ex) private3 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -141,14 +132,14 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getEvents(	 @RequestParam("start_time") String start_time
-								,@RequestParam("id") String id
-								,@RequestParam("target_ip") String target_ip
-								,@RequestParam("target_system") String target_system
-								,@RequestParam("target") String target
-								,@RequestParam("status") String status
-								,@RequestParam("severity") String severity
-								,@RequestParam("searchTxt") String searchTxt
+	public String getEvents(	 @RequestParam(value="start_time", required = true) String start_time
+								,@RequestParam(value="id", required=false) String id
+								,@RequestParam(value="target_ip", required=false) String target_ip
+								,@RequestParam(value="target_system", required=false) String target_system
+								,@RequestParam(value="target", required=false) String target
+								,@RequestParam(value="status", required=false) String status
+								,@RequestParam(value="severity", required=false) String severity
+								,@RequestParam(value="searchTxt", required=false) String searchTxt
 								) throws Exception {
 		Incident incident		= new Incident();
 		incident.setStart_time(start_time);
@@ -175,7 +166,6 @@ public class IncidentController {
 		@ApiImplicitParam(
 				name = "start_time", 
 	            value = "이벤트 조회 시간 (ex) 한시가전 : 1h, 두시간전 :2h .. ", 
-	            required = true, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -184,7 +174,7 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getEventByTime( @RequestParam("start_time") String start_time ) throws Exception {
+	public String getEventByTime( @RequestParam(value="start_time", required = true) String start_time ) throws Exception {
 		return incidentService.getEventByTime(start_time);
 	}
 	
@@ -200,7 +190,6 @@ public class IncidentController {
 		@ApiImplicitParam(
 				name = "start_time", 
 	            value = "이벤트 조회 시간 (ex) 한시가전 : 1h, 두시간전 :2h .. ", 
-	            required = true, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -209,7 +198,7 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getEventByIp( @RequestParam("start_time") String start_time ) throws Exception {
+	public String getEventByIp( @RequestParam(value="start_time", required = false) String start_time ) throws Exception {
 		return incidentService.getEventByIp(start_time);
 	}
 	
@@ -225,7 +214,6 @@ public class IncidentController {
 		@ApiImplicitParam(
 				name = "start_time", 
 	            value = "이벤트 조회 시간 (ex) 한시가전 : 1h, 두시간전 :2h .. ", 
-	            required = true, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -234,7 +222,7 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getEventByTarget( @RequestParam("start_time") String start_time ) throws Exception {
+	public String getEventByTarget( @RequestParam(value="start_time",required = true) String start_time ) throws Exception {
 		return incidentService.getEventByTarget(start_time);
 	}
 	
@@ -245,49 +233,42 @@ public class IncidentController {
 		@ApiImplicitParam(
 	            name = "start_time", 
 	            value = "이벤트 조회 시간 (ex) 한시가전 : 1h, 두시간전 :2h .. ", 
-	            required = true, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "id", 
 	            value = "이벤트가 발생한 Task(Container) ID (ex) nexclipper ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target_ip", 
 	            value = "이벤트가 발생한 Node(Agent) IP (ex) 192.168.0.1 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target_system", 
 	            value = "이벤트 발생 대상 (ex) Docker, Host, POD... ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "target", 
 	            value = "이벤트 발생 metric  (ex) CPU, Memory... ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "severity", 
 	            value = "이벤트 등급  (ex) Critical, Warning ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    ),
 		@ApiImplicitParam(
 	            name = "searchTxt", 
 	            value = "조회 하고자 하는 내용  (ex) private3 ", 
-	            required = false, 
 	            dataType = "string", 
 	            paramType = "query"
 	    )
@@ -296,13 +277,13 @@ public class IncidentController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getEventMap(	 @RequestParam("start_time") String start_time
-								,@RequestParam("id") String id
-								,@RequestParam("target_ip") String target_ip
-								,@RequestParam("target_system") String target_system
-								,@RequestParam("target") String target
-								,@RequestParam("severity") String severity
-								,@RequestParam("searchTxt") String searchTxt
+	public String getEventMap(	 @RequestParam(value="start_time", required = true) String start_time
+								,@RequestParam(value="id", required = false) String id
+								,@RequestParam(value="target_ip", required = false) String target_ip
+								,@RequestParam(value="target_system", required = false) String target_system
+								,@RequestParam(value="target", required = false) String target
+								,@RequestParam(value="severity", required = false) String severity
+								,@RequestParam(value="searchTxt", required = false) String searchTxt
 								) throws Exception {
 		Incident incident		= new Incident();
 		incident.setStart_time(start_time);
@@ -338,5 +319,68 @@ public class IncidentController {
 		Rule rule			= new Rule();
 		
 		return incidentService.getTarget(rule);
+	}
+	
+
+	@RequestMapping(value="/event/detail", method=RequestMethod.GET)
+	@ApiOperation(value="특정 이벤트에 대한 상세 정보조회", httpMethod="GET", notes="특정 이벤트에 대한 상세 정보조회")
+	@ApiImplicitParams({
+		@ApiImplicitParam(
+				name = "target_ip", 
+	            value = "이벤트가 발생한 Node(Agent) IP (ex) 192.168.0.1 ", 
+	            dataType = "string", 
+	            paramType = "query"
+	    ),
+		@ApiImplicitParam(
+	            name = "target", 
+	            value = "이벤트 발생 metric  (ex) CPU, Memory... ", 
+	            dataType = "string", 
+	            paramType = "query"
+	    ),
+		@ApiImplicitParam(
+	            name = "target_system", 
+	            value = "이벤트 발생 대상 (ex) Docker, Host, POD... ", 
+	            dataType = "string", 
+	            paramType = "query"
+	    ),
+		@ApiImplicitParam(
+	            name = "id", 
+	            value = "이벤트가 발생한 Task(Container) ID (ex) nexclipper ", 
+	            dataType = "string", 
+	            paramType = "query"
+	    ),
+		@ApiImplicitParam(
+	            name = "idx", 
+	            value = "이벤트 발생 순번 (ex) 1, 2...", 
+	            dataType = "string", 
+	            paramType = "query"
+	    ),
+		@ApiImplicitParam(
+	            name = "metric", 
+	            value = "이벤트 발생 metric (ex) mem_used_percent ", 
+	            dataType = "string", 
+	            paramType = "query"
+	    )
+	})
+	@ApiResponses(value={
+			@ApiResponse( code=200, message="SUCCESS"),
+			@ApiResponse( code=500, message="Internal Server Error")
+	})
+	public String getEventDetail(	 @RequestParam(value="idx", required = true) int idx
+									,@RequestParam(value="id", required = true) String id
+									,@RequestParam(value="target_ip", required = true) String target_ip
+									,@RequestParam(value="target_system", required = true) String target_system
+									,@RequestParam(value="target", required = true) String target
+									,@RequestParam(value="metric", required = true) String metric
+								) throws Exception {
+		Incident incident		= new Incident();
+		incident.setIdx(idx);
+		incident.setId(id);
+		incident.setTarget_ip(target_ip);
+		incident.setTarget(target);
+		incident.setTarget_system(target_system);
+		incident.setMetric(metric);
+		
+		return incidentService.getEventDetail(incident);
 	}
 }

@@ -50,6 +50,11 @@ public class IncidentService{
 		return mysql.resultToResponse(incidentRepository.getEventMap(incident));
 	}
 	
+	public String getEventDetail( Incident incident ){
+		//return mysql.resultToResponse(incidentRepository.getEventDetail(incident));
+		return null;
+	}
+	
 	public String getTargetSystem( Rule rule ){
 		return mysql.resultToResponse(incidentRepository.getTargetSystem(rule));
 	}

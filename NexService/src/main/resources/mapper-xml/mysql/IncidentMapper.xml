@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     	order by status asc, idx asc
     </select>
     
-	<select id="getIncidentList" parameterType="com.nexcloud.rdb.domain.mysql.Incident" resultType="com.nexcloud.rdb.domain.mysql.Incident">
+	<select id="getEvents" parameterType="com.nexcloud.rdb.domain.mysql.Incident" resultType="com.nexcloud.rdb.domain.mysql.Incident">
 		SELECT 	idx,
 				severity,
 				target_system ,
