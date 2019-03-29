@@ -109,7 +109,7 @@ volumes:
   $ kubectl create -f <yaml/rabbitmq/service.yaml>
 ```
 
-- [If you want to use Kafka instead of RabbitMQ, Got to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
+- [If you want to use Kafka instead of RabbitMQ, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
 
 
 ### NexClipper service deployment
