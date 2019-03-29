@@ -1,6 +1,6 @@
-# kafka로 설치시 수정해야 하는 부분
+# If you use Kafka
 
-- 아래의 코드를 본인 클러스터 환경에 맞게 변경해야 함
+- Update deployment 
 
 ```yaml
 // yaml/collector/deployment.yaml
