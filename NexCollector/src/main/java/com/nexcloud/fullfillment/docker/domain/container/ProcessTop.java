@@ -1,4 +1,3 @@
-package com.nexcloud.fullfillment.docker.domain.container;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.fullfillment.docker.domain.container;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.fullfillment.docker.domain.container;
 import java.util.ArrayList;
 import java.util.List;
 

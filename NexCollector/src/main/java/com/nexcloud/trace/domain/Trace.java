@@ -1,4 +1,3 @@
-package com.nexcloud.trace.domain;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.trace.domain;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.trace.domain;
 public class Trace {
 	private Integer agent_id;
 	private long 	uuid;

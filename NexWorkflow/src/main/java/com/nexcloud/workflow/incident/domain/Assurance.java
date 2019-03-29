@@ -1,4 +1,3 @@
-package com.nexcloud.workflow.incident.domain;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.workflow.incident.domain;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.workflow.incident.domain;
 import java.util.List;
 import java.util.Map;
 

@@ -44,7 +44,7 @@
 					<div class="m-portlet__head-tools"></div>
 				</div>
 				<div class="m-portlet__body">
-					<div class="m-widget12" style="height: 300px;">
+					<div class="m-widget12" style="overflow-x: hidden; height: 300px;">
 						<div class="m-widget12__item">
 							<div class="m-widget12__text1">
 								<span>Node Name</span> <div id="nodeNameArea"></div>

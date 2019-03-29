@@ -1,4 +1,3 @@
-package com.nexcloud.fullfillment.docker.resource;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.fullfillment.docker.resource;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.fullfillment.docker.resource;
 import java.util.Hashtable;
 
 public class ResourceLoader{	

@@ -44,7 +44,7 @@
 					<div class="m-portlet__head-tools"></div>
 				</div>
 				<div class="m-portlet__body">
-					<div class="m-widget12" style="height: 250px;">
+					<div class="m-widget12" style="height: 280px;">
 						<div class="m-widget12__item">
 							<div class="m-widget12__text1">
 								<span>Host</span> <div id="hostNameArea"></div>
@@ -100,7 +100,7 @@
 					<div class="m-portlet__head-tools"></div>
 				</div>
 				<div class="m-portlet__body">
-					<div id="topProcessArea" class="m-widget4 m-dashboard-widget4" style="overflow-x: hidden; height: 250px;"></div>
+					<div id="topProcessArea" class="m-widget4 m-dashboard-widget4" style="overflow-x: hidden; height: 280px;"></div>
 				</div>
 			</div>
 		</div>

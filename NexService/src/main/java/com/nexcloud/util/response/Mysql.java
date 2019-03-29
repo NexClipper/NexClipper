@@ -1,4 +1,3 @@
-package com.nexcloud.util.response;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,10 +13,10 @@ package com.nexcloud.util.response;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.util.response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import com.google.gson.Gson;
 import com.nexcloud.util.Util;
 import com.nexcloud.util.consts.HTTP;

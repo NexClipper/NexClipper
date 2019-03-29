@@ -1,4 +1,3 @@
-package com.nexcloud.api.service.rule;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.api.service.rule;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.api.service.rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nexcloud.rdb.mapper.mysql.RuleRepository;

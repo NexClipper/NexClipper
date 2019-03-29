@@ -1,4 +1,4 @@
-package com.nexcloud.api.akka.actor;
+
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +14,7 @@ package com.nexcloud.api.akka.actor;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.api.akka.actor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;

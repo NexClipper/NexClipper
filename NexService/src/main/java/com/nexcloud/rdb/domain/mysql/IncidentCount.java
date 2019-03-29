@@ -1,4 +1,3 @@
-package com.nexcloud.rdb.domain.mysql;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.rdb.domain.mysql;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.rdb.domain.mysql;
 public class IncidentCount{
 	private String targetSystem;
 	private String targetIp;

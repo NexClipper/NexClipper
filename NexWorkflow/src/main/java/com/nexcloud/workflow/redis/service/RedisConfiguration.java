@@ -1,4 +1,3 @@
-package com.nexcloud.workflow.redis.service;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.workflow.redis.service;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.workflow.redis.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

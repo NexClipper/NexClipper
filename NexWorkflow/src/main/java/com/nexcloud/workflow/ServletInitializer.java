@@ -1,4 +1,3 @@
-package com.nexcloud.workflow;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.workflow;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.workflow;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 

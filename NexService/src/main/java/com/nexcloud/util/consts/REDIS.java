@@ -1,4 +1,3 @@
-package com.nexcloud.util.consts;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.util.consts;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.util.consts;
 public interface REDIS {
 
 	interface HASH {

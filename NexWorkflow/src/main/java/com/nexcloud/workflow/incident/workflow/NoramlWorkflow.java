@@ -1,4 +1,3 @@
-package com.nexcloud.workflow.incident.workflow;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.workflow.incident.workflow;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.workflow.incident.workflow;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;

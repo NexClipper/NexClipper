@@ -1,4 +1,3 @@
-package com.nexcloud.util.security;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.util.security;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.util.security;
 import java.io.IOException;
  
 import javax.servlet.ServletException;

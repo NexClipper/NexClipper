@@ -1,4 +1,4 @@
-package com.nexcloud;
+
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +14,7 @@ package com.nexcloud;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
