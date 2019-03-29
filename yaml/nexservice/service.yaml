@@ -12,6 +12,7 @@ spec:
   - port: 10180
     protocol: TCP
     targetPort: 9000
+    nodePort: 32200
     name: http
   selector:  
     app: nexclipper-service
