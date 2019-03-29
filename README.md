@@ -39,7 +39,7 @@ NexClipper features the following capabilities:
 
 ![](docs/images/NexClipper_dashboard.png)
 
-## QUick Install
+## Quick Install
 
 NexClipper can be deployed on Kubernetes cluster. 
 
@@ -48,7 +48,7 @@ NexClipper can be deployed on Kubernetes cluster.
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
 - An SSH key pair on your local Linux/macOS/BSD machine.
 - ***Create namespace `nexclipper'***
-- ***Download yaml files from 'yaml' derectory
+- ***Download yaml files from 'yaml' derectory ***
 ### Prepare deployment
 
 From your master node run kubectl create. 
