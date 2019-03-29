@@ -1,6 +1,6 @@
-# 특정 DB사용시 수정해야 하는 부분
+# If you use your own DB instead of 'defaultdb'
 
-- deployment 수정
+- update deployment 
 ```yaml
 // yaml/nexservice/deployment.yaml
 ...
