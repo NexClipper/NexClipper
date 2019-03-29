@@ -1,4 +1,3 @@
-package com.nexcloud.util;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.util;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.util;
 import java.util.Properties;
 
 import javax.mail.Authenticator;

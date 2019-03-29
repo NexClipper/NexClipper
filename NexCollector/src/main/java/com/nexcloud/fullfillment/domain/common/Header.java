@@ -1,4 +1,3 @@
-package com.nexcloud.fullfillment.domain.common;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.fullfillment.domain.common;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.fullfillment.domain.common;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

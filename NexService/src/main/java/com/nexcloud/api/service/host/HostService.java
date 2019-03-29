@@ -1,4 +1,3 @@
-package com.nexcloud.api.service.host;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.api.service.host;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.api.service.host;
 import java.util.ArrayList;
 import java.util.List;
 

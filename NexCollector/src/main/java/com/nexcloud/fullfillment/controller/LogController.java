@@ -1,4 +1,3 @@
-package com.nexcloud.fullfillment.controller;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.fullfillment.controller;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.fullfillment.controller;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;

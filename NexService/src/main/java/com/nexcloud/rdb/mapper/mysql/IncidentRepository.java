@@ -1,4 +1,3 @@
-package com.nexcloud.rdb.mapper.mysql;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.rdb.mapper.mysql;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.rdb.mapper.mysql;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -29,6 +29,7 @@ public interface IncidentRepository {
 	public List<Incident> getEventByIp( String start_time );
 	public List<Incident> getEventByTarget( String start_time );
 	public List<Incident> getEventMap(Incident incident );
+	public List<Incident> getEventDetail(Incident incident );
 	public List<Rule> getTargetSystem( Rule rule );
 	public List<Rule> getTarget( Rule rule );
 }

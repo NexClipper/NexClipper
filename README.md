@@ -4,7 +4,7 @@ NexClipper is the container and container orchestration monitoring and performan
 
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
-Please note that previsous NexClipper Light project which was a host level container monitoring tool has been moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
+Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
 
 ![](docs/images/logo1.png)
 
@@ -19,7 +19,7 @@ NexClipper Cloud features the following capabilities:
 - Incidents Management
 - AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For more details visit  https://www.nexclipper.io/
+For more details visit  https://www.nexclipper.com/
 For beta service, visit https://server.nexclipper.com
 
 ## NexClipper  
@@ -29,7 +29,7 @@ NexClipper features the following capabilities:
 - Fullstack dashboard (Infrastructure, Kubernetes)
 - Container Cluster (Kuberentes)
 - Infrastruture Monitoring (Container, Host, Resource)
-- Incidents Management
+- Incidents Management(Soon)
 
 ## Architecture Overview
 
@@ -39,67 +39,145 @@ NexClipper features the following capabilities:
 
 ![](docs/images/NexClipper_dashboard.png)
 
-## Install
+## Quick Install
 
-There are various ways of installing NexClipper.
+NexClipper can be deployed on Kubernetes cluster. 
 
 ### Prerequisites
 
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
-- Installed Apache Kafka on kubernetes Cluster (including Zookeeper)
 - An SSH key pair on your local Linux/macOS/BSD machine.
-
+- ***Create namespace `nexclipper'***
+- ***Download yaml files from 'yaml' derectory ***
 ### Prepare deployment
 
-On Kubernetes Master
+From your master node run kubectl create. 
 
-- redis
+> #### redis
 
-      $kubectl create -f redis.yaml  
-      $kubectl create -f redisservice.yaml
+- create
+```sh
+  $ kubectl create -f <yaml/redis/deployment.yaml>
+  $ kubectl create -f <yaml/redis/service.yaml>
+```
 
-- mysql
+> #### mysql(or mariaDB)
 
-      $kubectl create -f mysql.yaml  
-      $kubectl create -f mysqlservice.yaml
+- Update hostpath for volume
+```yaml
+// yaml/mysql/deployment.yaml
+...
+volumes:
+  - name: mysql-data
+    hostPath:
+      path: /nfs/mysql        # update hostpath
+...
+```
 
-- influxdb
+- create
+```sh
+  $ kubectl create -f <yaml/mysql/deployment.yaml>
+  $ kubectl create -f <yaml/mysql/service.yaml>
+```
 
-      $kubectl create -f influx.yaml   
-      $kubectl create -f influxservice.yaml
+- [If you want to use your own database insted of 'detaultdb', Go to (https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md)
+
+> #### influxdb
+
+- Update hostpath for volume
+```yaml
+// yaml/influx/deployment.yaml
+...
+volumes:
+  - name: influx-data
+    hostPath:
+      path: /nfs/influxdb        # update hostpath
+...
+```
+
+- create
+```sh
+  $ kubectl create -f <yaml/influxdb/deployment.yaml>
+  $ kubectl create -f <yaml/influxdb/service.yaml>
+```
+
+> #### rabbitmq (or kafka)
+
+- create
+```sh
+  $ kubectl create -f <yaml/rabbitmq/deployment.yaml>
+  $ kubectl create -f <yaml/rabbitmq/service.yaml>
+```
+
+- [If you want to use Kafka instead of RabbitMQ, Got to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
 
 
-### Nexclipper service deployment
+### NexClipper service deployment
 
-- workflow
+> #### workflow
 
-      $kubectl create -f workflow_deployment.yaml  
-      $kubectl create -f workflow_service.yaml
+- create
+```sh
+  $ kubectl create -f <yaml/workflow/deployment.yaml>
+```
 
+- [If you don't use 'defaultdb' for MySQL or use kafka, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/workflow.md)
 
-- collector
+> #### collector
 
-      $kubectl create -f collectorapi_deployment.yaml  
-      $kubectl create -f collectorapi_service.yaml
+- create
+```sh
+  $ kubectl create -f <yaml/collector/deployment.yaml>
+  $ kubectl create -f <yaml/collector/service.yaml>
+```
 
-- ui
-
-      $kubectl create -f deployment.yaml
-      $kubectl create -f service.yaml
-
-
-### Nexclipper Agent deployment
-
-    $kubectl create -f nexclipper-agent.yaml
+- [If you don't use 'defaultdb' for MySQL or use kafka, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/collector.md)
 
 
-### Docker images
+> #### nexservice
 
-Docker image
+- create
+```sh
+  $ kubectl create -f <yaml/nexservice/deployment.yaml>
+  $ kubectl create -f <yaml/nexservice/service.yaml>
+```
 
-    $nexclipper/nexagent
+- [If you want to use your own database insted of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/nexservice.md)
 
-NexClipper will... 
+
+### NexClipper Agent daemonset/deployment
+
+- Deploy NedClipepr Agent on Kubernetes cluster as follows
+  - agent deployed by daemonset: get host and docker container's information
+  - agent deployed by deployment: get kubernetes cluster's information
+
+- Update agent endpoint into Kubernetes master node ip
+```yaml
+// yaml/nexclipper-agent/nexclipper-agent.yaml
+...
+kind: DaemonSet
+...
+env:
+  - name: agent_endpoint
+    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
+...
+kind: Deployment
+...
+env:
+  - name: agent_endpoint
+    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
+...
+```
+
+- create
+```sh
+  $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
+```
+
+### Now you can access web UI
+```
+  https://<k8s master ip>:32200
+```
 
 ## Licensing
 
@@ -109,10 +187,11 @@ NexClipper is licensed under the Apache License, Version 2.0. See [LICENSE](http
 
 Email: nexclipper@nexclipper.com
 
-Homepage: https://www.nexclipper.io/
+Homepage: https://www.nexclipper.com/
 
 Facebook : https://www.facebook.com/nexclipper/
 
 Linkedin: https://www.linkedin.com/company/nexcloud/
 
 Twitter: https://twitter.com/NexClipper
+

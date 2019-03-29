@@ -1,4 +1,3 @@
-package com.nexcloud.view.controller;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.view.controller;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.view.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

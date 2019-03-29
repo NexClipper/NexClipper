@@ -1,4 +1,3 @@
-package com.nexcloud.mdb.client.redis;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.mdb.client.redis;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.mdb.client.redis;
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;

@@ -1,4 +1,3 @@
-package com.nexcloud.fullfillment.service;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.fullfillment.service;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.fullfillment.service;
 import java.util.Date;
 
 import org.slf4j.Logger;

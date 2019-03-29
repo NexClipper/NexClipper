@@ -1,4 +1,3 @@
-package com.nexcloud.api.redis;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.api.redis;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.api.redis;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

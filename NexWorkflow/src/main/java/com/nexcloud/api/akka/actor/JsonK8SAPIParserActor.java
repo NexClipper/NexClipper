@@ -1,4 +1,3 @@
-package com.nexcloud.api.akka.actor;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.api.akka.actor;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.api.akka.actor;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;

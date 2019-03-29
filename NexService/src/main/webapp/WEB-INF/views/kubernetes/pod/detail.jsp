@@ -44,7 +44,7 @@
 					<div class="m-portlet__head-tools"></div>
 				</div>
 				<div class="m-portlet__body">
-					<div class="m-widget12" style="height: 270px;">
+					<div class="m-widget12" style="height: 270px; overflow-x: hidden;">
 						<div class="m-widget12__item">
 							<div class="m-widget12__text1">
 								<span>Pod Name</span> <div id="podNameArea"></div>

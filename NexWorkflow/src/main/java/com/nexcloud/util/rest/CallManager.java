@@ -1,4 +1,3 @@
-package com.nexcloud.util.rest;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.util.rest;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.util.rest;
 import com.nexcloud.util.Util;
 import com.nexcloud.util.rest.RestClient.Method;
 import com.nimbusds.jose.JWSAlgorithm;

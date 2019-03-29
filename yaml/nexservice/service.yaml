@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexclipper-service
+  labels: 
+    app: nexclipper-service
+    version: v0.1
+  namespace: nexclipper
+spec:
+  type: NodePort
+  ports:
+  - port: 10180
+    protocol: TCP
+    targetPort: 9000
+    nodePort: 32200
+    name: http
+  selector:  
+    app: nexclipper-service
+

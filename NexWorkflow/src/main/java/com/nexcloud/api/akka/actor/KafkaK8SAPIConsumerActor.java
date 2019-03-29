@@ -1,4 +1,3 @@
-package com.nexcloud.api.akka.actor;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,7 +13,7 @@ package com.nexcloud.api.akka.actor;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
+package com.nexcloud.api.akka.actor;
 import java.io.IOException;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -87,18 +86,22 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 			Channel channel = connection.createChannel();
 	
 			channel.queueDeclare(sendData.getKafka_topic()+"_work", false, false, false, null);
-			Consumer consumer = new DefaultConsumer(channel) {
-				@Override
-				public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
-						byte[] body) throws IOException {
-					String message = new String(body, "UTF-8");
-					sendData.setJson(message);
-					jsonParserActor.tell(sendData, ActorRef.noSender() );
-					
-				}
-			};
-	
-			channel.basicConsume(sendData.getKafka_topic()+"_work", true, consumer);
+			try{
+				Consumer consumer = new DefaultConsumer(channel) {
+					@Override
+					public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+							byte[] body) throws IOException {
+						String message = new String(body, "UTF-8");
+						sendData.setJson(message);
+						jsonParserActor.tell(sendData, ActorRef.noSender() );
+						
+					}
+				};
+		
+				channel.basicConsume(sendData.getKafka_topic()+"_work", true, consumer);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 }

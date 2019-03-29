@@ -1,4 +1,3 @@
-package com.nexcloud.tsdb.client.prometheus;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.tsdb.client.prometheus;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.tsdb.client.prometheus;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

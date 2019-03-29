@@ -1,4 +1,3 @@
-package com.nexcloud.tsdb.adapter;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.tsdb.adapter;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.tsdb.adapter;
 public interface HostDockerAdapter {
 	public String getDockerCpuUsedByContainerId (String hostIp, String containerId, String startTime, String time, int limit);
 	

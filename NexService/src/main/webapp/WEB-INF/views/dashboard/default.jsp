@@ -570,16 +570,31 @@ strong { color: black; font-weight: bold; }
 // 1 row - 1 col - 1 row
 function drawStatus (data){
 	data.items.forEach(function(item){
-		if (item.metadata.name == "controller-manager")
-			$("#controllerStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
-		if (item.metadata.name == "etcd-0")
-			$("#etcdStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
-		if (item.metadata.name == "scheduler")
-			$("#schedulerStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
+		if (item.metadata.name == "controller-manager") {
+			item.conditions.forEach(function(condition){
+				if (condition.type == "Healthy") {
+					if (condition.status == "True") $("#controllerStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
+					else $("#controllerStatus").empty().append('<strong style = "color : #000000;">False</strong>');
+				}
+			})
+		}
+		if (item.metadata.name == "etcd-0") {
+			item.conditions.forEach(function(condition){
+				if (condition.type == "Healthy") {
+					if (condition.status == "True") $("#etcdStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
+					else $("#etcdStatus").empty().append('<strong style = "color : #000000;">False</strong>');
+				}
+			})
+		}
+		if (item.metadata.name == "scheduler") {
+			item.conditions.forEach(function(condition){
+				if (condition.type == "Healthy") {
+					if (condition.status == "True") $("#schedulerStatus").empty().append('<strong style = "color : #36a3f7;">True</strong>');
+					else $("#schedulerStatus").empty().append('<strong style = "color : #000000;">False</strong>');
+				}
+			})
+		}
 	})
-}
-function drawNode(data) {
-	$("#nodeTotal").text(data.items.length);
 }
 function drawNamespace(data) {
 	var activeCount = 0;
@@ -592,6 +607,7 @@ function drawNamespace(data) {
 	})	
 	$("#namespaceTotal").text(activeCount + "/" + (activeCount+notActiveCount))
 	if (activeCount != (activeCount+notActiveCount)) $("#namespaceTotal").css("color","#f4516c");
+	else $("#namespaceTotal").css("color","#000000");
 }
 // event error code 
 
@@ -604,6 +620,7 @@ function drawDaemonSet(data) {
 	})
 	$("#daemonSetsTotal").text(runningCount + "/" + data.items.length);
 	if (runningCount != data.items.length) $("#daemonSetsTotal").css("color","#f4516c");
+	else $("#daemonSetsTotal").css("color","#000000");
 }
 function drawDeployments(data) {
 	var trueCount = 0;
@@ -614,6 +631,7 @@ function drawDeployments(data) {
 	})
 	$("#deploymentsTotal").text(trueCount + "/" + (trueCount+falseCount));
 	if (trueCount != (trueCount+falseCount)) $("#deploymentsTotal").css("color","#f4516c");
+	else $("#deploymentsTotal").css("color","#000000");
 }
 function drawReplicaSets(data) {
 	var trueCount = 0;
@@ -624,6 +642,7 @@ function drawReplicaSets(data) {
 	})
 	$("#replicaSetsTotal").text(trueCount + "/" + (trueCount+falseCount));
 	if (trueCount != (trueCount+falseCount)) $("#replicaSetsTotal").css("color","#f4516c");
+	else $("#replicaSetsTotal").css("color","#000000");
 }
 function drawStatefulSets(data) {
 	var trueCount = 0;
@@ -634,6 +653,7 @@ function drawStatefulSets(data) {
 	})
 	$("#statefulSetsTotal").text(trueCount + "/" + (trueCount+falseCount));
 	if (trueCount != (trueCount+falseCount)) $("#statefulSetsTotal").css("color","#f4516c");
+	else $("#statefulSetsTotal").css("color","#000000");
 }
 function drawPod(data) {
 	var runningCount = 0;
@@ -651,6 +671,7 @@ function drawPod(data) {
 	})
 	$("#podTotal").text(runningCount + "/" + (runningCount+notRunningCount));
 	if (runningCount != (runningCount+notRunningCount)) $("#podTotal").css("color","#f4516c");
+	else $("#podTotal").css("color","#000000");
 	drawHistogramChart("topPodCpuChart", formatHistogramData, "cpu");
 	drawHistogramChart("topPodMemChart", formatHistogramData, "mem");
 }
@@ -662,14 +683,31 @@ function drawAgents(data) {
 		else notActiveCount++;
 	})
 	$("#agentTotal").text(activeCount + "/" + (activeCount+notActiveCount));
-	$("#nodeTotal").text(activeCount + "/" + (activeCount+notActiveCount));
 	$("#hostTotal").text(activeCount + "/" + (activeCount+notActiveCount));
 	if (activeCount != (activeCount+notActiveCount)) {
 		$("#agentTotal").css("color","#f4516c");
-		$("#nodeTotal").css("color","#f4516c");
 		$("#hostTotal").css("color","#f4516c");
+	} else {
+		$("#agentTotal").css("color","#000000");
+		$("#hostTotal").css("color","#000000");
 	}
 	new Client().url("/api/v1/host/snapshot").refreshFlag(rf).callback(drawHost).bindData(data).get();
+}
+function drawNode(data) {
+	var activeCount = 0;
+	var notActiveCount = 0;
+	data.items.forEach(function(item){
+		item.status.conditions.forEach(function(condition){
+			if (condition.type == "Ready") {
+				if (condition.status == "True") activeCount++;
+				else notActiveCousnt++;
+			}
+		})
+	})
+	
+	$("#nodeTotal").text(activeCount + "/" + (activeCount+notActiveCount));
+	if (activeCount != (activeCount+notActiveCount)) $("#nodeTotal").css("color","#f4516c");
+	else  $("#nodeTotal").css("color","#000000");
 }
 //1 row - 1 col - 3 row
 function drawClusterUtilization(data){
@@ -850,8 +888,10 @@ function refresh() {
 	rf = false;
 	new Client().url("/api/v1/kubernetes/component/status/snapshot").refreshFlag(rf).callback(drawStatus).get();
 	new Client().url("/api/v1/kubernetes/namespace/snapshot").refreshFlag(rf).callback(drawNamespace).get();
+	
 	// event error code
 	new Client().url("/api/v1/kubernetes/daemonset/snapshot").refreshFlag(rf).callback(drawDaemonSet).get();
+	new Client().url("/api/v1/kubernetes/node/snapshot").refreshFlag(rf).callback(drawNode).get();
 	new Client().url("/api/v1/kubernetes/deployment/snapshot").refreshFlag(rf).callback(drawDeployments).get();
 	new Client().url("/api/v1/kubernetes/replicaset/snapshot").refreshFlag(rf).callback(drawReplicaSets).get();
 	new Client().url("/api/v1/kubernetes/statefulset/snapshot").refreshFlag(rf).callback(drawStatefulSets).get();

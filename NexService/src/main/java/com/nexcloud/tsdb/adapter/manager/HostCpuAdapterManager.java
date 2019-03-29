@@ -1,4 +1,3 @@
-package com.nexcloud.tsdb.adapter.manager;
 /*
 * Copyright 2019 NexCloud Co.,Ltd.
 *
@@ -14,6 +13,7 @@ package com.nexcloud.tsdb.adapter.manager;
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
+package com.nexcloud.tsdb.adapter.manager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
