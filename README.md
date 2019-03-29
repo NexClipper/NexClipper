@@ -19,7 +19,7 @@ NexClipper Cloud features the following capabilities:
 - Incidents Management
 - AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
-For more details visit  https://www.nexclipper.com/
+For more details visit  https://www.nexclipper.io/
 For beta service, visit https://server.nexclipper.com
 
 ## NexClipper  
@@ -109,7 +109,7 @@ volumes:
   $ kubectl create -f <yaml/rabbitmq/service.yaml>
 ```
 
-- [If you want to use Kafka instead of RabbitMQ, Got to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
+- [If you want to use Kafka instead of RabbitMQ, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
 
 
 ### NexClipper service deployment
@@ -179,15 +179,20 @@ env:
   https://<k8s master ip>:32200
 ```
 
+### For API swasgger UI
+```
+  https://<k8s master ip>:32200/swagger-ui.html 
+```
+
 ## Licensing
 
 NexClipper is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/NexClipper/NexClipper/blob/master/LICENSE) for the full license text.
 
 ## Contact
 
-Email: nexclipper@nexclipper.com
+Email: nexclipper@nexclipper.io
 
-Homepage: https://www.nexclipper.com/
+Homepage: https://www.nexclipper.io/
 
 Facebook : https://www.facebook.com/nexclipper/
 
