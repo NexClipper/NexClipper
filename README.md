@@ -80,7 +80,7 @@ volumes:
   $ kubectl create -f <yaml/mysql/service.yaml>
 ```
 
-- [If you want to use your own database insted of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md})
+- [If you want to use your own database insted of 'detaultdb', Go to (https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md)
 
 > #### influxdb
 
