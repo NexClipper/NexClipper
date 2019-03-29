@@ -18,18 +18,6 @@ spec:
 ...
 ```
 
-- 클러스터 환경에 맞게 저장경로 변경
-
-```yaml
-// yaml/mysql/deployment.yaml
-...
-volumes:
-  - name: mysql-data
-    hostPath:
-      path: /nfs/mysql        # 본인 클러스터 환경에 맞춰서 변경
-...
-```
-
 - load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
 ```yaml
 // yaml/mysql/load.sql
