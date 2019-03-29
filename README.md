@@ -29,7 +29,7 @@ NexClipper features the following capabilities:
 - Fullstack dashboard (Infrastructure, Kubernetes)
 - Container Cluster (Kuberentes)
 - Infrastruture Monitoring (Container, Host, Resource)
-- Incidents Management
+- Incidents Management(Soon)
 
 ## Architecture Overview
 
@@ -39,21 +39,19 @@ NexClipper features the following capabilities:
 
 ![](docs/images/NexClipper_dashboard.png)
 
-## Install
+## QUick Install
 
-There are various ways of installing NexClipper.
+NexClipper can be deployed on Kubernetes cluster. 
 
 ### Prerequisites
 
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
 - An SSH key pair on your local Linux/macOS/BSD machine.
 - ***Create namespace `nexclipper'***
-
+- ***Download yaml files from 'yaml' derectory
 ### Prepare deployment
 
-kubectl이 설치된 클러스터에서 진행
-
-먼저, `yaml` 디렉토리 밑의 모든 파일을 다운받아서 원하는 디렉토리에 저장한다.
+From your master node run kubectl create. 
 
 > #### redis
 
@@ -65,14 +63,14 @@ kubectl이 설치된 클러스터에서 진행
 
 > #### mysql(or mariaDB)
 
-- 클러스터 환경에 맞게 저장경로 변경
+- Update hostpath for volume
 ```yaml
 // yaml/mysql/deployment.yaml
 ...
 volumes:
   - name: mysql-data
     hostPath:
-      path: /nfs/mysql        # 본인 클러스터 환경에 맞춰서 변경
+      path: /nfs/mysql        # update hostpath
 ...
 ```
 
@@ -82,18 +80,18 @@ volumes:
   $ kubectl create -f <yaml/mysql/service.yaml>
 ```
 
-- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md})
+- [If you want to use your own database insted of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md})
 
 > #### influxdb
 
-- 클러스터 환경에 맞게 저장경로 변경
+- Update hostpath for volume
 ```yaml
 // yaml/influx/deployment.yaml
 ...
 volumes:
   - name: influx-data
     hostPath:
-      path: /nfs/influxdb        # 본인 클러스터 환경에 맞춰서 변경
+      path: /nfs/influxdb        # update hostpath
 ...
 ```
 
@@ -111,7 +109,7 @@ volumes:
   $ kubectl create -f <yaml/rabbitmq/service.yaml>
 ```
 
-- [kafka로 설치시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
+- [If you want to use Kafka instead of RabbitMQ, Got to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
 
 
 ### NexClipper service deployment
@@ -123,7 +121,7 @@ volumes:
   $ kubectl create -f <yaml/workflow/deployment.yaml>
 ```
 
-- [kafka를 사용하거나 다른 DB를 사용할때 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/workflow.md)
+- [If you don't use 'defaultdb' for MySQL or use kafka, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/workflow.md)
 
 > #### collector
 
@@ -133,7 +131,7 @@ volumes:
   $ kubectl create -f <yaml/collector/service.yaml>
 ```
 
-- [kafka를 사용하거나 다른 DB를 사용할때 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/collector.md)
+- [If you don't use 'defaultdb' for MySQL or use kafka, Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/collector.md)
 
 
 > #### nexservice
@@ -144,16 +142,16 @@ volumes:
   $ kubectl create -f <yaml/nexservice/service.yaml>
 ```
 
-- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/nexservice.md)
+- [If you want to use your own database insted of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/nexservice.md)
 
 
 ### NexClipper Agent daemonset/deployment
 
-- Install the agent on the cluster node (master) to be monitored as follows
-  - role of daemonset: get host and docker container's information
-  - role of deployment: get kubernetes cluster's information
+- Deploy NedClipepr Agent on Kubernetes cluster as follows
+  - agent deployed by daemonset: get host and docker container's information
+  - agent deployed by deployment: get kubernetes cluster's information
 
-- endpoint 변경
+- Update agent endpoint into Kubernetes master node ip
 ```yaml
 // yaml/nexclipper-agent/nexclipper-agent.yaml
 ...
@@ -161,13 +159,13 @@ kind: DaemonSet
 ...
 env:
   - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<해당 서비스의 nodeport>
+    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
 ...
 kind: Deployment
 ...
 env:
   - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<해당 서비스의 nodeport>
+    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
 ...
 ```
 
@@ -176,7 +174,7 @@ env:
   $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
 ```
 
-### 웹으로 연결
+### Now you can access web UI
 ```
   https://<k8s master ip>:32200
 ```
