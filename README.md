@@ -65,27 +65,7 @@ kubectl이 설치된 클러스터에서 진행
 
 > #### mysql(or mariaDB)
 
-- 본인이 원하는 특정한 db가 있을시에 아래 부분을 변경해야함
-
-```yaml
-// yaml/mysql/deployment.yaml
-...
-spec:
-  containers:
-    - env:
-      - name: MYSQL_DATABASE
-        value: defaultdb
-      - name: MYSQL_PASSWORD
-        value: password
-      - name: MYSQL_ROOT_PASSWORD
-        value: root
-      - name: MYSQL_USER
-        value: admin
-...
-```
-
 - 클러스터 환경에 맞게 저장경로 변경
-
 ```yaml
 // yaml/mysql/deployment.yaml
 ...
@@ -102,21 +82,12 @@ volumes:
   $ kubectl create -f <yaml/mysql/service.yaml>
 ```
 
-- 다른 db를 사용하였다면 load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
-```yaml
-// yaml/mysql/load.sql
-...
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `defaultdb` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `defaultdb`;        # 'defaultdb'를 사용하고자 하는 db명으로 변경
-...
-```
+- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md}
 
 
 > #### influxdb
 
 - 클러스터 환경에 맞게 저장경로 변경
-
 ```yaml
 // yaml/influx/deployment.yaml
 ...
@@ -135,187 +106,47 @@ volumes:
 
 > #### rabbitmq (or kafka)
 
-- rabbitmq는 바로 create
+- create
 ```sh
   $ kubectl create -f <yaml/rabbitmq/deployment.yaml>
   $ kubectl create -f <yaml/rabbitmq/service.yaml>
 ```
 
-- kafka로 설치를 진행 할 시 아래 부분을 본인 환경에맞게 변경해야함.
-
-```yaml
-// yaml/collector/deployment.yaml
-...
-env:
-  - name: KAFKA_ZOOKEEPER
-    value: "kafka-zookeeper.kafka-test-02:2181"
-  - name: KAFKA_PORT
-    value: '9092'
-  - name: KAFKA_HOST
-    value: "kafka-kafka.kafka-test-02"
-  - name: MYSQL_DBNAME
-    value: "defaultdb"
-  - name: MYSQL_URL
-    value: "mysql.nexclipper:3306"
-  - name: MYSQL_PASSWORD
-    value: "password"
-  - name: MYSQL_USERNAME
-    value: "admin"
-  - name: REDIS_HOST
-    value: redis.nexclipper
-  - name: REDIS_PORT
-    value: '6379'
-  - name: INFLUXDB_ENDPOINT
-    value: "http://influx.nexclipper:8087"
-  - name: INFLUXDB_DATASOURCE
-    value: "nexclipper"
-  - name: TDB
-    value: INFLUX
-  - name: PUSHGATEWAY_ENDPOINT
-    value: prometheus-h-pushgateway.prometheus:9091
-  - name: BROKER
-    value: rabbitmq
-  - name: RABBITMQ_HOST
-    value: rabbitmq.nexclipper
-  - name: RABBITMQ_PORT
-    value: '5672'
-...
-```
+- [kafka로 설치시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/kafka.md)
 
 
 ### NexClipper service deployment
 
 > #### workflow
-
-- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
-```yaml
-// yaml/workflow/deployment.yaml
-...
-env:
-  - name: KAFKA_ZOOKEEPER
-    value: "kafka-zookeeper.kafka-test-02:2181"
-  - name: KAFKA_PORT
-    value: '9092'
-  - name: KAFKA_HOST
-    value: "kafka-kafka.kafka-test-02"
-  - name: MYSQL_DBNAME
-    value: "defaultdb"
-  - name: MYSQL_URL
-    value: "mysql.nexclipper:3306"
-  - name: MYSQL_PASSWORD
-    value: "password"
-  - name: MYSQL_USERNAME
-    value: "admin"
-  - name: REDIS_HOST
-    value: redis.nexclipper
-  - name: REDIS_PORT
-    value: '6379'
-  - name: INFLUXDB_ENDPOINT
-    value: "http://influx.nexclipper:8087"
-  - name: INFLUXDB_DATASOURCE
-    value: "nexclipper"
-  - name: BROKER
-    value: rabbitmq
-  - name: RABBITMQ_HOST
-    value: rabbitmq.nexclipper
-  - name: RABBITMQ_PORT
-    value: '5672'
-...
-```
       
 - create
-
 ```sh
   $ kubectl create -f <yaml/workflow/deployment.yaml>
 ```
 
+- [kafka를 사용하거나 다른 DB를 사용할때 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/workflow.md)
+
 > #### collector
 
-- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
-```yaml
-// yaml/collector/deployment.yaml
-...
-spec:
-  replicas: 2           # default는 2개 이지만 노드 수에 맞춰주는게 가장 좋음
-...
-env:
-  - name: KAFKA_ZOOKEEPER
-    value: "kafka-zookeeper.kafka-test-02:2181"
-  - name: KAFKA_PORT
-    value: '9092'
-  - name: KAFKA_HOST
-    value: "kafka-kafka.kafka-test-02"
-  - name: MYSQL_DBNAME
-    value: "defaultdb"
-  - name: MYSQL_URL
-    value: "mysql.nexclipper:3306"
-  - name: MYSQL_PASSWORD
-    value: "password"
-  - name: MYSQL_USERNAME
-    value: "admin"
-  - name: REDIS_HOST
-    value: redis.nexclipper
-  - name: REDIS_PORT
-    value: '6379'
-  - name: INFLUXDB_ENDPOINT
-    value: "http://influx.nexclipper:8087"
-  - name: INFLUXDB_DATASOURCE
-    value: "nexclipper"
-  - name: TDB
-    value: INFLUX
-  - name: PUSHGATEWAY_ENDPOINT
-    value: prometheus-h-pushgateway.prometheus:9091
-  - name: BROKER
-    value: rabbitmq
-  - name: RABBITMQ_HOST
-    value: rabbitmq.nexclipper
-  - name: RABBITMQ_PORT
-    value: '5672'
-...
-```
 - create
 ```sh
   $ kubectl create -f <yaml/collector/deployment.yaml>
   $ kubectl create -f <yaml/collector/service.yaml>
 ```
 
-> #### nexservice
+- [kafka를 사용하거나 다른 DB를 사용할때 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/collector.md)
 
-- 제공되는 yaml파일 외에 따로 수정한 부분이 있으면 아래 파일을 본인 클러스터 환경에 맞게 변경해야함.
-```yaml
-// yaml/nexservice/deployment.yaml
-...
-env:
-  - name: MYSQL_DBNAME
-    value: "defaultdb"
-  - name: MYSQL_URL
-    value: "mysql.nexclipper"
-  - name: MYSQL_PORT
-    value: '3306'
-  - name: MYSQL_USERNAME
-    value: "admin"
-  - name: MYSQL_PASSWORD
-    value: "password"
-  - name: REDIS_ENDPOINT
-    value: "redis.nexclipper"
-  - name: REDIS_PORT
-    value: '6379'
-  - name: TSDB
-    value: "influx"
-  - name: INFLUXDB_ENDPOINT
-    value: "http://influx.nexclipper:8087"
-  - name: INFLUXDB_DATASOURCE
-    value: "nexclipper"
-  - name: ACTIVE
-    value: "dev"
-...
-```
+
+> #### nexservice
 
 - create
 ```sh
   $ kubectl create -f <yaml/nexservice/deployment.yaml>
   $ kubectl create -f <yaml/nexservice/service.yaml>
 ```
+
+- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/nexservice.md)
+
 
 ### NexClipper Agent daemonset/deployment
 
