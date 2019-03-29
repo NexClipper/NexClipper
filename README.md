@@ -183,7 +183,7 @@ env:
 ```
 
 
-### Nexclipper service deployment
+### NexClipper service deployment
 
 > #### workflow
 
@@ -317,7 +317,7 @@ env:
   $ kubectl create -f <yaml/nexservice/service.yaml>
 ```
 
-### Nexclipper Agent daemonset/deployment
+### NexClipper Agent daemonset/deployment
 
 -Install the agent on the cluster node (master) to be monitored as follows
  - role of daemonset: get host and docker container's information
@@ -331,19 +331,24 @@ kind: DaemonSet
 ...
 env:
   - name: agent_endpoint
-    value: 192.168.0.180:32100      # 본인의 호스트 ip로 변경
+    value: 192.168.0.180:32100      # <k8s master ip>:<해당 서비스의 nodeport>
 ...
 kind: Deployment
 ...
 env:
   - name: agent_endpoint
-    value: 192.168.0.180:32100      # 본인의 호스트 ip로 변경
+    value: 192.168.0.180:32100      # <k8s master ip>:<해당 서비스의 nodeport>
 ...
 ```
 
 - create
 ```sh
   $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
+```
+
+### 웹으로 연결
+```
+  https://<k8s master ip>:32200
 ```
 
 ## Licensing
