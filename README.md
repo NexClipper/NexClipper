@@ -82,8 +82,7 @@ volumes:
   $ kubectl create -f <yaml/mysql/service.yaml>
 ```
 
-- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md}
-
+- [특정 DB사용시 수정해야 하는 부분](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md})
 
 > #### influxdb
 
@@ -118,7 +117,7 @@ volumes:
 ### NexClipper service deployment
 
 > #### workflow
-      
+
 - create
 ```sh
   $ kubectl create -f <yaml/workflow/deployment.yaml>
@@ -150,9 +149,9 @@ volumes:
 
 ### NexClipper Agent daemonset/deployment
 
--Install the agent on the cluster node (master) to be monitored as follows
- - role of daemonset: get host and docker container's information
- - role of deployment: get kubernetes cluster's information
+- Install the agent on the cluster node (master) to be monitored as follows
+  - role of daemonset: get host and docker container's information
+  - role of deployment: get kubernetes cluster's information
 
 - endpoint 변경
 ```yaml
