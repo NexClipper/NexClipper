@@ -5,7 +5,7 @@
 // yaml/collector/deployment.yaml
 ...
 spec:
-  replicas: 2           # default는 2개 이지만 노드 수에 맞춰주는게 가장 좋음
+  replicas: 2           # By default, recommended for same replicas with nodes
 ...
 env:
   - name: KAFKA_ZOOKEEPER
