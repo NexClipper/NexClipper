@@ -1,6 +1,6 @@
-# 특정 DB로 변경시 수정해야할 부분
+# If you use your own DB instead of 'defaultdb' 
 
-- deployment 코드 수정
+- Update deployment 
 ```yaml
 // yaml/mysql/deployment.yaml
 ...
@@ -18,12 +18,12 @@ spec:
 ...
 ```
 
-- load.sql 파일에 `USE 'defaultdb'` 부분을 변경한다.
+- Update DB at load.sql 
 ```yaml
 // yaml/mysql/load.sql
 ...
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `defaultdb` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-USE `defaultdb`;        # 'defaultdb'를 사용하고자 하는 db명으로 변경
+USE `defaultdb`;        # update if you use other DB
 ...
 ```
