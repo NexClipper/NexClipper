@@ -1,6 +1,6 @@
-# kafka를 사용하거나 다른 DB를 사용할때 수정해야 하는 부분
+# If you don't use 'defaultdb' for MySQL or use kafka
 
-- deployment 수정
+- Update deployment 
 ```yaml
 // yaml/collector/deployment.yaml
 ...
