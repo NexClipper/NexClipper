@@ -93,6 +93,8 @@ public class KafkaHostConsumerActor extends UntypedActor{
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(sendData.getRabbitmq_host());
 			factory.setPort(Integer.parseInt(sendData.getRabbitmq_port())); // 5672 port
+			factory.setAutomaticRecoveryEnabled(true);
+			
 			Connection connection = factory.newConnection();
 			Channel channel = connection.createChannel();
 	

@@ -314,7 +314,6 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 					
 					String tag						= null;
 					String host_name				= "";
-					//String agent_id					= null;
 					
 					if( tags != null )
 					{
@@ -322,17 +321,13 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						{
 							if( dummy.trim().toLowerCase().startsWith("host") || dummy.trim().toLowerCase().startsWith("node") || dummy.trim().toLowerCase().startsWith("agent") )
 							{
-								if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-									host_name = tags.get(dummy.trim());
+								host_name = tags.get(dummy.trim());
 							}
 							
-							if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-							{
-								if( tag == null)
-									tag					= tags.get(dummy.trim());
-								else
-									tag					+= "_"+tags.get(dummy.trim());
-							}
+							if( tag == null)
+								tag					= tags.get(dummy.trim());
+							else
+								tag					+= "_"+tags.get(dummy.trim());
 						}
 						
 						if( tag == null ) continue;
@@ -346,12 +341,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						ips					  			= gson.fromJson(hostData, new TypeToken<List<String>>(){}.getType());
 						hMap							= new HashMap<String, Host>();
 						Host host						= null;
-						for( String ip : ips )
+						
+						if( hostData != null )
 						{
-							data						= redisService.get(Const.HOST, ip);
-							host						= null;
-							host						= Util.JsonTobean(data, Host.class);
-							hMap.put(ip, host);
+							for( String ip : ips )
+							{
+								data						= redisService.get(Const.HOST, ip);
+								host						= null;
+								host						= Util.JsonTobean(data, Host.class);
+								hMap.put(ip, host);
+							}
 						}
 						
 						
@@ -677,17 +676,13 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						{
 							if( dummy.trim().toLowerCase().startsWith("host") || dummy.trim().toLowerCase().startsWith("node") || dummy.trim().toLowerCase().startsWith("agent") )
 							{
-								if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-									host_name = tags.get(dummy.trim());
+								host_name = tags.get(dummy.trim());
 							}
 														
-							if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-							{
-								if( tag == null)
-									tag					= tags.get(dummy.trim());
-								else
-									tag					+= "_"+tags.get(dummy.trim());
-							}
+							if( tag == null)
+								tag					= tags.get(dummy.trim());
+							else
+								tag					+= "_"+tags.get(dummy.trim());
 						}
 						
 						if( tag == null ) continue;
@@ -701,12 +696,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						ips					  			= gson.fromJson(hostData, new TypeToken<List<String>>(){}.getType());
 						hMap							= new HashMap<String, Host>();
 						Host host						= null;
-						for( String ip : ips )
+						
+						if( hostData != null )
 						{
-							data						= redisService.get(Const.HOST, ip);
-							host						= null;
-							host						= Util.JsonTobean(data, Host.class);
-							hMap.put(ip, host);
+							for( String ip : ips )
+							{
+								data						= redisService.get(Const.HOST, ip);
+								host						= null;
+								host						= Util.JsonTobean(data, Host.class);
+								hMap.put(ip, host);
+							}
 						}
 						
 						Notification notification 	= notiMap.get(notiKey);
@@ -1025,17 +1024,13 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						{
 							if( dummy.trim().toLowerCase().startsWith("host") || dummy.trim().toLowerCase().startsWith("node") || dummy.trim().toLowerCase().startsWith("agent") )
 							{
-								if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-									host_name = tags.get(dummy.trim());
+								host_name = tags.get(dummy.trim());
 							}
 							
-							if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-							{
-								if( tag == null)
-									tag					= tags.get(dummy.trim());
-								else
-									tag					+= "_"+tags.get(dummy.trim());
-							}
+							if( tag == null)
+								tag					= tags.get(dummy.trim());
+							else
+								tag					+= "_"+tags.get(dummy.trim());
 						}
 						
 						if( tag == null ) continue;
@@ -1049,12 +1044,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 						ips					  			= gson.fromJson(hostData, new TypeToken<List<String>>(){}.getType());
 						hMap							= new HashMap<String, Host>();
 						Host host						= null;
-						for( String ip : ips )
+						
+						if( hostData != null )
 						{
-							data						= redisService.get(Const.HOST, ip);
-							host						= null;
-							host						= Util.JsonTobean(data, Host.class);
-							hMap.put(ip, host);
+							for( String ip : ips )
+							{
+								data						= redisService.get(Const.HOST, ip);
+								host						= null;
+								host						= Util.JsonTobean(data, Host.class);
+								hMap.put(ip, host);
+							}
 						}
 						
 						Notification notification 	= notiMap.get(notiKey);
