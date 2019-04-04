@@ -358,22 +358,17 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 									{
 										if( dummy.trim().toLowerCase().startsWith("host") || dummy.trim().toLowerCase().startsWith("node") || dummy.trim().toLowerCase().startsWith("agent") )
 										{
-											if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-												host_name = tags.get(dummy.trim());
+											host_name = tags.get(dummy.trim());
+												
 										}
 
+										if( tag == null)
+											tag					= tags.get(dummy.trim());
+										else
+											tag					+= "_"+tags.get(dummy.trim());
 										
-										if( !dummy.trim().toLowerCase().startsWith("agent_id") )
-										{
-											if( tag == null)
-												tag					= tags.get(dummy.trim());
-											else
-												tag					+= "_"+tags.get(dummy.trim());
-											
-											if( Pattern.matches(validIp, tags.get(dummy.trim())) ) 
-												host_ip 			= tags.get(dummy.trim());
-											
-										}
+										if( Pattern.matches(validIp, tags.get(dummy.trim())) ) 
+											host_ip 			= tags.get(dummy.trim());
 									}
 									
 									if( tag == null ) continue;
@@ -388,14 +383,17 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 									ips					  			= gson.fromJson(hostData, new TypeToken<List<String>>(){}.getType());
 									hMap							= new HashMap<String, Host>();
 									Host host						= null;
-									for( String ip : ips )
-									{
-										data						= redisService.get(Const.HOST, ip);
-										host						= null;
-										host						= Util.JsonTobean(data, Host.class);
-										hMap.put(ip, host);
-									}
 									
+									if( hostData !=  null )
+									{
+										for( String ip : ips )
+										{
+											data						= redisService.get(Const.HOST, ip);
+											host						= null;
+											host						= Util.JsonTobean(data, Host.class);
+											hMap.put(ip, host);
+										}
+									}
 									
 									Notification notification 	= notiMap.get(notiKey);
 									

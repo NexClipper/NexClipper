@@ -33,10 +33,10 @@ env:
   - name: PUSHGATEWAY_ENDPOINT
     value: prometheus-h-pushgateway.prometheus:9091
   - name: BROKER
-    value: rabbitmq
-  - name: RABBITMQ_HOST
-    value: rabbitmq.nexclipper
-  - name: RABBITMQ_PORT
+    value: rabbitmq                 # kafka
+  - name: RABBITMQ_HOST             # don't use
+    value: rabbitmq.nexclipper  
+  - name: RABBITMQ_PORT             # don't use
     value: '5672'
 ...
 ```

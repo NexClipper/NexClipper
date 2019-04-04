@@ -213,25 +213,25 @@ function drawCluster (data) {
 function drawCpuTotal (data, bindData) {
 	var basicLine = new BasicLine().area("cpuChartArea").colors(colors.cpuTotal).data(data, "cpuTotal", "cpuTotal").draw();
 	function drawCpuUsed(data) {
-		basicLine.appendColors(colors.cpuUsed).appendData(data, "cpuPercent", "cpuPercent");
+		basicLine.appendColors(colors.cpuUsed).appendData(data, "cpuUsed", "cpuUsed");
 	}
-	new Client().url("/api/v1/kubernetes/cluster/cpu/used/percent?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
+	new Client().url("/api/v1/kubernetes/cluster/cpu/used?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
 	.callback(drawCpuUsed).get();
 }
 function drawMemoryTotal (data, bindData) {
 	var basicLine = new BasicLine().area("memoryChartArea").colors(colors.cpuTotal).data(data, "memoryTotal", "memoryTotal").draw();
 	function drawMemoryUsed(data) {
-		basicLine.appendColors(colors.memoryUsed).appendData(data, "memoryPercent", "memoryPercent");
+		basicLine.appendColors(colors.memoryUsed).appendData(data, "memoryUsed", "memoryUsed");
 	}
-	new Client().url("/api/v1/kubernetes/cluster/memory/used/percent?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
+	new Client().url("/api/v1/kubernetes/cluster/memory/used?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
 	.callback(drawMemoryUsed).get();
 }
 function drawPodTotal (data, bindData) {
 	var basicLine = new BasicLine().area("podChartArea").colors(colors.podTotal).data(data, "podTotal", "podTotal").draw();
 	function drawPodUsed(data) {
-		basicLine.appendColors(colors.podUsed).appendData(data, "podPercent", "podPercent");
+		basicLine.appendColors(colors.podUsed).appendData(data, "podUsed", "podUsed");
 	}
-	new Client().url("/api/v1/kubernetes/cluster/pod/used/percent?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
+	new Client().url("/api/v1/kubernetes/cluster/pod/used?startTime=" + bindData.startTime + "&time=" + bindData.time + "&limit=1000")
 	.callback(drawPodUsed).get();
 }
 
@@ -272,7 +272,6 @@ function drawDaemonsets (data) {
 	new StatusList().area("daemonsetsListArea").fields(fields).data(listData).draw();
 }
 function drawDeployment (data) {
-	console.log(data);
 	var listData = [];
 	var trueCount = 0;
 	data.items.forEach(function(item){
