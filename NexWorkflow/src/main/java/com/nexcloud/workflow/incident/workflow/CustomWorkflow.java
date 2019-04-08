@@ -198,7 +198,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 		String datasource						= rule.getData_source().toLowerCase();
 		String []tables							= Util.split(rule.getTable().toLowerCase(), Const.TABLE_TOKEN);
 		String metric							= rule.getMetric().toLowerCase();
-		String []groupBys						= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		String []groupBys						= null;
+		
+		if( rule.getGroup_by()  != null)
+			groupBys							= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		else
+		{
+			groupBys							= new String[1];
+			groupBys[0]							= "";
+		}
+		
 		String condition						= rule.getCondition().toLowerCase();
 		String message							= rule.getMessage();
 		String math								= rule.getMath();
@@ -550,7 +559,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 		String datasource						= rule.getData_source().toLowerCase();
 		String []tables							= Util.split(rule.getTable().toLowerCase(), Const.TABLE_TOKEN);
 		String metric							= rule.getMetric().toLowerCase();
-		String []groupBys						= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		String []groupBys						= null;
+		
+		if( rule.getGroup_by()  != null)
+			groupBys							= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		else
+		{
+			groupBys							= new String[1];
+			groupBys[0]							= "";
+		}
+		
 		String condition						= rule.getCondition().toLowerCase();
 		String message							= rule.getMessage();
 		String math								= rule.getMath();
@@ -902,7 +920,16 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 		String datasource						= rule.getData_source().toLowerCase();
 		String []tables							= Util.split(rule.getTable().toLowerCase(), Const.TABLE_TOKEN);
 		String metric							= rule.getMetric().toLowerCase();
-		String []groupBys						= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		String []groupBys						= null;
+		
+		if( rule.getGroup_by()  != null)
+			groupBys							= Util.split(Util.nullToEmpty(rule.getGroup_by().toLowerCase()), Const.COLUMN_TOKEN);
+		else
+		{
+			groupBys							= new String[1];
+			groupBys[0]							= "";
+		}
+		
 		String condition						= rule.getCondition().toLowerCase();
 		String message							= rule.getMessage();
 		String math								= rule.getMath();

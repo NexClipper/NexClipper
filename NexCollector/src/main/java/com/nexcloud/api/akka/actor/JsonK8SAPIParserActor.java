@@ -96,8 +96,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			}
 			// End of First Time Check
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println(Util.makeStackTrace(e));
+			logger.error("jsonK8SAPIParser Exception::", e);
 		}
 	}
 	
@@ -806,8 +805,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	        this.send(msg);
 	        
 		}catch(Exception e){
-			e.printStackTrace();
-			logger.error(Util.makeStackTrace(e));
+			logger.error("jsonK8SParser Exception::", e);
 		}
 	}
 	
@@ -820,6 +818,6 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	{
 		SendDataLoader.getInstance().set(msg);
 		
-		logger.error("Kubernetes Data Parsing Timestamp : "+(System.currentTimeMillis() - actor_start));
+		logger.error("K8S Data Parsing Timestamp : "+(System.currentTimeMillis() - actor_start));
 	}
 }

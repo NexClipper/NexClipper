@@ -48,20 +48,30 @@ public class RedisService {
     
     public synchronized void put( String key, String hashKey, String data)
     {
-    	hashOps.put(key, hashKey, data);
+    	try{
+    		hashOps.put(key, hashKey, data);
+    	}catch(Exception e){
+    		
+    	}
     }
     
     public synchronized String get( String key, String hashKey)
     {
     	String data = null;
-    	
-    	data = hashOps.get(key, hashKey);
-    	
+    	try{
+    		data = hashOps.get(key, hashKey);
+    	}catch(Exception e){
+    		data	= "";
+    	}
     	return data;
     }
     
     public void remove( String key, String hashKey )
     {
-    	hashOps.delete(key, hashKey);
+    	try{
+    		hashOps.delete(key, hashKey);
+    	}catch(Exception e){
+    		
+    	}
     }
 }

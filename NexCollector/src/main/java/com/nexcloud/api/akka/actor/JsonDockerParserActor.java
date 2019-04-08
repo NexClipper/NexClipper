@@ -79,8 +79,7 @@ public class JsonDockerParserActor extends UntypedActor{
 			}
 			// End of First Time Check
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println(Util.makeStackTrace(e));
+			logger.error("jsonHostParser Exception::", e);
 		}
 	}
 	
@@ -151,8 +150,7 @@ public class JsonDockerParserActor extends UntypedActor{
 			
 			this.send(msg);
 		}catch(Exception e){
-			e.printStackTrace();
-			logger.error(Util.makeStackTrace(e));
+			logger.error("jsonDockerParser Exception::", e);
 		}
 	}
 	

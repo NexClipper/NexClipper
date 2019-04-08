@@ -16,6 +16,7 @@
 package com.nexcloud.api.akka.actor;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class JsonHostParserActor extends UntypedActor{
 	/**
 	 * 액터에 전달된 메세지를 처리
 	 */
-	public void onReceive(Object message){
+	public synchronized void onReceive(Object message){
 		// TODO Auto-generated method stub
 		SendData sendData						= null; 
         ConsumerRecords<String, String> records = null;
@@ -74,11 +75,22 @@ public class JsonHostParserActor extends UntypedActor{
 			else
 			{
 				exec( sendData, sendData.getJson() );
+				/*
+				for( String json : jsons )
+					exec( sendData, json );
+				*/
+				/*
+				List<String> jsons	= sendData.getJsons();
+				for (Iterator<String> iter = jsons.iterator(); iter.hasNext(); ) 
+				{
+					String json = iter.next();
+					exec( sendData, json );
+				}
+				*/
 			}
 			// End of First Time Check
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println(Util.makeStackTrace(e));
+			logger.error("jsonHostParser Exception::", e);
 			
 		}
 	}
@@ -176,9 +188,10 @@ public class JsonHostParserActor extends UntypedActor{
 				ips.add(header.getNode_ip());
 			
 			redisCluster.put(Const.HOST, Const.LIST, Util.beanToJson(ips));
+			
+			logger.error("jsonHostParser End");
 		}catch(Exception e){
-			e.printStackTrace();
-			logger.error(Util.makeStackTrace(e));
+			logger.error("jsonHostParser Exception::", e);
 		}
 	}
 }

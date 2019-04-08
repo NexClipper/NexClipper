@@ -41,16 +41,7 @@ import com.nexcloud.util.Util;
 public class CollectorService {
 	@Autowired
     private RedisService redisService;
-/*	
-	@Value("${kafka.zookeeper}")
-	private String kafka_zookeeper;
 	
-	@Value("${kafka.host}")
-	String 		kafka_host;
-	
-	@Value("${kafka.port}")
-	String 		kafka_port;
-*/	
 	@Value("${spring.kafka.zookeeper}")
 	private String kafka_zookeeper;
 	
@@ -68,7 +59,6 @@ public class CollectorService {
 	
 	@Value("${spring.broker}")
 	String 		broker;
-	
 	
 	static final Logger logger = LoggerFactory.getLogger(CollectorService.class);
 	
@@ -187,7 +177,6 @@ public class CollectorService {
 		return response;
 	}
 	
-	
 	/**
 	 * Kafka Send
 	 */
@@ -197,12 +186,11 @@ public class CollectorService {
 			Producer	prdocuer 		= null;
 			prdocuer 					= Producer.getInstance( kafka_zookeeper, kafka_host, kafka_port, kafka_topic );
 			prdocuer.send(kafka_host, kafka_port, kafka_topic, Util.beanToJson(requestData));
-
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * RabbitMQ Send
 	 */
@@ -211,8 +199,11 @@ public class CollectorService {
 		
 		try{
 			Publish	publish		 		= null;
-			publish 					= Publish.getInstance( );			
-			publish.send(rabbitmp_host, rabbitmp_port, topic, Util.beanToJson(requestData));
+			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port );			
+			
+			//publish.send(rabbitmp_host, rabbitmp_port, topic, Util.beanToJson(requestData));
+			
+			publish.put( topic, Util.beanToJson(requestData) );
 		}catch(Exception e){
 			e.printStackTrace();
 		}

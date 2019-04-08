@@ -171,7 +171,7 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		ActorRef kafkaHostConsumer 	= null;
 		kafkaHostConsumer 				= systemHost.actorOf(Props.create(KafkaHostConsumerActor.class),"KafkaHostConsumerActor");
 		kafkaHostConsumer.tell(sendData, ActorRef.noSender());
-		System.out.println("Host :: "+ sendData.toString());
+		//System.out.println("Host :: "+ sendData.toString());
 		
 		/**
 		 * Docker Kafka Consumer Actor
@@ -195,7 +195,7 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		ActorRef kafkaDockerConsumer 	= null;
 		kafkaDockerConsumer 			= systemDocker.actorOf(Props.create(KafkaDockerConsumerActor.class),"KafkaDockerConsumerActor");
 		kafkaDockerConsumer.tell(sendData, ActorRef.noSender());
-		System.out.println("Docker :: "+ sendData.toString());
+		//System.out.println("Docker :: "+ sendData.toString());
 		
 		/**
 		 * Kubernete(API) Kafka Consumer Actor
@@ -219,7 +219,7 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		ActorRef kafkaK8SAPIConsumer	= null;
 		kafkaK8SAPIConsumer 			= systemK8SAPI.actorOf(Props.create(KafkaK8SAPIConsumerActor.class),"KafkaK8SAPIConsumerActor");
 		kafkaK8SAPIConsumer.tell(sendData, ActorRef.noSender());
-		System.out.println("Kubernetes API:: "+ sendData.toString());
+		//System.out.println("Kubernetes API:: "+ sendData.toString());
 	}
 	
     public static void main(String[] args) throws Exception {
