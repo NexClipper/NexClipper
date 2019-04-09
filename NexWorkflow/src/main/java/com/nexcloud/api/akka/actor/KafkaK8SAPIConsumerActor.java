@@ -44,31 +44,15 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 	static final Logger logger = LoggerFactory.getLogger(KafkaK8SAPIConsumerActor.class);
 	
 	private SendData sendData;
-	private ActorRef actor1;
-	private ActorRef actor2;
-	private ActorRef actor3;
-	private ActorRef actor4;
-	private ActorRef actor5;
-	private List<ActorRef> ref			= new ArrayList<ActorRef>();
-	private int loop					= 0;
+	private ActorRef actor;
 	
 	@Override
 	/**
 	 * 액터에 전달된 메세지를 처리
 	 */
 	public void onReceive(Object message) throws Exception {
-		actor1			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor1");
-		actor2			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor2");
-		actor3			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor3");
-		actor4			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor4");
-		actor5			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor5");
-
-		ref.add(actor1);
-		ref.add(actor2);
-		ref.add(actor3);
-		ref.add(actor4);
-		ref.add(actor5);
-		sendData			= (SendData)message;
+		actor			 				= this.getContext().actorOf(Props.create(JsonK8SAPIParserActor.class),"JsonK8SAPIParserActor");
+		sendData						= (SendData)message;
 
 		// kafka
 		if( "kafka".equals(sendData.getBroker()) )
@@ -84,12 +68,7 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 						{
 							sendData.setRecords(records);
 							
-							ref.get(loop).tell(sendData, ActorRef.noSender() );
-							if( loop == 4 )
-								loop = 0;
-							else
-								loop++;
-			    			
+							actor.tell(sendData, ActorRef.noSender() );
 			    			Thread.sleep((long)(Math.random() * 1000));
 						}
 						
@@ -154,11 +133,7 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 						//logger.error("K8S Data Receive");
 						sendData.setJson(message);
 						
-						ref.get(loop).tell(sendData, ActorRef.noSender() );
-						if( loop == 4 )
-							loop = 0;
-						else
-							loop++;
+						actor.tell(sendData, ActorRef.noSender() );
 
 						Thread.sleep((long)(Math.random() * 1000));
 					} catch (InterruptedException e) {
