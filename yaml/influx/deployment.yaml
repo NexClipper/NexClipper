@@ -1,35 +1,35 @@
-  apiVersion: apps/v1beta2
-  kind: Deployment
-  metadata:
-    name: influx
-    namespace: nexclipper
-    labels:
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: influx
+  namespace: nexclipper
+  labels:
+    app: influx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
       app: influx
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
+  template:
+    metadata:
+      labels:
         app: influx
-    template:
-      metadata:
-        labels:
-          app: influx
-      spec:
-        containers:          
-        - env:
-          - name: PRE_CREATE_DB
-            value: dashboard
-          image: nexclipper/influxdb
-          imagePullPolicy: IfNotPresent 
-          name: influx
-          ports:
-          - containerPort: 8083
-          - containerPort: 8086 
-          volumeMounts:
-          - name: influx-data
-            mountPath: /var/lib/influxdb             
-        volumes:
+    spec:
+      containers:          
+      - env:
+        - name: PRE_CREATE_DB
+          value: dashboard
+        image: nexclipper/influxdb
+        imagePullPolicy: IfNotPresent 
+        name: influx
+        ports:
+        - containerPort: 8083
+        - containerPort: 8086 
+        volumeMounts:
         - name: influx-data
-          hostPath:
-            path: /nfs/inlfuxdb
-  status: {}
+          mountPath: /var/lib/influxdb             
+      volumes:
+      - name: influx-data
+        hostPath:
+          path: /nfs/inlfuxdb
+status: {}
