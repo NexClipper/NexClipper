@@ -16,6 +16,8 @@
 package com.nexcloud.api.akka.actor;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
@@ -26,28 +28,50 @@ import com.nexcloud.api.kafka.DockerConsumer;
 import com.nexcloud.util.Util;
 import com.nexcloud.util.rest.HttpAPI;
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BlockedListener;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ReturnListener;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
+import akka.io.dns.internal.Message;
 
 public class KafkaDockerConsumerActor extends UntypedActor{
 	static final Logger logger = LoggerFactory.getLogger(KafkaDockerConsumerActor.class);
 	private SendData sendData;
-	private ActorRef jsonParserActor;
+	
+	private ActorRef actor1;
+	private ActorRef actor2;
+	private ActorRef actor3;
+	private ActorRef actor4;
+	private ActorRef actor5;
+	private List<ActorRef> ref			= new ArrayList<ActorRef>();
+	private int loop					= 0;
 	
 	@Override
 	/**
 	 * 액터에 전달된 메세지를 처리
 	 */
 	public void onReceive(Object message) throws Exception {
-		jsonParserActor 	= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor");
+		actor1			 				= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor1");
+		actor2			 				= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor2");
+		actor3			 				= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor3");
+		actor4			 				= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor4");
+		actor5			 				= this.getContext().actorOf(Props.create(JsonDockerParserActor.class),"JsonDockerParserActor5");
+
+		ref.add(actor1);
+		ref.add(actor2);
+		ref.add(actor3);
+		ref.add(actor4);
+		ref.add(actor5);
 		
 		sendData				= (SendData)message;
 		/**
@@ -70,7 +94,12 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 						{
 							sendData.setRecords(records);
 							
-			    			jsonParserActor.tell(sendData, ActorRef.noSender() );
+							ref.get(loop).tell(sendData, ActorRef.noSender() );
+							if( loop == 4 )
+								loop = 0;
+							else
+								loop++;
+			    			
 			    			Thread.sleep((long)(Math.random() * 1000));
 						}
 						else
@@ -91,32 +120,98 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 		// rabbit mq
 		else
 		{
+			Connection connection 	= null;
+			while( true )
+			{
+				if( (connection  = getConnection()) == null )
+					Thread.sleep(1000);
+				else
+					break;
+			}
+			
+			connection.addBlockedListener(new BlockedListener() {
+			    public void handleBlocked(String reason) throws IOException {
+			        logger.error("Docker RabbitMQ Connection Blocked::"+reason);
+			    }
+
+			    public void handleUnblocked() throws IOException {
+			        // Connection is now unblocked
+			    }
+			});
+			
+			connection.addShutdownListener(new ShutdownListener() {
+			    @Override
+			    public void shutdownCompleted(ShutdownSignalException cause) {
+			    	logger.error("Docker RabbitMQ Connection Shutdown::", cause);
+			    }
+			});
+			
+			Channel channel = connection.createChannel();
+			
+			channel.queueDeclare(sendData.getKafka_topic(), false, false, true, null);
+			
+			channel.addShutdownListener(new ShutdownListener() {
+			    @Override
+			    public void shutdownCompleted(ShutdownSignalException cause) {
+			    	logger.error("Docker RabbitMQ Channel Shutdown::", cause);
+			    }
+			});
+			
+			Consumer consumer = new DefaultConsumer(channel) {
+				@Override
+				public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+						byte[] body) throws IOException {
+					try {
+						String message = new String(body, "UTF-8");
+						//logger.error("Docker Data Receive");
+						sendData.setJson(message);
+						
+						ref.get(loop).tell(sendData, ActorRef.noSender() );
+						if( loop == 4 )
+							loop = 0;
+						else
+							loop++;
+
+						Thread.sleep((long)(Math.random() * 1000));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			};
+			consumer.handleConsumeOk(sendData.getKafka_topic());
+			//channel.basicConsume(sendData.getKafka_topic(), true, consumer);
+			channel.basicConsume(sendData.getKafka_topic(), false, consumer);
+		}
+	}
+	
+
+	private Connection getConnection()
+	{
+		logger.error("KafkaDocker RabbitMQ Connection Start!!");
+		Connection conn		= null;
+		try{
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(sendData.getRabbitmq_host());
 			factory.setPort(Integer.parseInt(sendData.getRabbitmq_port())); // 5672 port
+			
 			factory.setAutomaticRecoveryEnabled(true);
-			
-			Connection connection = factory.newConnection();
-			Channel channel = connection.createChannel();
-			
-			channel.queueDeclare(sendData.getKafka_topic(), false, false, false, null);
-			try{
-				Consumer consumer = new DefaultConsumer(channel) {
-					@Override
-					public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
-							byte[] body) throws IOException {
-						String message = new String(body, "UTF-8");
-						sendData.setJson(message);
-						jsonParserActor.tell(sendData, ActorRef.noSender() );
-						
-					}
-				};
-		
-				channel.basicConsume(sendData.getKafka_topic(), true, consumer);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
+			factory.setRequestedHeartbeat(60);
+	        
+			factory.setConnectionTimeout(1000);
+	        
+	        factory.setRequestedChannelMax(0);
+	        factory.setRequestedFrameMax(0);
+	        
+	        conn 			= factory.newConnection();
+	        
+	        logger.error("KafkaDocker RabbitMQ Connection End!!");
+		}catch(Exception e){
+			logger.error("KafkaDocker RabbitMQ Connection Exception");
+			conn			= null;
 		}
+		
+		return conn;
 	}
 	
 	/**

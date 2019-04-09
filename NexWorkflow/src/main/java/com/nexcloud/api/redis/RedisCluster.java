@@ -14,20 +14,19 @@
 * limitations under the License.
 */
 package com.nexcloud.api.redis;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nexcloud.util.Util;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 
 public class RedisCluster {
 static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 	private static RedisCluster thisObj = null;
 	
+	private long actor_start; 
 	//private Jedis jedis = null;
 	private JedisPool pool = null;
 	
@@ -62,6 +61,19 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 				logger.error("Config Class getInstance Exception Error = " + e);
 			}	
 		}	
+		else{
+			if(thisObj.pool.isClosed())
+				thisObj.init(host, port);
+			else if( thisObj.pool.getNumActive() <= 0 )
+			{
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 		return thisObj; 		
 	}
@@ -71,9 +83,23 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 	{
 		try{
 			System.out.println("host::"+host+",port::"+port);
+
+			JedisPoolConfig config	 = new JedisPoolConfig();
+			config.setMaxTotal(1000);
+            config.setMaxIdle(500);
+            config.setMinIdle(2);
+            config.setMaxWaitMillis(100);
+            config.setTestWhileIdle(true);
+            config.setTestOnBorrow(true);
+            config.setTestOnReturn(true);
+            config.setMinEvictableIdleTimeMillis(10000);
+            config.setTimeBetweenEvictionRunsMillis(5000);
+            config.setNumTestsPerEvictionRun(10);
+
+            pool	= new JedisPool(config, host, port, 1000);
 			
-			pool	= new JedisPool(new GenericObjectPoolConfig(), host,   port, 2000);
-			//System.out.println("Redis Connection Success!!"+pool.getNumActive());
+			//pool	= new JedisPool(new GenericObjectPoolConfig(), host,   port, 1000);
+			System.out.println("Redis Connection Success!!"+pool.getNumActive());
 			
 		}catch( Exception e ){
 			System.out.println("Redis Connection Fail!!");
@@ -84,9 +110,11 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 	
 	public synchronized void put( String key, String field, String data)
     {
+		Jedis jedis 		= null;
 		try{
+			actor_start		= System.currentTimeMillis();
 			//System.out.println("Redis Pool "+pool.getNumWaiters());
-			Jedis jedis = pool.getResource();
+			jedis = pool.getResource();
 			jedis.hset(key, field, data);
 			
 			if( jedis != null ){
@@ -94,19 +122,21 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 			}
 			//pool.returnResource(jedis);
 		}catch( Exception e ){
-			System.out.println("Redis Put Error::"+Util.makeStackTrace(e));
-	
-			e.printStackTrace();
-
+			logger.error("Redis Put Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+			if( jedis != null ){
+				jedis.close();
+			}
 		}
     }
     
     public synchronized String get( String key, String field)
     {
+    	Jedis jedis 		= null;
     	String data = null;
     	try{
+    		actor_start		= System.currentTimeMillis();
     		//System.out.println("Redis Pool "+pool.getNumWaiters());
-    		Jedis jedis = pool.getResource();
+    		jedis = pool.getResource();
     		data = jedis.hget(key, field);
     		
     		if( jedis != null ){
@@ -114,86 +144,31 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
     		}
     		//pool.returnResource(jedis);
     	}catch( Exception e ){
-    		System.out.println("Redis Get Error::"+Util.makeStackTrace(e));
-    	
-			e.printStackTrace();
-	
+    		logger.error("Redis Get Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+    		if( jedis != null ){
+    			jedis.close();
+    		}
 		}
     	return data;
     }
     
     public synchronized void remove( String key, String field)
     {
+    	Jedis jedis 		= null;
     	try{
-    		Jedis jedis = pool.getResource();
+    		actor_start		= System.currentTimeMillis();
+    		jedis = pool.getResource();
     		jedis.hdel(key, field);
+    		
+    		if( jedis != null ){
+    			jedis.close();
+    		}
+    		
     	}catch(Exception e){
-    		System.out.println("Redis Remove Error::"+Util.makeStackTrace(e));
-        	
-			e.printStackTrace();
+    		logger.error("Redis Remove Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+    		if( jedis != null ){
+    			jedis.close();
+    		}
     	}
     }
-    
-	/*
-	public void init( String host, int port )
-	{
-		try{
-			System.out.println("host::"+host+",port::"+port);
-			if( jedis == null || !jedis.isConnected() )
-			{
-				jedis = null;
-				jedis = new Jedis(host, port);
-				//jedis.auth("1111");    / auth(패스워드)
-				System.out.println("Redis Connection Success!!");
-			}
-			else
-			{
-				System.out.println("Redis Connection before connect!!");
-			}
-		}catch( Exception e ){
-			if( jedis != null )
-				jedis.close();
-			jedis = null;
-			thisObj = null;
-			
-			System.out.println("Redis Connection Fail!!");
-			
-			e.printStackTrace();
-		}
-	}
-	
-	public void put( String key, String field, String data)
-    {
-		try{
-			jedis.hset(key, field, data);
-		}catch( Exception e ){
-			System.out.println("Redis Put Error::"+Util.makeStackTrace(e));
-	
-			if( jedis != null )
-				jedis.close();
-			jedis = null;
-			thisObj = null;
-			e.printStackTrace();
-
-		}
-    }
-    
-    public String get( String key, String field)
-    {
-    	String data = null;
-    	try{
-    		data = jedis.hget(key, field);
-    	}catch( Exception e ){
-    		System.out.println("Redis Get Error::"+Util.makeStackTrace(e));
-    	
-    		if( jedis != null )
-				jedis.close();
-    		
-			jedis = null;
-			thisObj = null;
-			e.printStackTrace();
-	
-		}
-    	return data;
-    }*/
 }

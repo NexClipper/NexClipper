@@ -101,8 +101,9 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 	
 	@Value("${spring.rabbitmq.port}")
 	private String rabbitmq_port;
-
-	static final Logger logger = LoggerFactory.getLogger(Fullfillment.class);
+	
+	static final Logger logger 	= LoggerFactory.getLogger(Fullfillment.class);
+	
 	
 	@RequestMapping("/check")
     public String checkBit( ) throws Exception {
@@ -142,8 +143,8 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 	    	CreateTopic.getInstance().create(kafka_zookeeper, kafka_host, kafka_port, Const.LOG_TOPIC);
 	    	
 	    	System.out.println(" Kafka Topic Create End.....");
-		}
-		
+		}	
+			
 		// Connection Redis
 		RedisCluster.getInstance(redis_host, Integer.parseInt(redis_port));
 		
@@ -172,6 +173,37 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		sendData.setTimeseries_db(timeseries_db);
 		sendData.setPushgateway_endpoint(pushgateway_endpoint);
 		*/
+		
+		/**
+		 * Kubernete(API) Kafka Consumer Actor
+		 */
+		sendData			= new SendData();
+		sendData.setMysql_datasource_url(mysql_datasource_url);
+		sendData.setMysql_password(mysql_password);
+		sendData.setMysql_username(mysql_username);
+		
+		sendData.setRedis_host(redis_host);
+		sendData.setRedis_port(redis_port);
+		
+		sendData.setKafka_zookeeper(kafka_zookeeper);
+		sendData.setKafka_host(kafka_host);
+		sendData.setKafka_port(kafka_port);
+		
+		sendData.setInfluxdb_datasource(influxdb_datasource);
+		sendData.setInfluxdb_endpoint(influxdb_endpoint);
+		
+		sendData.setBroker(broker);
+		sendData.setRabbitmq_host(rabbitmq_host);
+		sendData.setRabbitmq_port(rabbitmq_port);
+		/*
+		sendData.setTimeseries_db(timeseries_db);
+		sendData.setPushgateway_endpoint(pushgateway_endpoint);
+		*/
+		sendData.setKafka_topic(Const.K8SAPI_TOPIC);
+		ActorSystem systemK8SAPI		= ActorSystem.create("K8SAPIConsumer");
+		ActorRef kafkaK8SAPIConsumer	= null;
+		kafkaK8SAPIConsumer 			= systemK8SAPI.actorOf(Props.create(KafkaK8SAPIConsumerActor.class),"KafkaK8SAPIConsumerActor");
+		kafkaK8SAPIConsumer.tell(sendData, ActorRef.noSender());
 		
 		/**
 		 * Host Kafka Consumer Actor
@@ -239,38 +271,6 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		kafkaDockerConsumer.tell(sendData, ActorRef.noSender());
 		//System.out.println("Docker :: "+ sendData.toString());
 		
-		
-		/**
-		 * Kubernete(API) Kafka Consumer Actor
-		 */
-		sendData			= new SendData();
-		sendData.setMysql_datasource_url(mysql_datasource_url);
-		sendData.setMysql_password(mysql_password);
-		sendData.setMysql_username(mysql_username);
-		
-		sendData.setRedis_host(redis_host);
-		sendData.setRedis_port(redis_port);
-		
-		sendData.setKafka_zookeeper(kafka_zookeeper);
-		sendData.setKafka_host(kafka_host);
-		sendData.setKafka_port(kafka_port);
-		
-		sendData.setInfluxdb_datasource(influxdb_datasource);
-		sendData.setInfluxdb_endpoint(influxdb_endpoint);
-		
-		sendData.setBroker(broker);
-		sendData.setRabbitmq_host(rabbitmq_host);
-		sendData.setRabbitmq_port(rabbitmq_port);
-		/*
-		sendData.setTimeseries_db(timeseries_db);
-		sendData.setPushgateway_endpoint(pushgateway_endpoint);
-		*/
-		sendData.setKafka_topic(Const.K8SAPI_TOPIC);
-		ActorSystem systemK8SAPI		= ActorSystem.create("K8SAPIConsumer");
-		ActorRef kafkaK8SAPIConsumer	= null;
-		kafkaK8SAPIConsumer 			= systemK8SAPI.actorOf(Props.create(KafkaK8SAPIConsumerActor.class),"KafkaK8SAPIConsumerActor");
-		kafkaK8SAPIConsumer.tell(sendData, ActorRef.noSender());
-		//System.out.println("Kubernetes API:: "+ sendData.toString());
 		
 		/**
 		 * DataSender Actor

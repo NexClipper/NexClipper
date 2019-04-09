@@ -61,7 +61,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	/**
 	 * 액터에 전달된 메세지를 처리
 	 */
-	public void onReceive(Object message){
+	public synchronized void onReceive(Object message){
 		// TODO Auto-generated method stub
 		SendData sendData									= null; 
         ConsumerRecords<String, String> records 			= null;
@@ -90,8 +90,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			
 			// End of First Time Check
 		}catch(Exception e){
-			e.printStackTrace();
-			System.out.println(Util.makeStackTrace(e));
+			logger.error("jsonK8SAPIParser Exception::", e);
 		}
 	}
 	
@@ -554,9 +553,9 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					redisCluster.put(Const.K8S, Const.COMPONENT_STATUS, Util.beanToJson(k8s.getComponentstatuses()));
 				}
 			}
+			logger.error("jsonK8sParser End");
 		}catch(Exception e){
-			e.printStackTrace();
-			logger.error(Util.makeStackTrace(e));
+			logger.error("jsonK8sParser Exception::", e);
 		}
 	}
 }

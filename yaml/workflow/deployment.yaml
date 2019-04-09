@@ -19,9 +19,9 @@ spec:
           image: nexclipper/nexworkflow:k8s
           resources:
             limits:
-              memory: 2Gi
-            requests:
               memory: 1Gi
+            requests:
+              memory: 512Mi
           imagePullPolicy: Always
           ports:
             - containerPort: 9000
