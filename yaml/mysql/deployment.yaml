@@ -1,40 +1,40 @@
-  apiVersion: apps/v1beta2
-  kind: Deployment
-  metadata:
-    name: mysql
-    namespace: nexclipper
-    labels:
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: nexclipper
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
       app: mysql
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
+  template:
+    metadata:
+      labels:
         app: mysql
-    template:
-      metadata:
-        labels:
-          app: mysql
-      spec:
-        containers:
-        - env:
-          - name: MYSQL_DATABASE
-            value: defaultdb
-          - name: MYSQL_PASSWORD
-            value: password
-          - name: MYSQL_ROOT_PASSWORD
-            value: root
-          - name: MYSQL_USER
-            value: admin
-          image: mysql:5.7.12
-          imagePullPolicy: IfNotPresent 
-          name: mysql
-          ports:
-          - containerPort: 3306
-          volumeMounts:
-          - name: mysql-data
-            mountPath: /var/lib/mysql             
-        volumes:
+    spec:
+      containers:
+      - env:
+        - name: MYSQL_DATABASE
+          value: defaultdb
+        - name: MYSQL_PASSWORD
+          value: password
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_USER
+          value: admin
+        image: mysql:5.7.12
+        imagePullPolicy: IfNotPresent 
+        name: mysql
+        ports:
+        - containerPort: 3306
+        volumeMounts:
         - name: mysql-data
-          hostPath:
-            path: /nfs/mysql
-  status: {}
+          mountPath: /var/lib/mysql             
+      volumes:
+      - name: mysql-data
+        hostPath:
+          path: /nfs/mysql
+status: {}
