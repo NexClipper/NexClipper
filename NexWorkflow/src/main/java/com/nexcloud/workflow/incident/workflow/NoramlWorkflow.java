@@ -57,6 +57,16 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
     private String kafka_host;
     
     private String kafka_port;
+    
+    private String broker;
+    
+    private String rabbitmq_host;
+    
+    private String rabbitmq_port;
+    
+    private String rabbitmq_username;
+    
+    private String rabbitmq_password;
 	
 	private static NoramlWorkflow thisObj 	= null;
 	
@@ -91,12 +101,17 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 	}
 	
 	
-	public void goRunning( String influxdb_endpoint, String kafka_host, String kafka_port, RedisService redisService )
+	public void goRunning( String influxdb_endpoint, String broker, String rabbitmq_host, String rabbitmq_port, String rabbitmq_username, String rabbitmq_password, String kafka_host, String kafka_port, RedisService redisService )
 	{
 		this.influxdb_endpoint	= influxdb_endpoint;
 		this.kafka_host			= kafka_host;
 		this.kafka_port			= kafka_port;
 		this.redisService 		= redisService;
+		this.broker				= broker;
+		this.rabbitmq_host		= rabbitmq_host;
+		this.rabbitmq_port		= rabbitmq_port;
+		this.rabbitmq_username	= rabbitmq_username;
+		this.rabbitmq_password	= rabbitmq_password;
 		thisObj.setProcessing(true);
 		
 		/*
@@ -544,7 +559,14 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 							        			notification.setStatus("F");
 							        			notification.setFinish_time(Util.getTime());
 							        			// Kafka notification topic 전송
-							        			send( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			//kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			// Kafka notification topic 전송
+							        			if( "kafka".equals(broker))
+							        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			// Rabbit Notification Send
+							        			else
+							        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			
 							        		}
 							        		keys.add(key);
 							        	}
@@ -554,7 +576,13 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 							        		if( event_term > period && Const.SEND_N.equals(notification.getSend_yn()) )
 							        		{
 							        			notification.setSend_yn(Const.SEND_Y);
-							        			send( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			//kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			// Kafka notification topic 전송
+							        			if( "kafka".equals(broker))
+							        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+							        			// Rabbit Notification Send
+							        			else
+							        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 							        			
 							        			String mailfrom		= makeHTML( notification );
 							        			
@@ -608,7 +636,13 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 						        		notification.setStatus("F");
 					        			notification.setFinish_time(Util.getTime());
 					        			// Kafka notification topic 전송
-					        			send( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+					        			//kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+					        			// Kafka notification topic 전송
+					        			if( "kafka".equals(broker))
+					        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+					        			// Rabbit Notification Send
+					        			else
+					        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 						        		
 						        		keys.add(key);
 						        	}
@@ -618,7 +652,14 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 						        		if( Const.SEND_N.equals(notification.getSend_yn()) )
 						        		{
 						        			notification.setSend_yn(Const.SEND_Y);
-						        			send( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+						        			//kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+						        			// Kafka notification topic 전송
+						        			if( "kafka".equals(broker))
+						        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+						        			// Rabbit Notification Send
+						        			else
+						        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+						        			
 						        			
 						        			String mailfrom		= makeHTML( notification );
 						        			

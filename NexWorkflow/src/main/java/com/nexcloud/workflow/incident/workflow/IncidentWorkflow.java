@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import javax.ws.rs.core.MediaType;
 
 import com.nexcloud.api.kafka.Producer;
+import com.nexcloud.api.rabitmq.Publish;
 import com.nexcloud.rule.domain.Notification;
 import com.nexcloud.util.Mail;
 import com.nexcloud.util.rest.HttpAPI;
@@ -96,11 +97,28 @@ public class IncidentWorkflow{
 	 * @param sendData
 	 * @param data
 	 */
-	public void send( String kafka_host, String kafka_port,String kafka_topic, String data )
+	public void kafkSend( String kafka_host, String kafka_port,String kafka_topic, String data )
 	{
 		
 		Producer	prdocuer 	= Producer.getInstance();
 		prdocuer.send(kafka_host, kafka_port, kafka_topic, data);
+	}
+	
+	/**
+	 * RabbitMQ Send
+	 */
+	public void rabbitSend(String rabbitmp_host, String rabbitmp_port, String rabbitmq_username, String rabbitmq_password, String topic, String data )
+	{
+		
+		try{
+			Publish	publish		 		= null;
+			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port, rabbitmq_username, rabbitmq_password);			
+			
+			publish.put( topic, data );
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public String makeHTML( Notification notification )

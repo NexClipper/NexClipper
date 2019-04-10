@@ -72,6 +72,21 @@ public class WorkflowService {
 	
 	@Value("${spring.influxdb.endpoint}")
 	private String influxdb_endpoint;
+	
+	@Value("${spring.broker}")
+	private String broker;
+	
+	@Value("${spring.rabbitmq.host}")
+	private String rabbitmq_host;
+	
+	@Value("${spring.rabbitmq.port}")
+	private String rabbitmq_port;
+	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
 
 	static final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
 
@@ -150,12 +165,12 @@ public class WorkflowService {
 				if( !NoramlWorkflow.getInstance().isProcessing() )
 				{
 					System.out.println("NoramlWorkflow Start....");
-					NoramlWorkflow.getInstance().goRunning(influxdb_endpoint, kafka_host, kafka_port, redisService);
+					NoramlWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 				else
 				{
 					if( NoramlWorkflow.getInstance( ).getState() == State.TERMINATED )
-						NoramlWorkflow.getInstance( ).goRunning(influxdb_endpoint, kafka_host, kafka_port, redisService);
+						NoramlWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 			}
 			
@@ -170,12 +185,12 @@ public class WorkflowService {
 				if( !CustomWorkflow.getInstance().isProcessing() )
 				{
 					System.out.println("CustomWorkflow Start....");
-					CustomWorkflow.getInstance().goRunning(influxdb_endpoint, kafka_host, kafka_port, redisService);
+					CustomWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 				else
 				{
 					if( CustomWorkflow.getInstance( ).getState() == State.TERMINATED )
-						CustomWorkflow.getInstance( ).goRunning(influxdb_endpoint, kafka_host, kafka_port, redisService);
+						CustomWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 			}
 			
@@ -202,31 +217,37 @@ public class WorkflowService {
 		
 		try {
 			
-			// Kafka Event Topic Consumer register
-			
-			if( NotificationConsumer.getInstance().init(kafka_zookeeper, kafka_host, kafka_port, Const.INCIDENT_TOPIC, Const.INCIDENT_TOPIC+"_group") )
+			if( "kafka".equals(broker))
 			{
-				ConsumerRecords<String, String> records = NotificationConsumer.getInstance().read( );
-	    		
-	    		for (ConsumerRecord<String, String> record : records)
-		        {
-	    			if( record.value() == null || "".equals(record.value())) continue;
-	    			
-	    			logger.error("incident consumer ::"+record.value());
-	    			
-	    			Notification notification = Util.JsonTobean(record.value(), Notification.class);
-	    			
-	    			int count = dbMapper.selectIncident(notification);
-	    			if( count == 0 )
-	    			{
-	    				dbMapper.insertIncident( notification );
-	    			}
-	    			else
-	    			{
-	    				if( notification.getFinish_time() != null && !"".equals(notification.getFinish_time()) )
-	    					dbMapper.updateIncident( notification );
-	    			}
-		        }
+				if( NotificationConsumer.getInstance().init(kafka_zookeeper, kafka_host, kafka_port, Const.INCIDENT_TOPIC, Const.INCIDENT_TOPIC+"_group") )
+				{
+					ConsumerRecords<String, String> records = NotificationConsumer.getInstance().read( );
+		    		
+		    		for (ConsumerRecord<String, String> record : records)
+			        {
+		    			if( record.value() == null || "".equals(record.value())) continue;
+		    			
+		    			logger.error("incident consumer ::"+record.value());
+		    			
+		    			Notification notification = Util.JsonTobean(record.value(), Notification.class);
+		    			
+		    			int count = dbMapper.selectIncident(notification);
+		    			if( count == 0 )
+		    			{
+		    				dbMapper.insertIncident( notification );
+		    			}
+		    			else
+		    			{
+		    				if( notification.getFinish_time() != null && !"".equals(notification.getFinish_time()) )
+		    					dbMapper.updateIncident( notification );
+		    			}
+			        }
+				}
+			}
+			// Rabbit MQ
+			else
+			{
+				
 			}
 		} catch ( Exception e) {
 			e.printStackTrace();

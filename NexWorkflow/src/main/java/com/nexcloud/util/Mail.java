@@ -46,9 +46,7 @@ public class Mail {
          
         Authenticator auth = new Authenticator(){
             protected PasswordAuthentication getPasswordAuthentication() {
-            	//return new PasswordAuthentication("admin@nexcloud.co.kr", "sprtmzmfflvj~!@#");
-            	return new PasswordAuthentication("support@nexclipper.com", "ncloud2370");
-            	//return new PasswordAuthentication("travelbooks2", "tbuqhujdywbhcgfj"); 
+            	return new PasswordAuthentication("main address", "password"); 
             }
         };
         
@@ -56,8 +54,7 @@ public class Mail {
         session.setDebug(true);
         MimeMessage message = new MimeMessage(session); 
         try{
-	        //message.setSender(new InternetAddress( "NOTIFICATOR<travelbooks2@gmail.com>" ));
-        	message.setSender(new InternetAddress( "NOTIFICATOR<support@nexclipper.com>" )); 
+        	message.setSender(new InternetAddress( "" )); 
 
 	        // 이메일 제목
 	        message.setSubject(title, "UTF-8");

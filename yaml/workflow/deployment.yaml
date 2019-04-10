@@ -55,3 +55,7 @@ spec:
               value: rabbitmq.nexclipper
             - name: RABBITMQ_PORT
               value: '5672'
+            - name: RABBITMQ_USER
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest

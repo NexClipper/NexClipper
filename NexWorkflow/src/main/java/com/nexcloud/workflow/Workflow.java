@@ -14,6 +14,8 @@
 * limitations under the License.
 */
 package com.nexcloud.workflow;
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +39,21 @@ import com.nexcloud.api.akka.actor.KafkaK8SAPIConsumerActor;
 import com.nexcloud.api.akka.domain.SendData;
 import com.nexcloud.api.kafka.CreateTopic;
 import com.nexcloud.api.redis.RedisCluster;
+import com.nexcloud.rule.domain.Notification;
 import com.nexcloud.util.Const;
+import com.nexcloud.util.Util;
+import com.nexcloud.workflow.mapper.DBMapper;
 import com.nexcloud.workflow.service.WorkflowService;
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BlockedListener;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -54,6 +69,9 @@ import akka.actor.Props;
 public class Workflow extends SpringBootServletInitializer implements WebApplicationInitializer {
 	@Autowired
 	private WorkflowService workflowService;
+	
+	@Autowired
+	DBMapper dbMapper;
 	
 	@Value("${spring.kafka.zookeeper}")
 	private String kafka_zookeeper;
@@ -78,6 +96,12 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 	
 	@Value("${spring.rabbitmq.port}")
 	private String rabbitmq_port;
+	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
 
 	static final Logger logger = LoggerFactory.getLogger(Workflow.class);
 	
@@ -120,6 +144,22 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		}
 	}
 	
+	/*	
+	@Bean(name = "dataSource")
+	public void dataSource() {
+	    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+	    dataSource.setUrl("jdbc:mysql://mysql.nexclipper:3306/defaultdb?useUnicode=yes&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;autoReconnectForPools=true");
+	    dataSource.setUsername("admin");
+	    dataSource.setPassword("password");
+
+	    // schema init
+        Resource initData = new ClassPathResource("scripts/load.sql");
+        DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initData);
+        DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+	}
+	*/
+	
 	public void createActor()
 	{
 		/**
@@ -161,6 +201,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		
 		/**
@@ -189,6 +231,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		sendData.setKafka_topic(Const.DOCKER_TOPIC);
 		ActorSystem systemDocker		= ActorSystem.create("DockerConsumer");
@@ -213,6 +257,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		sendData.setKafka_topic(Const.K8SAPI_TOPIC);
 		ActorSystem systemK8SAPI		= ActorSystem.create("K8SAPIConsumer");
@@ -220,8 +266,115 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		kafkaK8SAPIConsumer 			= systemK8SAPI.actorOf(Props.create(KafkaK8SAPIConsumerActor.class),"KafkaK8SAPIConsumerActor");
 		kafkaK8SAPIConsumer.tell(sendData, ActorRef.noSender());
 		//System.out.println("Kubernetes API:: "+ sendData.toString());
+		
+		// 이벤트 handler 처리
+		if( !"kafka".equals(broker) )
+		{
+			try{
+				Connection connection 	= null;
+				while( true )
+				{
+					if( (connection  = getConnection()) == null )
+						Thread.sleep(1000);
+					else
+						break;
+				}
+				
+				connection.addBlockedListener(new BlockedListener() {
+				    public void handleBlocked(String reason) throws IOException {
+				        logger.error("Workflow RabbitMQ Connection Blocked::"+reason);
+				    }
+	
+				    public void handleUnblocked() throws IOException {
+				        // Connection is now unblocked
+				    }
+				});
+				
+				connection.addShutdownListener(new ShutdownListener() {
+				    @Override
+				    public void shutdownCompleted(ShutdownSignalException cause) {
+				    	logger.error("Workflow RabbitMQ Connection Shutdown::", cause);
+				    }
+				});
+				
+				Channel channel = connection.createChannel();
+				channel.queueDeclare(Const.INCIDENT_TOPIC, false, false, true, null);
+				
+				channel.addShutdownListener(new ShutdownListener() {
+				    @Override
+				    public void shutdownCompleted(ShutdownSignalException cause) {
+				    	logger.error("Workflow RabbitMQ Channel Shutdown::", cause);
+				    }
+				});
+				
+				Consumer consumer = new DefaultConsumer(channel) {
+					@Override
+					public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+							byte[] body) throws IOException {
+						
+						try{
+							String message = new String(body, "UTF-8");
+							
+							logger.error("notification data::"+message);
+							
+							Notification notification = Util.JsonTobean(message, Notification.class);
+			    			
+			    			int count = dbMapper.selectIncident(notification);
+			    			if( count == 0 )
+			    			{
+			    				dbMapper.insertIncident( notification );
+			    			}
+			    			else
+			    			{
+			    				if( notification.getFinish_time() != null && !"".equals(notification.getFinish_time()) )
+			    					dbMapper.updateIncident( notification );
+			    			}
+	
+							Thread.sleep((long)(Math.random() * 1000));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				};
+		
+				consumer.handleConsumeOk(Const.INCIDENT_TOPIC);
+				//channel.basicConsume(sendData.getKafka_topic()+"_work", true, consumer);
+				channel.basicConsume(Const.INCIDENT_TOPIC, false, consumer);
+			}catch(Exception e){
+				logger.error("Workflow Main Application Exception", e);
+			}
+		}
 	}
 	
+	private Connection getConnection()
+	{
+		logger.error("Workflow RabbitMQ Connection Start!!");
+		Connection conn		= null;
+		try{
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost(rabbitmq_host);
+			factory.setPort(Integer.parseInt(rabbitmq_port)); // 5672 port
+			factory.setUsername(rabbitmq_username);
+			factory.setPassword(rabbitmq_password);
+			
+			factory.setAutomaticRecoveryEnabled(true);
+			factory.setRequestedHeartbeat(60);
+	        
+			factory.setConnectionTimeout(1000);
+	        
+	        factory.setRequestedChannelMax(0);
+	        factory.setRequestedFrameMax(0);
+	        conn 			= factory.newConnection();
+	        
+	        logger.error("Workflow RabbitMQ Connection End!!");
+		}catch(Exception e){
+			logger.error("Workflow RabbitMQ Connection Exception");
+			conn			= null;
+		}
+		
+		return conn;
+	}
     public static void main(String[] args) throws Exception {
     	ConfigurableApplicationContext context 	= SpringApplication.run(Workflow.class, args);
     	Workflow workflow						= context.getBean(Workflow.class);

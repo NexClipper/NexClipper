@@ -158,6 +158,12 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(sendData.getRabbitmq_host());
 			factory.setPort(Integer.parseInt(sendData.getRabbitmq_port())); // 5672 port
+			factory.setUsername(sendData.getRabbitmq_username());
+			factory.setPassword(sendData.getRabbitmq_password());
+			
+			factory.setUsername("guest");
+			factory.setPassword("guest");
+			
 			factory.setAutomaticRecoveryEnabled(true);
 			factory.setRequestedHeartbeat(60);
 	        
