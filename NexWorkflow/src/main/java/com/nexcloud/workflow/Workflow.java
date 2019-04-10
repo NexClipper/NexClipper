@@ -96,6 +96,12 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 	
 	@Value("${spring.rabbitmq.port}")
 	private String rabbitmq_port;
+	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
 
 	static final Logger logger = LoggerFactory.getLogger(Workflow.class);
 	
@@ -195,6 +201,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		
 		/**
@@ -223,6 +231,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		sendData.setKafka_topic(Const.DOCKER_TOPIC);
 		ActorSystem systemDocker		= ActorSystem.create("DockerConsumer");
@@ -247,6 +257,8 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		
 		sendData.setKafka_topic(Const.K8SAPI_TOPIC);
 		ActorSystem systemK8SAPI		= ActorSystem.create("K8SAPIConsumer");
@@ -343,6 +355,9 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 			ConnectionFactory factory = new ConnectionFactory();
 			factory.setHost(rabbitmq_host);
 			factory.setPort(Integer.parseInt(rabbitmq_port)); // 5672 port
+			factory.setUsername(rabbitmq_username);
+			factory.setPassword(rabbitmq_password);
+			
 			factory.setAutomaticRecoveryEnabled(true);
 			factory.setRequestedHeartbeat(60);
 	        

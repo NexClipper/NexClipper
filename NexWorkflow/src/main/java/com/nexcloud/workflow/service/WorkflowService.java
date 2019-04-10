@@ -81,6 +81,12 @@ public class WorkflowService {
 	
 	@Value("${spring.rabbitmq.port}")
 	private String rabbitmq_port;
+	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
 
 	static final Logger logger = LoggerFactory.getLogger(WorkflowService.class);
 
@@ -159,12 +165,12 @@ public class WorkflowService {
 				if( !NoramlWorkflow.getInstance().isProcessing() )
 				{
 					System.out.println("NoramlWorkflow Start....");
-					NoramlWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, kafka_host, kafka_port, redisService);
+					NoramlWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 				else
 				{
 					if( NoramlWorkflow.getInstance( ).getState() == State.TERMINATED )
-						NoramlWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, kafka_host, kafka_port, redisService);
+						NoramlWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 			}
 			
@@ -179,12 +185,12 @@ public class WorkflowService {
 				if( !CustomWorkflow.getInstance().isProcessing() )
 				{
 					System.out.println("CustomWorkflow Start....");
-					CustomWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, kafka_host, kafka_port, redisService);
+					CustomWorkflow.getInstance().goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 				else
 				{
 					if( CustomWorkflow.getInstance( ).getState() == State.TERMINATED )
-						CustomWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, kafka_host, kafka_port, redisService);
+						CustomWorkflow.getInstance( ).goRunning(influxdb_endpoint, broker, rabbitmq_host, rabbitmq_port, rabbitmq_username, rabbitmq_password, kafka_host, kafka_port, redisService);
 				}
 			}
 			

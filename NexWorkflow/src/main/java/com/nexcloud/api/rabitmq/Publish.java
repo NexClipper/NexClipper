@@ -46,6 +46,9 @@ public class Publish extends Thread
 	public static String rabbitMqIP						= null;
 	public static String rabbitMqPort					= null;
 	
+	public static String rabbitUser						= null;
+	public static String rabbitPassword					= null;
+	
 	public Publish(){ 
 		start();
 	}
@@ -65,7 +68,7 @@ public class Publish extends Thread
 		return thisObj; 		
 	}
 	
-	public synchronized static Publish getInstance( String rabbitMqIP, String rabbitMqPort ){
+	public synchronized static Publish getInstance( String rabbitMqIP, String rabbitMqPort, String rabbitUser, String rabbitPassword ){
 		if ( thisObj == null ){
 			logger.debug("Rabbit Publish!!!!!!!!!!!!!!!");
 			try {
@@ -74,12 +77,14 @@ public class Publish extends Thread
 				
 				thisObj.rabbitMqIP			= rabbitMqIP;
 				thisObj.rabbitMqPort		= rabbitMqPort;
+				thisObj.rabbitUser			= rabbitUser;
+				thisObj.rabbitPassword		= rabbitPassword;
 				
-				thisObj.connection(rabbitMqIP, rabbitMqPort);
+				thisObj.connection(rabbitMqIP, rabbitMqPort,rabbitUser,rabbitPassword );
 				while(true)
 				{
 					if( thisObj.connection == null || !thisObj.connection.isOpen() )
-						thisObj.connection(rabbitMqIP, rabbitMqPort);
+						thisObj.connection(rabbitMqIP, rabbitMqPort, rabbitUser,rabbitPassword);
 					else
 						break;
 				}
@@ -95,7 +100,7 @@ public class Publish extends Thread
 		return thisObj; 		
 	}
 	
-	public synchronized void connection( String rabbitMqIP, String rabbitMqPort )
+	public synchronized void connection( String rabbitMqIP, String rabbitMqPort,String rabbitUser,String rabbitPassword )
 	{
 		try{
 			logger.error("Rabbit MQ Connection!!!!!!!!!!!!!!!");
@@ -103,6 +108,8 @@ public class Publish extends Thread
 			ConnectionFactory factory 	= new ConnectionFactory();
 			factory.setHost(rabbitMqIP);
 			factory.setPort(Integer.parseInt(rabbitMqPort)); //5672
+			factory.setUsername(rabbitUser);
+			factory.setPassword(rabbitPassword);
 			
 			factory.setAutomaticRecoveryEnabled(true);
 			factory.setRequestedHeartbeat(60);
@@ -192,7 +199,7 @@ public class Publish extends Thread
 	{
 		try{
 			if( connection == null || !connection.isOpen() )
-				connection( rabbitMqIP, rabbitMqPort );
+				connection( rabbitMqIP, rabbitMqPort,rabbitUser, rabbitPassword );
 			
 			connection.addBlockedListener(new BlockedListener() {
 			    public void handleBlocked(String reason) throws IOException {

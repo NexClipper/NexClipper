@@ -57,6 +57,12 @@ public class CollectorService {
 	@Value("${spring.rabbitmq.port}")
 	String 		rabbitmp_port;
 	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
+	
 	@Value("${spring.broker}")
 	String 		broker;
 	
@@ -94,7 +100,7 @@ public class CollectorService {
 			else
 			{
 				// Rabbit MQ Send
-				rabbitSend(rabbitmp_host, rabbitmp_port, kafka_topic, requestData );
+				rabbitSend(rabbitmp_host, rabbitmp_port, rabbitmq_username, rabbitmq_password, kafka_topic, requestData );
 			}
 			
 			resData.setStatus(Const.OK);
@@ -194,12 +200,12 @@ public class CollectorService {
 	/**
 	 * RabbitMQ Send
 	 */
-	public void rabbitSend(String rabbitmp_host, String rabbitmp_port, String topic, RequestData requestData )
+	public void rabbitSend(String rabbitmp_host, String rabbitmp_port, String rabbitmp_usename, String rabbitmq_password, String topic, RequestData requestData )
 	{
 		
 		try{
 			Publish	publish		 		= null;
-			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port );			
+			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port, rabbitmp_usename, rabbitmq_password );			
 			
 			//publish.send(rabbitmp_host, rabbitmp_port, topic, Util.beanToJson(requestData));
 			

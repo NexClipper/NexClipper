@@ -102,6 +102,12 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 	@Value("${spring.rabbitmq.port}")
 	private String rabbitmq_port;
 	
+	@Value("${spring.rabbitmq.username}")
+	private String rabbitmq_username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String rabbitmq_password;
+	
 	static final Logger logger 	= LoggerFactory.getLogger(Fullfillment.class);
 	
 	
@@ -169,6 +175,8 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		/*
 		sendData.setTimeseries_db(timeseries_db);
 		sendData.setPushgateway_endpoint(pushgateway_endpoint);
@@ -195,6 +203,8 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		/*
 		sendData.setTimeseries_db(timeseries_db);
 		sendData.setPushgateway_endpoint(pushgateway_endpoint);
@@ -226,6 +236,8 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		/*
 		sendData.setTimeseries_db(timeseries_db);
 		sendData.setPushgateway_endpoint(pushgateway_endpoint);
@@ -260,6 +272,8 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 		sendData.setBroker(broker);
 		sendData.setRabbitmq_host(rabbitmq_host);
 		sendData.setRabbitmq_port(rabbitmq_port);
+		sendData.setRabbitmq_username(rabbitmq_username);
+		sendData.setRabbitmq_password(rabbitmq_password);
 		/*
 		sendData.setTimeseries_db(timeseries_db);
 		sendData.setPushgateway_endpoint(pushgateway_endpoint);

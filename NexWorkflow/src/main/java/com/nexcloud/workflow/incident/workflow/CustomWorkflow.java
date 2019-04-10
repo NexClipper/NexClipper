@@ -64,6 +64,10 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
     
     private String rabbitmq_port;
     
+    private String rabbitmq_username;
+    
+    private String rabbitmq_password;
+    
 	private static CustomWorkflow thisObj 	= null;
 	
 	private boolean isProcessing			= false;
@@ -96,7 +100,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 		return thisObj; 		
 	}
 	
-	public void goRunning( String influxdb_endpoint, String broker, String rabbitmq_host, String rabbitmq_port, String kafka_host, String kafka_port, RedisService redisService )
+	public void goRunning( String influxdb_endpoint, String broker, String rabbitmq_host, String rabbitmq_port, String rabbitmq_username, String rabbitmq_password, String kafka_host, String kafka_port, RedisService redisService )
 	{
 		this.influxdb_endpoint	= influxdb_endpoint;
 		this.kafka_host			= kafka_host;
@@ -105,6 +109,8 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 		this.broker				= broker;
 		this.rabbitmq_host		= rabbitmq_host;
 		this.rabbitmq_port		= rabbitmq_port;
+		this.rabbitmq_username	= rabbitmq_username;
+		this.rabbitmq_password	= rabbitmq_password;
 		thisObj.setProcessing(true);
 		/*
 		Thread thread			= new Thread( thisObj );
@@ -492,7 +498,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 			        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			// Rabbit Notification Send
 			        			else
-			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        		
 			        		}
 			        		keys.add(key);
@@ -511,7 +517,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 			        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			// Rabbit Notification Send
 			        			else
-			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			
 			        			String mailfrom		= makeHTML( notification );
 			        			
@@ -867,7 +873,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 			        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			// Rabbit Notification Send
 			        			else
-			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        		}
 			        		keys.add(key);
 			        	}
@@ -883,7 +889,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 			        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			// Rabbit Notification Send
 			        			else
-			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			
 			        			String mailfrom		= makeHTML( notification );
 			        			
@@ -1233,7 +1239,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 			        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 			        			// Rabbit Notification Send
 			        			else
-			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+			        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        		
 				        		keys.add(key);
 				        	}
@@ -1249,7 +1255,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 				        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        			// Rabbit Notification Send
 				        			else
-				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        			
 				        			String mailfrom		= makeHTML( notification );
 				        			
@@ -1315,7 +1321,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 				        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        			// Rabbit Notification Send
 				        			else
-				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 					        		
 				        		}
 				        		keys.add(key);
@@ -1332,7 +1338,7 @@ public class CustomWorkflow extends IncidentWorkflow implements Runnable {
 				        				kafkSend( this.kafka_host, this.kafka_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        			// Rabbit Notification Send
 				        			else
-				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
+				        				rabbitSend(this.rabbitmq_host, this.rabbitmq_port, this.rabbitmq_username, this.rabbitmq_password, Const.INCIDENT_TOPIC, Util.beanToJson(notification));
 				        			
 				        			String mailfrom		= makeHTML( notification );
 				        			

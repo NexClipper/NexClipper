@@ -59,6 +59,26 @@ public class SendData {
 	
 	private String rabbitmq_port;
 	
+	private String rabbitmq_username;
+	
+	private String rabbitmq_password;
+	
+	public String getRabbitmq_username() {
+		return rabbitmq_username;
+	}
+
+	public void setRabbitmq_username(String rabbitmq_username) {
+		this.rabbitmq_username = rabbitmq_username;
+	}
+
+	public String getRabbitmq_password() {
+		return rabbitmq_password;
+	}
+
+	public void setRabbitmq_password(String rabbitmq_password) {
+		this.rabbitmq_password = rabbitmq_password;
+	}
+
 	public String getRabbitmq_host() {
 		return rabbitmq_host;
 	}

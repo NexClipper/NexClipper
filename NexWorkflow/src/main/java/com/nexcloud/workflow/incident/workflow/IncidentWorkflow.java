@@ -107,12 +107,12 @@ public class IncidentWorkflow{
 	/**
 	 * RabbitMQ Send
 	 */
-	public void rabbitSend(String rabbitmp_host, String rabbitmp_port, String topic, String data )
+	public void rabbitSend(String rabbitmp_host, String rabbitmp_port, String rabbitmq_username, String rabbitmq_password, String topic, String data )
 	{
 		
 		try{
 			Publish	publish		 		= null;
-			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port );			
+			publish 					= Publish.getInstance( rabbitmp_host, rabbitmp_port, rabbitmq_username, rabbitmq_password);			
 			
 			publish.put( topic, data );
 		}catch(Exception e){
