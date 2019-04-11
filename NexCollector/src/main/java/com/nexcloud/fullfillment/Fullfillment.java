@@ -124,10 +124,13 @@ public class Fullfillment extends SpringBootServletInitializer implements WebApp
 	 * 
 	 * @throws Exception
 	 */
+	/*
+	 * Docker container log Get Scheduler
 	@Scheduled(fixedDelay = 1000, initialDelay = 1000)
 	public void scheduleLogCrawling() throws Exception {
 		fullfillmentService.logCrawlig();
 	}
+	*/
 	
 	public void createActor()
 	{
