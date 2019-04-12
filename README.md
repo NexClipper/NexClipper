@@ -8,7 +8,7 @@ Please note that previsous NexClipper Light project which was host level contain
 
 ![](docs/images/logo1.png)
 
-## NexClipper Cloud
+## NexClipper Cloud (SaaS)
 
 NexClipper Cloud is an online SaaS to monitor and manage performance of the container cluster -  Docker, DC/OS and Kubernetes.
 NexClipper Cloud features the following capabilities:
@@ -22,14 +22,16 @@ NexClipper Cloud features the following capabilities:
 For more details visit  https://www.nexclipper.io/
 For beta service, visit https://server.nexclipper.com
 
-## NexClipper  
+## NexClipper (On-Premise)
 
 NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker and Kubernetes.
 NexClipper features the following capabilities:
-- Fullstack dashboard (Infrastructure, Kubernetes)
-- Container Cluster (Kuberentes)
+- Fullstack dashboard (Kubernetes and Infrastructure)
+- Container Cluster (Kuberentes cluster, nodes and worklodas)
 - Infrastruture Monitoring (Container, Host, Resource)
-- Incidents Management(Soon)
+- Incidents Management (Rule set and alert manager) (Soon)
+- Workload management and deployment (Planned)
+- Resource analytics and forecasting (Planned)
 
 ## Architecture Overview
 
