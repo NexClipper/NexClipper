@@ -26,7 +26,7 @@ $ helm init --service-account tiller
 > download helm chart of NexClipper
 
 ```sh
-$ wget <HELM/nexclipper-0.1.0.tgz>
+$ wget https://raw.githubusercontent.com/NexClipper/NexClipper/dev/HELM/nexclipper-0.1.0.tgz
 ```
 
 > install the chart 
