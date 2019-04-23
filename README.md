@@ -58,8 +58,8 @@ NexClipper can be deployed on Kubernetes cluster.
 
 ### HEML chart Deployment
 
-- [If you want to use HEML chart to install, Go to]
-(https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
+- [If you want to use HEML chart to install, Go to](https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
+
 
 ### Prepare deployment
 
