@@ -54,6 +54,9 @@ public class FullfillmentService {
 	@Value("${spring.kafka.port}")
 	private String kafka_port;
 	
+	@Value("${spring.broker}")
+	private String broker;
+	
 	static final Logger logger = LoggerFactory.getLogger(FullfillmentService.class);
 
 	/**
@@ -61,47 +64,50 @@ public class FullfillmentService {
 	 * kafka topic : log
 	 * @throws Exception
 	 */
-	public void logCrawlig() throws Exception {
-		
+	public void logCrawlig() throws Exception 
+	{	
 		try {
-			Log log							= null;
-			if( LogDBConsumer.getInstance().init(kafka_zookeeper, kafka_host, kafka_port, Const.LOG_TOPIC, Const.LOG_TOPIC+"_group") )
+			if( "kafka".equals(broker) )
 			{
-				ConsumerRecords<String, String> records = LogDBConsumer.getInstance().read( );
-	    		List<Log> list	= new ArrayList<Log>();
-	    		for (ConsumerRecord<String, String> record : records)
-		        {
-	    			if( record.value() == null || "".equals(record.value())) continue;
-	    			
-	    			
-	    			/////////////////////////////////////////////////////
-	    			/**
-	    	         * Docker Container Log data 
-	    	         */
-	    	        ResponseData resData			= null;
-	    	        Header header					= null;
-	    	        String body						= null;
-	    	        String container_id				= null;
-	    	        
-	    	        resData							= Util.JsonTobean(record.value(), ResponseData.class);
-	    	        header							= resData.getHeader();
-	    			body							= resData.getBody();
-	    			container_id					= resData.getContainer_id();	    			
-	    			log								= Util.JsonTobean(body, Log.class);
-	    			
-	    			log.setContainer_id(container_id);
-	    			log.setHost_ip(header.getNode_ip());
-
-	    			list.add(log);
-	    			log								= null;
-		        }
-	    		
-	    		if( list.size() > 0 )
-	    		{
-		    		Map<String, Object> map	= new HashMap<String, Object>();
-		    		map.put("list", list);
-		    		dbMapper.insertLog(map);
-	    		}
+				Log log							= null;
+				if( LogDBConsumer.getInstance().init(kafka_zookeeper, kafka_host, kafka_port, Const.LOG_TOPIC, Const.LOG_TOPIC+"_group") )
+				{
+					ConsumerRecords<String, String> records = LogDBConsumer.getInstance().read( );
+		    		List<Log> list	= new ArrayList<Log>();
+		    		for (ConsumerRecord<String, String> record : records)
+			        {
+		    			if( record.value() == null || "".equals(record.value())) continue;
+		    			
+		    			
+		    			/////////////////////////////////////////////////////
+		    			/**
+		    	         * Docker Container Log data 
+		    	         */
+		    	        ResponseData resData			= null;
+		    	        Header header					= null;
+		    	        String body						= null;
+		    	        String container_id				= null;
+		    	        
+		    	        resData							= Util.JsonTobean(record.value(), ResponseData.class);
+		    	        header							= resData.getHeader();
+		    			body							= resData.getBody();
+		    			container_id					= resData.getContainer_id();	    			
+		    			log								= Util.JsonTobean(body, Log.class);
+		    			
+		    			log.setContainer_id(container_id);
+		    			log.setHost_ip(header.getNode_ip());
+	
+		    			list.add(log);
+		    			log								= null;
+			        }
+		    		
+		    		if( list.size() > 0 )
+		    		{
+			    		Map<String, Object> map	= new HashMap<String, Object>();
+			    		map.put("list", list);
+			    		dbMapper.insertLog(map);
+		    		}
+				}
 			}
 		} catch ( Exception e) {
 			e.printStackTrace();

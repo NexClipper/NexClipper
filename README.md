@@ -8,7 +8,7 @@ Please note that previsous NexClipper Light project which was host level contain
 
 ![](docs/images/logo1.png)
 
-## NexClipper Cloud
+## NexClipper Cloud (SaaS)
 
 NexClipper Cloud is an online SaaS to monitor and manage performance of the container cluster -  Docker, DC/OS and Kubernetes.
 NexClipper Cloud features the following capabilities:
@@ -22,14 +22,20 @@ NexClipper Cloud features the following capabilities:
 For more details visit  https://www.nexclipper.io/
 For beta service, visit https://server.nexclipper.com
 
-## NexClipper  
+## NexClipper (On-Premise)
 
 NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker and Kubernetes.
 NexClipper features the following capabilities:
-- Fullstack dashboard (Infrastructure, Kubernetes)
-- Container Cluster (Kuberentes)
-- Infrastruture Monitoring (Container, Host, Resource)
-- Incidents Management(Soon)
+- Fullstack dashboard (Kubernetes and Infrastructure)
+- Container Cluster (Kuberentes cluster, nodes and worklodas)
+- Infrastruture Monitoring (Docker Container, Host, Resource)
+
+- Incidents Management (Rule set and alert manager) (Soon)
+- Rest API service (Soon)
+- Dashboard Enhancement for custmizing (Plan)
+- Prometheus Integration (Plan) 
+- Workload management and deployment (Plan)
+- Resource analytics and forecasting (Plan)
 
 ## Architecture Overview
 
@@ -49,6 +55,12 @@ NexClipper can be deployed on Kubernetes cluster.
 - An SSH key pair on your local Linux/macOS/BSD machine.
 - ***Create namespace `nexclipper'***
 - ***Download yaml files from 'yaml' derectory ***
+
+### HEML chart Deployment
+
+- [If you want to use HEML chart to install, Go to](https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
+
+
 ### Prepare deployment
 
 From your master node run kubectl create. 
