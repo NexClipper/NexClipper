@@ -55,6 +55,12 @@ NexClipper can be deployed on Kubernetes cluster.
 - An SSH key pair on your local Linux/macOS/BSD machine.
 - ***Create namespace `nexclipper'***
 - ***Download yaml files from 'yaml' derectory ***
+
+### HEML chart Deployment
+
+- [If you want to use HEML chart to install, Go to]
+(https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
+
 ### Prepare deployment
 
 From your master node run kubectl create. 
