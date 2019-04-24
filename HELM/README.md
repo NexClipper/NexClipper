@@ -32,7 +32,7 @@ $ wget https://raw.githubusercontent.com/NexClipper/NexClipper/dev/HELM/nexclipp
 > install the chart 
 
 ```sh
-$ helm install --set hostPath.influx=<influx data path>,hostPath.mysql=<mysql data path> <tgz name>
+$ helm install --set hostPath.influx=<influx data path>,hostPath.mysql=<mysql data path> nexclipper-0.1.0.tgz
 ```
 
 
