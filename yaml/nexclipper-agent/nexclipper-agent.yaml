@@ -54,6 +54,7 @@ spec:
       - name: pki
         hostPath:
           path: /etc/kubernetes/pki
+      serviceAccount: agent-sa
       hostNetwork: true
       hostPID: true
       hostIPC: true
@@ -70,9 +71,6 @@ spec:
         imagePullPolicy: Always
         securityContext:
           privileged: true
-        env:
-        - name: agent_endpoint
-          value: 192.168.0.180:32100
         volumeMounts:
         - mountPath: /var/run/docker.sock
           name: docker-sock
@@ -137,9 +135,6 @@ spec:
         imagePullPolicy: Always
         securityContext:
           privileged: true
-        env:
-        - name: agent_endpoint
-          value: 192.168.0.180:32100
         volumeMounts:
         - mountPath: /dev
           name: dev

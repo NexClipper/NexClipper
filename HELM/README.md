@@ -32,7 +32,7 @@ $ wget https://raw.githubusercontent.com/NexClipper/NexClipper/dev/HELM/nexclipp
 > install the chart 
 
 ```sh
-$ helm install --set hostPath.influx=<influx data path>,hostPath.mysql=<mysql data path>,agent_endpoint.master=<master node ip> <tgz name>
+$ helm install --set hostPath.influx=<influx data path>,hostPath.mysql=<mysql data path> nexclipper-0.1.0.tgz
 ```
 
 
@@ -51,4 +51,3 @@ The following table lists the configurable parameters of the NexClipper chart an
 |--------------------------------------|------------------------------------------------|-------------------------------|
 | `hostPath.influx`                    | Hostpath of influx                             | `/nfs/influxdb`               |
 | `hostPath.mysql`                     | Hostpath of mysql                              | `/nfs/mysql`                  |
-| `agent_endpoint.master`              | IP address of master node                      | `10.0.0.2`                    |
