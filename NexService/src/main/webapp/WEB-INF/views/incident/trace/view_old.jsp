@@ -156,8 +156,6 @@
                 <!--End:: Widget-->
             </div>
 
-<script src="/resources/js/module/common/client.js" type="text/javascript"></script>
-<script src="/resources/js/module/common/colors.js" type="text/javascript"></script>
 <script src="/resources/js/module/list/simpleList.js" type="text/javascript"></script>
 <script src="/resources/js/module/chart/basicLine.js" type="text/javascript"></script>
 <script src="/resources/js/module/table/mDataTable.js" type="text/javascript"></script>

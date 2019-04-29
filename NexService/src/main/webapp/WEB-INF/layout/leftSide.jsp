@@ -54,14 +54,86 @@
 								<span class="m-menu__link-text">Node</span>
 							</a>
 						</li> 
-						<li class="m-menu__item " aria-haspopup="true" >
-							<a href="/kubernetes/pod" class="m-menu__link ">
+						<!-- <li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/volume" class="m-menu__link ">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
 									<span></span>
 								</i>
-								<span class="m-menu__link-text">Pod</span>
+								<span class="m-menu__link-text">Volume</span>
 							</a>
 						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/persistentvolume" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Persistent Volume</span>
+							</a>
+						</li> -->
+						<!-- <li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/workload" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+									<span></span>
+								</i>
+								<span class="m-menu__link-text">Workload</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/daemonset" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Daemonset</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/deployment" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Deployment</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/pod" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Pod</span>
+							</a>
+						</li> -->
+						<!-- <li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/replicaset" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Replicaset</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/statefulset" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Statefulset</span>
+							</a>
+						</li> -->
+						<!-- <li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/discovery" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+									<span></span>
+								</i>
+								<span class="m-menu__link-text">Discovery</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/ingress" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Ingress</span>
+							</a>
+						</li>
+						<li class="m-menu__item " aria-haspopup="true" >
+							<a href="/kubernetes/services" class="m-menu__link ">
+								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
+								</i>
+								<span class="m-menu__link-text">Services</span>
+							</a>
+						</li> -->
 					</ul>
 				</div>
 			</li>
@@ -116,7 +188,7 @@
 				</a>
 				<div class="m-menu__submenu ">
 					<span class="m-menu__arrow"></span>
-					<!-- <ul class="m-menu__subnav">
+					<ul class="m-menu__subnav">
 						<li class="m-menu__item  m-menu__item--parent" aria-haspopup="true" >
 							<span class="m-menu__link">
 								<span class="m-menu__link-text">
@@ -148,15 +220,21 @@
 								<span class="m-menu__link-text">Rule Set Manager</span>
 							</a>
 						</li>
-					</ul>-->
+					</ul>
 				</div> 
 			</li>
-			<!-- <li class="m-menu__item  m-menu__item">
+			<li class="m-menu__item  m-menu__item">
 				<a href="/agent/default" class="m-menu__link">
 					<i class="m-menu__link-icon flaticon-dashboard"></i>
 					<span class="m-menu__link-text">Agent</span>
 				</a>
-			</li> -->
+			</li>
+			<li class="m-menu__item  m-menu__item" id = "accountTab" style="display: none;">
+				<a href="/account/default" class="m-menu__link">
+					<i class="m-menu__link-icon flaticon-dashboard"></i>
+					<span class="m-menu__link-text">Account</span>
+				</a>
+			</li>
 			<!-- <li class="m-menu__item  m-menu__item--submenu " aria-haspopup="true"  data-menu-submenu-toggle="hover">
 				<a  href="#" class="m-menu__link m-menu__toggle">
 					<i class="m-menu__link-icon flaticon-settings"></i>
@@ -208,8 +286,6 @@ $(function(){
 				$(p).addClass("m-menu__item--open");
 			})
 		}
-			
 	})
-	
 })
 </script>

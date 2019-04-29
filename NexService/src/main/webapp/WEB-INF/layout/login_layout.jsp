@@ -38,9 +38,9 @@
 						<div class="m-login__title">
 							<h3> Get a free account and try beta service for Container monitoring and Performance Management </h3>
 						</div>
-						<div class="m-login__form-action">
+						<!-- <div class="m-login__form-action">
 							<a href="/user/join" class="btn btn-outline-focus m-btn--pill" > Get Free Account </a>
-						</div>
+						</div> -->
 					</div>
 				</div>
 			</div>
@@ -52,10 +52,10 @@
 	<footer class="m-grid__item		m-footer " style="bottom: 0; position: fixed; margin-left: 0; width: 100%;">
 		<div class="m-container m-container--fluid m-container--full-height m-page__container">
 			<div class="m-stack m-stack--flex-tablet-and-mobile m-stack--ver m-stack--desktop">
-				<div class="m-stack__item m-stack__item--left m-stack__item--middle m-stack__item--last">
+				<div class="m-stack__item_bottom m-stack__item--left m-stack__item--middle m-stack__item--last">
 					<span class="m-footer__copyright">© 2018 <a href="http://www.nexclipper.com/" class="m-link" target="_BLANK">NexClipper</a></span>
 				</div>
-				<div class="m-stack__item m-stack__item--right m-stack__item--middle m-stack__item--first">
+				<div class="m-stack__item_bottom m-stack__item--right m-stack__item--middle m-stack__item--first">
 					<ul class="m-footer__nav m-nav m-nav--inline m--pull-right">
 						<li class="m-nav__item">
 							<a href="#" class="m-nav__link"><span class="m-nav__link-text">Term Of Use</span></a>
