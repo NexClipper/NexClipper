@@ -2,11 +2,15 @@
 
 NexClipper is the container and container orchestration monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especially supports machine learning based predictive, forecasting, anormaly detection.
 
+![](docs/images/logo1_wide.png)
+
+NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](https://landscape.cncf.io/category=monitoring&format=card-mode&grouping=category).
+
+![](docs/images/cncf.png)
+
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
 Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
-
-![](docs/images/logo1.png)
 
 ## NexClipper Cloud (SaaS)
 
