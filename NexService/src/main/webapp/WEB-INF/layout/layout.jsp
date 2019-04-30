@@ -25,6 +25,7 @@
 <meta name="msapplication-TileImage" content="/resources/img/icon/cropped-logo4_정사각형-270x270.png" />
 
 <link href="/resources/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/resources/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="/resources/css/notosanskr.css" rel="stylesheet" type="text/css">
 <link href="/resources/css/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css">
 
@@ -33,9 +34,12 @@
 <link href="/resources/css/nexcloud.css" rel="stylesheet" type="text/css">
 
 <script src="/resources/js/lib/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="/resources/js/lib/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="/resources/js/lib/dataTables.bootstrap.min.js" type="text/javascript"></script>
 <script src="/resources/js/lib/vendors.bundle.js" type="text/javascript"></script>
 <script src="/resources/js/lib/scripts.bundle.js" type="text/javascript"></script>
 <script src="/resources/js/lib/jquery.preloaders.js" type="text/javascript"></script>
+<script src="/resources/js/lib/webfont.js" type="text/javascript"></script>
 
 <script type="text/javascript" src="/resources/js/lib/highchart/highcharts.js"></script>
 <script type="text/javascript" src="/resources/js/lib/highchart/highcharts-more.js"></script>
@@ -44,8 +48,23 @@
 <script type="text/javascript" src="/resources/js/lib/highchart/heatmap.js"></script>
 <script type="text/javascript" src="/resources/js/lib/highchart/drilldown.js"></script>
 <script type="text/javascript" src="/resources/js/lib/highchart/solid-gauge.js"></script>
+<script type="text/javascript" src="/resources/js/module/common/client.js"></script>
+<script type="text/javascript" src="/resources/js/module/common/colors.js"></script>
 <script type="text/javascript" src="/resources/js/module/common/utils.js"></script>
 <script type="text/javascript" src="/resources/js/module/picker.js"></script>
+<script type="text/javascript">
+
+function drawAccountInfo(data) {
+	if (data == "prod"){
+		$("#m_header_topbar").show();
+		new Client().url("/api/v1/account/iam").callback(function (data) {
+			$("#dispaly_user_id").text(data);
+		}).get();
+		$("#accountTab").show();
+	}
+}
+new Client().url("/api/v1/account/active").callback(drawAccountInfo).get();
+</script>
 </head>
 <body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--fixed m-aside-left--skin-light m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default">
 <div class="m-grid m-grid--hor m-grid--root m-page">

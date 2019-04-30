@@ -17,7 +17,9 @@ package com.nexcloud.api.akka.actor;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
@@ -148,7 +150,10 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 			
 			Channel channel = connection.createChannel();
 			
-			channel.queueDeclare(sendData.getKafka_topic(), false, false, true, null);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-queue-mode", "lazy");
+			channel.queueDeclare(sendData.getKafka_topic(), false, false, false, args);
+			//channel.queueDeclare(sendData.getKafka_topic(), false, false, true, null);
 			
 			channel.addShutdownListener(new ShutdownListener() {
 			    @Override

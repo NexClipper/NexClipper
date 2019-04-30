@@ -15,6 +15,8 @@
 */
 package com.nexcloud.workflow;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -298,7 +300,10 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 				});
 				
 				Channel channel = connection.createChannel();
-				channel.queueDeclare(Const.INCIDENT_TOPIC, false, false, true, null);
+				Map<String, Object> args = new HashMap<String, Object>();
+				args.put("x-queue-mode", "lazy");
+				channel.queueDeclare(Const.INCIDENT_TOPIC, false, false, false, args);
+				//channel.queueDeclare(Const.INCIDENT_TOPIC, false, false, true, null);
 				
 				channel.addShutdownListener(new ShutdownListener() {
 				    @Override

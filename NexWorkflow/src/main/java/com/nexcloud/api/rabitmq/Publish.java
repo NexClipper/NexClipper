@@ -221,8 +221,12 @@ public class Publish extends Thread
 			Channel channel = connection.createChannel();
 			
 			logger.error("Notification::"+channelName);
-
-			channel.queueDeclare(channelName, false, false, true, null);
+			
+			
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-queue-mode", "lazy");
+			channel.queueDeclare(channelName, false, false, false, args);
+			//channel.queueDeclare(channelName, false, false, true, null);
 			channel.basicPublish("", channelName, null, message.getBytes());
 
 			channel.close();

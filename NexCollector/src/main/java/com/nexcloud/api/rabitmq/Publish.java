@@ -225,10 +225,14 @@ public class Publish extends Thread
 			
 			//logger.error("Channel name::"+channelName);
 
-			channel.queueDeclare(channelName, false, false, true, null);
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("x-queue-mode", "lazy");
+			channel.queueDeclare(channelName, false, false, false, args);
+			//channel.queueDeclare(channelName, false, false, true, null);
 			channel.basicPublish("", channelName, null, message.getBytes());
 			
-			channel.queueDeclare(channelName+"_work", false, false, true, null);
+			channel.queueDeclare(channelName+"_work", false, false, false, args);
+			//channel.queueDeclare(channelName+"_work", false, false, true, null);
 			channel.basicPublish("", channelName+"_work", null, message.getBytes());
 
 			channel.close();

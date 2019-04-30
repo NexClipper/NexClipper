@@ -68,27 +68,30 @@
 					</li>
 				</ul>
 			</div>
-			<!-- <div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general m-stack--fluid">
+			<div id="m_header_topbar" class="m-topbar  m-stack m-stack--ver m-stack--general m-stack--fluid" style="display: none;">
 				<div class="m-stack__item m-topbar__nav-wrapper">
 					<ul class="m-topbar__nav m-nav m-nav--inline">
 						<li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
 							<span class="m-nav__link m-dropdown__toggle">
-								<span class="m-nav__link-icon" id="dispaly_user_id" style="width:100%;"></span>
+								<span class="m-nav__link-icon" id="dispaly_user_id" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:100%; cursor: pointer;"></span>
+                         <div class="dropdown-menu dropdown-menu-left" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                             <a href="/user/logout" class="dropdown-item m-dropdown__toggle"><span class="m-nav__link-icon"><i class="flaticon-logout"></i>logout</span></a>
+                         </div>
 							</span>
 						</li>
-						<li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
+						<!-- <li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
 							<a href="#" class="m-nav__link m-dropdown__toggle">
 								<span class="m-nav__link-icon"><i class="flaticon-info"></i>Help</span>
 							</a>
-						</li>	
-						<li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
+						</li> -->	
+						<!-- <li class="	m-nav__item m-dropdown m-dropdown--large m-dropdown--arrow m-dropdown--align-center m-dropdown--mobile-full-width m-dropdown--skin-light	m-list-search m-list-search--skin-light">
 							<a href="/user/logout" class="m-nav__link m-dropdown__toggle">
 								<span class="m-nav__link-icon"><i class="flaticon-logout"></i>logout</span>
 							</a>	
-						</li>						
+						</li> -->						
 					</ul>
 				</div>
-			</div> -->
+			</div>
 		</div>
 	</div>
 </div>

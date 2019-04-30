@@ -54,6 +54,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 
 	static final Logger 	logger 				= LoggerFactory.getLogger(JsonK8SAPIParserActor.class);
 	private Map<String, Containers> containerMap= new HashMap<String, Containers>();
+	private Map<String, String> hostNameInfo	= new HashMap<String, String>();
 	private Map<String, String> hostInfo		= new HashMap<String, String>();
 	private Map<String, Integer> hostCpuInfo	= new HashMap<String, Integer>();
 	
@@ -99,6 +100,9 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 		// TODO Auto-generated method stub
 		RedisCluster redisCluster						= null;
 		
+		String nodeName									= null;
+		String nodeIP									= null;
+		
 		String pattern 									= "#####.###";
         DecimalFormat dformat 							= new DecimalFormat( pattern );
         
@@ -139,6 +143,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			{
 				hostInfo.clear();
 				hostCpuInfo.clear();
+				hostNameInfo.clear();
 				
 				ips					  					= gson.fromJson(data, new TypeToken<List<String>>(){}.getType());
 				for( String ip : ips )
@@ -148,6 +153,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					hostInfo.put(host.getHost_name(), ip);
 					hostCpuInfo.put(host.getHost_name(), host.getCpu().getCpu_total());
+					hostNameInfo.put(ip, host.getHost_name());
 					
 					data										= redisCluster.get(Const.DOCKER, ip);
 		            docker										= Util.JsonTobean(data, Docker.class);
@@ -314,6 +320,20 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					pod_mem_used					= 0d;
 					pod_mem_limit					= 0d;
 					
+					nodeName						= item.getSpec().getNodeName();
+					nodeIP							= hostInfo.get(nodeName);
+					
+					/**
+					 * OKE같은 경우 Kubernetes Master의  node관리가 host ip로 관리되기ㅣ 때문에 
+					 * 실제 host ip정보로 node name을 세팅한다 
+					 */
+					if( nodeIP == null )
+					{
+						nodeIP						= nodeName;
+						nodeName					= hostNameInfo.get(nodeIP);
+						item.getSpec().setNodeName(nodeName);
+					}
+					
 					// Container
 					for( Container container : item.getSpec().getContainers() )
 					{
@@ -412,8 +432,8 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					pod_cpu_used					= Float.parseFloat(dformat.format(pod_cpu_used));
 					try{
-						//pod_cpu_used_percent		= Float.parseFloat(dformat.format(((pod_cpu_used/host.getCpu().getCpu_total())*100)*host.getCpu().getCpu_total()));
-						pod_cpu_used_percent		= Float.parseFloat(dformat.format(((pod_cpu_used/hostCpuInfo.get(item.getSpec().getNodeName()))*100)*hostCpuInfo.get(item.getSpec().getNodeName())));
+						//pod_cpu_used_percent		= Float.parseFloat(dformat.format(((pod_cpu_used/hostCpuInfo.get(item.getSpec().getNodeName()))*100)*hostCpuInfo.get(item.getSpec().getNodeName())));
+						pod_cpu_used_percent		= Float.parseFloat(dformat.format(((pod_cpu_used/hostCpuInfo.get(nodeName))*100)*hostCpuInfo.get(nodeName)));
 					}catch(Exception e){
 						pod_cpu_used_percent		= 0f;
 					}
@@ -438,7 +458,8 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					// Node Used & Used percent
 					nodeResource					= null;
-					if( nodeResourceMap.get(item.getSpec().getNodeName()) == null )
+					//if( nodeResourceMap.get(item.getSpec().getNodeName()) == null )
+					if( nodeResourceMap.get(nodeName) == null )
 					{
 						nodeResource				= new Resource();
 						
@@ -447,7 +468,8 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					}
 					else
 					{
-						nodeResource 				= nodeResourceMap.get(item.getSpec().getNodeName());
+						//nodeResource 				= nodeResourceMap.get(item.getSpec().getNodeName());
+						nodeResource 				= nodeResourceMap.get(nodeName);
 						
 						Double node_cpu_used		= Double.parseDouble(nodeResource.getUsed().getCpu())+Double.parseDouble(Float.toString(pod_cpu_used));
 						Double node_mem_used		= Double.parseDouble(nodeResource.getUsed().getMemory())+pod_mem_used;
@@ -455,7 +477,8 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 						nodeResource.getUsed().setCpu(""+node_cpu_used);
 						nodeResource.getUsed().setMemory(""+node_mem_used);
 					}
-					nodeResourceMap.put(item.getSpec().getNodeName(), nodeResource);
+					//nodeResourceMap.put(item.getSpec().getNodeName(), nodeResource);
+					nodeResourceMap.put(nodeName, nodeResource);
 				}
 				
 				cluster_used_cpus					= Double.parseDouble(dformat.format(cluster_used_cpus));
@@ -469,9 +492,29 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 				main								= k8s.getNode();
 				for( Item item : main.getItems() )
 				{						
+					nodeName						= item.getMetadata().getName();
+					nodeIP							= hostInfo.get(nodeName);
+					
+					/**
+					 * OKE같은 경우 Kubernetes Master의  node관리가 host ip로 관리되기ㅣ 때문에 
+					 * 실제 host ip정보로 node name을 세팅한다 
+					 */
+					if( nodeIP == null )
+					{
+						nodeIP						= nodeName;
+						nodeName					= hostNameInfo.get(nodeIP);
+					}
+					
+					item.getMetadata().setNode_name(nodeName);
+					item.getMetadata().setNode_ip(nodeIP);
+					
+					item.getMetadata().setName(nodeName);
+					
+					
+					/*
 					item.getMetadata().setNode_name(item.getMetadata().getName());
 					item.getMetadata().setNode_ip(hostInfo.get(item.getMetadata().getName()));
-					
+					*/
 					cluster_total_cpus				+= Integer.parseInt(item.getStatus().getCapacity().getCpu());
 					cluster_total_mem				+= Double.parseDouble(item.getStatus().getAllocatable().getMemory());
 					cluster_total_pod				+= Integer.parseInt(item.getStatus().getAllocatable().getPods());

@@ -136,8 +136,6 @@
 	</div>
 </div>
 
-<script src="/resources/js/module/common/client.js" type="text/javascript"></script>
-<script src="/resources/js/module/common/colors.js" type="text/javascript"></script>
 <script src="/resources/js/module/table/mDataTable.js" type="text/javascript"></script>
 <script src="/resources/js/module/chart/basicLine.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -292,12 +290,18 @@ function drawContainerList (data) {
 		item.start_time = getTimeStamp(new Date(startA));
 		
 		var finish_time = item.finish_time;
-		var dateB = new Date(finish_time.substring(0,4),finish_time.substring(5,7)-1, finish_time.substring(8,10), finish_time.substring(11,13), finish_time.substring(14,16), finish_time.substring(17,19) );
-		var offset = new Date().getTimezoneOffset();
-		dateB.setHours(dateB.getHours() - (offset / 60 ));
-		var startB = dateB.getTime();
-		item.finish_time = getTimeStamp(new Date(startB));
-		
+		if( item.finish_time === undefined  )
+		{
+			item.finish_time	= "";
+		}
+		else
+		{
+			var dateB = new Date(finish_time.substring(0,4),finish_time.substring(5,7)-1, finish_time.substring(8,10), finish_time.substring(11,13), finish_time.substring(14,16), finish_time.substring(17,19) );
+			var offset = new Date().getTimezoneOffset();
+			dateB.setHours(dateB.getHours() - (offset / 60 ));
+			var startB = dateB.getTime();
+			item.finish_time = getTimeStamp(new Date(startB));
+		}
 		
 		
 		
