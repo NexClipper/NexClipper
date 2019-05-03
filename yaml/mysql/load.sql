@@ -259,7 +259,7 @@ CREATE TABLE `nexclipper_email` (
   `email_no` INT(11) unsigned NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(64) NOT NULL,
   `email_type` char(1) NOT NULL, 
-  `email_password` VARCHAR(256) NOT NULL,
+  `email_password` VARCHAR(256),
   PRIMARY KEY (email_no)
 );
 
