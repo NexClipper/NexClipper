@@ -89,6 +89,8 @@ public class Const {
 	
 	public static final String LIST					= "list";
 	
+	public static final String SEND_EMAIL_INFO		= "send_info";
+	
 	public static final String NODE_LIST			= "node_list";
 	
 	public static final String AGENT_STATUS			= "agent_status";
@@ -122,6 +124,8 @@ public class Const {
 	public static final String VERSION				= "version";
 	
 	public static final String COMPONENT_STATUS		= "component_status";
+	
+	public static final String EVENT				= "event";
 	
 	
 	/**

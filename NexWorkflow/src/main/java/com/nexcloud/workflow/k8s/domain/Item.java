@@ -35,6 +35,26 @@ public class Item {
 	private String type;
 	
 	private Resource resource;
+	
+	private Metadata involvedObject;
+	
+	private String reason;
+	
+	private String message;
+	
+	private Source source;
+	
+	private String firstTimestamp;
+	
+	private String lastTimestamp;
+	
+	private Integer cout;
+	
+	private String eventTime;
+	
+	private String reportingComponent;
+	
+	private String reportingInstance;
 
 	public Metadata getMetadata() {
 		if( metadata == null )
@@ -122,5 +142,89 @@ public class Item {
 
 	public void setResource(Resource resource) {
 		this.resource = resource;
+	}
+	
+	public Metadata getInvolvedObject() {
+		if( involvedObject == null )
+			involvedObject = new Metadata();
+		return involvedObject;
+	}
+
+	public void setInvolvedObject(Metadata involvedObject) {
+		this.involvedObject = involvedObject;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Source getSource() {
+		if( source == null )
+			source = new Source();
+		return source;
+	}
+
+	public void setSource(Source source) {
+		this.source = source;
+	}
+
+	public String getFirstTimestamp() {
+		return firstTimestamp;
+	}
+
+	public void setFirstTimestamp(String firstTimestamp) {
+		this.firstTimestamp = firstTimestamp;
+	}
+
+	public String getLastTimestamp() {
+		return lastTimestamp;
+	}
+
+	public void setLastTimestamp(String lastTimestamp) {
+		this.lastTimestamp = lastTimestamp;
+	}
+
+	public Integer getCout() {
+		return cout;
+	}
+
+	public void setCout(Integer cout) {
+		this.cout = cout;
+	}
+
+	public String getEventTime() {
+		return eventTime;
+	}
+
+	public void setEventTime(String eventTime) {
+		this.eventTime = eventTime;
+	}
+
+	public String getReportingComponent() {
+		return reportingComponent;
+	}
+
+	public void setReportingComponent(String reportingComponent) {
+		this.reportingComponent = reportingComponent;
+	}
+
+	public String getReportingInstance() {
+		return reportingInstance;
+	}
+
+	public void setReportingInstance(String reportingInstance) {
+		this.reportingInstance = reportingInstance;
 	}
 }

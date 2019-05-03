@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package com.nexcloud.workflow.k8s.domain;
+
 public class K8SAPI {
 	private K8SMain daemonset;
 	
@@ -42,6 +43,8 @@ public class K8SAPI {
 	private Version version;
 	
 	private K8SMain componentstatuses;
+	
+	private K8SMain event;
 
 	public K8SMain getComponentstatuses() {
 		if( componentstatuses == null )
@@ -183,5 +186,15 @@ public class K8SAPI {
 
 	public void setVersion(Version version) {
 		this.version = version;
+	}
+	
+	public K8SMain getEvent() {
+		if( event == null )
+			event = new K8SMain();
+		return event;
+	}
+
+	public void setEvent(K8SMain event) {
+		this.event = event;
 	}
 }

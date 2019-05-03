@@ -170,7 +170,7 @@ public class JsonDockerParserActor extends UntypedActor{
 				redisCluster.remove(Const.DOCKER, ip);
 			}
 			
-			logger.error("jsonDockerParser End");
+			//logger.error("jsonDockerParser End");
 		}catch(Exception e){
 			logger.error("jsonDockerParser Exception::", e);
 		}

@@ -189,7 +189,7 @@ public class JsonHostParserActor extends UntypedActor{
 			
 			redisCluster.put(Const.HOST, Const.LIST, Util.beanToJson(ips));
 			
-			logger.error("jsonHostParser End");
+			//logger.error("jsonHostParser End");
 		}catch(Exception e){
 			logger.error("jsonHostParser Exception::", e);
 		}
