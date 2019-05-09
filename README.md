@@ -33,17 +33,18 @@ NexClipper features the following capabilities:
 - Fullstack dashboard (Kubernetes and Infrastructure)
 - Container Cluster (Kuberentes cluster, nodes and worklodas)
 - Infrastruture Monitoring (Docker Container, Host, Resource)
-
-- Incidents Management (Rule set and alert manager) (Soon)
+- Incidents Management (Rule set and alert manager) (#30)
 - Rest API service (Soon)
-- Dashboard Enhancement for custmizing (Plan)
-- Prometheus Integration (Plan) 
+- Dashboard Enhancement to replace k8s dashboard (Soon)
+- Dashboard Enhancement for customizing (Plan)
+- Global view and multi tenancy (Plan)
+- Prometheus Integration (Plan)
 - Workload management and deployment (Plan)
 - Resource analytics and forecasting (Plan)
 
 ## Architecture Overview
 
-![](docs/images/NexClipper_Architecture1.png)
+![](docs/images/NexClipper_Architecture.png)
 
 ## NexClipper Dashboard
 
