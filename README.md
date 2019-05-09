@@ -43,7 +43,7 @@ NexClipper features the following capabilities:
 
 ## Architecture Overview
 
-![](docs/images/NexClipper_Architecture.png)
+![](docs/images/NexClipper_Architecture1.png)
 
 ## NexClipper Dashboard
 
