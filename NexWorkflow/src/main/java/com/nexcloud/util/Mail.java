@@ -27,7 +27,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class Mail {
-	public static boolean sendMail(String mailTo, String title, String content){
+	public static boolean sendMail(String sendEmail, String sendEmailPassword, String mailTo, String title, String content){
 		boolean ret = true;
 		
 		Properties props = new Properties(); 
@@ -46,7 +46,7 @@ public class Mail {
          
         Authenticator auth = new Authenticator(){
             protected PasswordAuthentication getPasswordAuthentication() {
-            	return new PasswordAuthentication("main address", "password"); 
+            	return new PasswordAuthentication(sendEmail, sendEmailPassword); 
             }
         };
         

@@ -113,11 +113,27 @@ public class WorkflowService {
 			/**
 			 * 각각의 Agent서 가지고 있는 Node, Task정보 세팅
 			 */
-			// Email 정보 조회
-			String emails							= dbMapper.selectEmail(  );
+			// Email 정보 조회 ( 수신 )
+			Map<String, String> emails				= dbMapper.selectEmail( "R" );
 			if( emails == null )
-				emails								= "";
-			redisService.put(Const.EMAIL, Const.LIST, emails);
+				emails								= new HashMap<String, String>();
+			redisService.put(Const.EMAIL, Const.LIST, emails.get("email"));
+			
+			// Email 정보 조회 ( 발신 )
+			emails									= null;
+			emails									= dbMapper.selectEmail( "S" );
+			if( emails == null )
+				emails								= new HashMap<String, String>();
+			
+			String email							= emails.get("email");
+			String email_password					= emails.get("email_password");
+			
+			if( email != null && !"".equals(email) )
+				email								= email+"|"+email_password;
+			else
+				email								= "";
+			
+			redisService.put(Const.EMAIL, Const.SEND_EMAIL_INFO, email);
 			
 			/**
 			 * 특정 Agent의 Node List조회

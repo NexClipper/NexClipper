@@ -40,5 +40,5 @@ public interface DBMapper {
 	
 	public int updateIncidentFinishTime( Notification notification ) throws Exception;
 	
-	public String selectEmail(  ) throws Exception;
+	public Map<String, String> selectEmail( String email_type ) throws Exception;
 }

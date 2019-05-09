@@ -590,7 +590,12 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 							        			if( notify != null && notify.equals("email") )
 							        			{
 							        				String emails					= redisService.get(Const.EMAIL, Const.LIST);
-							        				sendMail(emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+							        				String sendEmails				= redisService.get(Const.EMAIL, Const.SEND_EMAIL_INFO);
+							        				if( sendEmails != null && !"".equals(sendEmails) )
+							        				{
+							        					String[]emailInfo			= Util.split(sendEmails, "|");
+							        					sendMail(emailInfo[0], emailInfo[1], emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+							        				}
 							        			}
 							        			
 							        			// Slack
@@ -605,7 +610,12 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 							        			{
 							        				// Email 전송
 							        				String emails					= redisService.get(Const.EMAIL, Const.LIST);
-							        				sendMail(emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+							        				String sendEmails				= redisService.get(Const.EMAIL, Const.SEND_EMAIL_INFO);
+							        				if( sendEmails != null && !"".equals(sendEmails) )
+							        				{
+							        					String[]emailInfo			= Util.split(sendEmails, "|");
+							        					sendMail(emailInfo[0], emailInfo[1], emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+							        				}
 							        				
 							        				// Slack 전송
 							        				sendSlack(notification.getSlack_token(), notification.getSlack_channel(),notification.getContents());
@@ -667,7 +677,12 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 						        			if( notify != null && notify.equals("email") )
 						        			{
 						        				String emails					= redisService.get(Const.EMAIL, Const.LIST);
-						        				sendMail(emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+						        				String sendEmails				= redisService.get(Const.EMAIL, Const.SEND_EMAIL_INFO);
+						        				if( sendEmails != null && !"".equals(sendEmails) )
+						        				{
+						        					String[]emailInfo			= Util.split(sendEmails, "|");
+						        					sendMail(emailInfo[0], emailInfo[1], emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+						        				}
 						        			}
 						        			
 						        			// Slack
@@ -682,7 +697,12 @@ public class NoramlWorkflow extends IncidentWorkflow implements Runnable {
 						        			{
 						        				// Email 전송
 						        				String emails					= redisService.get(Const.EMAIL, Const.LIST);
-						        				sendMail(emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+						        				String sendEmails				= redisService.get(Const.EMAIL, Const.SEND_EMAIL_INFO);
+						        				if( sendEmails != null && !"".equals(sendEmails) )
+						        				{
+						        					String[]emailInfo			= Util.split(sendEmails, "|");
+						        					sendMail(emailInfo[0], emailInfo[1], emails, "["+notification.getSeverity()+"] "+ notification.getTarget()+" Alarm ",mailfrom);
+						        				}
 						        				
 						        				// Slack 전송
 						        				sendSlack(notification.getSlack_token(), notification.getSlack_channel(),notification.getContents());

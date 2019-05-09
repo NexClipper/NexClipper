@@ -61,11 +61,11 @@ public class IncidentWorkflow{
 	 * @param title
 	 * @param content
 	 */
-	public void sendMail( String receive_email, String title, String content )
+	public void sendMail( String sendEmail, String sendEmailPassword, String receive_email, String title, String content )
 	{
 		
 		try{
-			Mail.sendMail(receive_email, title, content);
+			Mail.sendMail(sendEmail, sendEmailPassword, receive_email, title, content);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

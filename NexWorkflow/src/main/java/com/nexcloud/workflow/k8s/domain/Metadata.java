@@ -47,6 +47,10 @@ public class Metadata {
 	private String node_name;
 	
 	private String node_ip;
+	
+	private String apiVersion;
+	
+	private String fieldPath;
 
 	public Map<String, String> getAnnotations() {
 		if( annotations == null )
@@ -164,5 +168,21 @@ public class Metadata {
 
 	public void setNode_ip(String node_ip) {
 		this.node_ip = node_ip;
+	}
+
+	public String getApiVersion() {
+		return apiVersion;
+	}
+
+	public void setApiVersion(String apiVersion) {
+		this.apiVersion = apiVersion;
+	}
+
+	public String getFieldPath() {
+		return fieldPath;
+	}
+
+	public void setFieldPath(String fieldPath) {
+		this.fieldPath = fieldPath;
 	}
 }

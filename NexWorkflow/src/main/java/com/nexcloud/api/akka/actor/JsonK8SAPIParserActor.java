@@ -594,9 +594,12 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					// Component Status
 					redisCluster.put(Const.K8S, Const.COMPONENT_STATUS, Util.beanToJson(k8s.getComponentstatuses()));
+					
+					// Event
+					redisCluster.put(Const.K8S, Const.EVENT, Util.beanToJson(k8s.getEvent()));
 				}
 			}
-			logger.error("jsonK8sParser End");
+			//logger.error("jsonK8sParser End");
 		}catch(Exception e){
 			logger.error("jsonK8sParser Exception::", e);
 		}
