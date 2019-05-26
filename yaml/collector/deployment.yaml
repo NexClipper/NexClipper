@@ -1,22 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: nexclipper-colletor
+  name: nexclipper-collector
   labels: 
-    app: nexclipper-colletor
+    app: nexclipper-collector
     version: v1
   namespace: nexclipper
 spec:
   replicas: 2
   template:
     metadata:
-      name: nexclipper-colletor
+      name: nexclipper-collector
       labels:
-        app: nexclipper-colletor
+        app: nexclipper-collector
     spec:
       containers:
-        - name: nexclipper-colletor
-          image: nexclipper/nexcolletor:k8s
+        - name: nexclipper-collector
+          image: nexclipper/nexcollector:k8s
           resources:
             limits:
               memory: 1Gi

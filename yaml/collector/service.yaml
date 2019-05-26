@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nexclipper-colletor
+  name: nexclipper-collector
   labels: 
-    app: nexclipper-colletor
+    app: nexclipper-collector
     version: v0.1
   namespace: nexclipper
 spec:
@@ -14,4 +14,4 @@ spec:
     targetPort: 9000
     name: http
   selector:  
-    app: nexclipper-colletor
+    app: nexclipper-collector

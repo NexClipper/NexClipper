@@ -61,9 +61,9 @@ NexClipper can be deployed on Kubernetes cluster.
 - ***Create namespace `nexclipper'***
 - ***Download yaml files from 'yaml' derectory ***
 
-### HEML chart Deployment
+### HELM chart Deployment
 
-- [If you want to use HEML chart to install, Go to](https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
+- [If you want to use HELM chart to install, Go to](https://github.com/NexClipper/NexClipper/tree/dev/HELM/README.md)
 
 
 ### Prepare deployment
@@ -95,6 +95,14 @@ volumes:
 ```sh
   $ kubectl create -f <yaml/mysql/deployment.yaml>
   $ kubectl create -f <yaml/mysql/service.yaml>
+```
+
+- Create Mysql table and data
+```sh
+  $ kubectl exec -it <mysql pod id> -n nexclipper sh
+  > mysql -uadmin -ppassword
+  > use defaultdb
+  > (Execute stript of load.sql at https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
 ```
 
 - [If you want to use your own database instead of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md)
@@ -190,6 +198,7 @@ env:
 ```sh
   $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
 ```
+
 
 ### Now you can access web UI
 ```
