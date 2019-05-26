@@ -196,7 +196,7 @@ env:
   $ kubectl exec -it <mysql pod id> -n nexclipper sh
   > mysql -uadmin -ppassword
   > use defaultdb
-  > (load.sql 내용 복사 후 붙여넣기 : https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
+  > (Execute stript of load.sql at https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
 ```
 
 ### Now you can access web UI
