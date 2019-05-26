@@ -97,6 +97,14 @@ volumes:
   $ kubectl create -f <yaml/mysql/service.yaml>
 ```
 
+- Create Mysql table and data
+```sh
+  $ kubectl exec -it <mysql pod id> -n nexclipper sh
+  > mysql -uadmin -ppassword
+  > use defaultdb
+  > (Execute stript of load.sql at https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
+```
+
 - [If you want to use your own database instead of 'detaultdb', Go to](https://github.com/NexClipper/NexClipper/blob/dev/docs/option/mysql.md)
 
 > #### influxdb
@@ -191,13 +199,6 @@ env:
   $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
 ```
 
-### Create Mysql table and data
-```sh
-  $ kubectl exec -it <mysql pod id> -n nexclipper sh
-  > mysql -uadmin -ppassword
-  > use defaultdb
-  > (Execute stript of load.sql at https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
-```
 
 ### Now you can access web UI
 ```
