@@ -71,6 +71,9 @@ spec:
         imagePullPolicy: Always
         securityContext:
           privileged: true
+        env:
+        - name: cluster_id
+          value: default
         volumeMounts:
         - mountPath: /var/run/docker.sock
           name: docker-sock
@@ -135,6 +138,9 @@ spec:
         imagePullPolicy: Always
         securityContext:
           privileged: true
+        env:
+        - name: cluster_id
+          value: default
         volumeMounts:
         - mountPath: /dev
           name: dev
