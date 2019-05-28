@@ -59,6 +59,8 @@ public class Const {
 	
 	public static final String LOST_INCIDENT		= "lost_incident";
 	
+	public static final String CLUSTER				= "cluster";
+	
 	
 	/**
 	 * Redis field

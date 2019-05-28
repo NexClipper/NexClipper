@@ -82,12 +82,15 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 		// kafka
 		if( "kafka".equals(sendData.getBroker()) )
 		{
+			logger.error("K8S Kafka Start");
 			while(true)
 			{
 				try{
 					if( K8SAPIConsumer.getInstance().init(sendData.getKafka_zookeeper(), sendData.getKafka_host(), sendData.getKafka_port(), sendData.getKafka_topic(), sendData.getKafka_topic()+"group") )
 					{
+						//logger.error("K8S Data read start:");
 						ConsumerRecords<String, String> records = K8SAPIConsumer.getInstance().read( );
+						//logger.error("K8S Data::"+records.count());
 						if( records.count() > 0)
 						{
 							sendData.setRecords(records);
@@ -104,7 +107,10 @@ public class KafkaK8SAPIConsumerActor extends UntypedActor{
 							Thread.sleep(10);
 					}
 					else
+					{
+						logger.error("Kafka K8S Consummer Exception::");
 						Thread.sleep(10);
+					}
 				}catch(Exception e){
 					System.out.println("K8S Akka Terminated");
 					e.printStackTrace();

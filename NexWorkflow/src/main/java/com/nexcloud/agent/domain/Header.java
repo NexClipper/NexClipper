@@ -22,6 +22,7 @@ public class Header {
 	private String node_ip;
 	private String node_name;
 	private String version;
+	private String cluster_id;
 
 	public String getAgent_key() {
 		return agent_key;
@@ -71,4 +72,11 @@ public class Header {
 		this.version = version;
 	}
 
+	public String getCluster_id() {
+		return cluster_id;
+	}
+
+	public void setCluster_id(String cluster_id) {
+		this.cluster_id = cluster_id;
+	}
 }

@@ -122,7 +122,7 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
 			}
 			//pool.returnResource(jedis);
 		}catch( Exception e ){
-			logger.error("Redis Put Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+			logger.error("Redis Put Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start), e);
 			if( jedis != null ){
 				jedis.close();
 			}
@@ -144,7 +144,7 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
     		}
     		//pool.returnResource(jedis);
     	}catch( Exception e ){
-    		logger.error("Redis Get Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+    		logger.error("Redis Get Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start), e);
     		if( jedis != null ){
     			jedis.close();
     		}
@@ -165,7 +165,7 @@ static final Logger logger = LoggerFactory.getLogger(RedisCluster.class);
     		}
     		
     	}catch(Exception e){
-    		logger.error("Redis Remove Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start));
+    		logger.error("Redis Remove Exception["+key+"]["+field+"] : "+(System.currentTimeMillis() - actor_start), e);
     		if( jedis != null ){
     			jedis.close();
     		}

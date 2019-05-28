@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.nexcloud.agent.domain.AgentStatus;
+import com.nexcloud.agent.domain.Header;
 import com.nexcloud.agent.domain.ResponseData;
 import com.nexcloud.api.akka.domain.SendData;
 import com.nexcloud.api.redis.RedisCluster;
@@ -106,12 +107,18 @@ public class JsonDockerParserActor extends UntypedActor{
 	         * Agent metric data
 	         */
 	        ResponseData resData				= null;
+	        Header header						= null;
 	        String body							= null;
+	        String cluster_id					= null;
 			Docker docker						= null; 
 			
 			String dataStatus					= null;
 			AgentStatus status					= null;
 			resData								= Util.JsonTobean(data, ResponseData.class);
+			
+			header								= resData.getHeader();
+	        
+	        cluster_id							= header.getCluster_id();
 			
 			body								= resData.getBody();
 			body								= new String(Util.decompress(Util.hexStringToByteArray(body)));
@@ -148,7 +155,10 @@ public class JsonDockerParserActor extends UntypedActor{
 			
 			
 			// Host Mpa Redis In/Out
-			String hostIps								= redisCluster.get(Const.HOST, Const.LIST);
+			String hostIps							= redisCluster.get(cluster_id+"_"+Const.HOST, Const.LIST);
+			if( hostIps == null )
+				hostIps								= redisCluster.get(Const.HOST, Const.LIST);
+			
 			ips					  					= gson.fromJson(hostIps, new TypeToken<List<String>>(){}.getType());
 			if( ips == null )
 				ips									= new ArrayList<String>();
@@ -159,8 +169,11 @@ public class JsonDockerParserActor extends UntypedActor{
 				dataStatus							= null;
 				status								= null;
 				
-				dataStatus							= redisCluster.get(Const.AGENT_STATUS, ip );
-	            
+				dataStatus							= redisCluster.get(cluster_id+"_"+Const.AGENT_STATUS, ip );
+				
+				if( dataStatus == null )
+					dataStatus						= redisCluster.get(Const.AGENT_STATUS, ip );
+				
 	            if( dataStatus == null )  continue;
 	            
 				status								= Util.JsonTobean(dataStatus, AgentStatus.class);
@@ -168,6 +181,8 @@ public class JsonDockerParserActor extends UntypedActor{
 				if( !Const.INACTIVE.equals(status.getStatus()) ) continue;
 				
 				redisCluster.remove(Const.DOCKER, ip);
+				
+				redisCluster.remove(cluster_id+"_"+Const.DOCKER, ip);
 			}
 			
 			//logger.error("jsonDockerParser End");

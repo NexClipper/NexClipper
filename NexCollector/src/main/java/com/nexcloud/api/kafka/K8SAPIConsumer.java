@@ -87,6 +87,7 @@ public class K8SAPIConsumer
 			  
 			  consumer = new KafkaConsumer<String, String>(props);
 		      consumer.subscribe(Arrays.asList(topic));
+		      logger.error("K8SAPI Consumer init finish");
 		      return true;
 		}catch(Exception e){
 			e.printStackTrace();

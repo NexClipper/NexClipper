@@ -349,4 +349,91 @@ public class WorkflowService {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Cluster Agent  Status Update
+	 * @throws Exception
+	 */
+	public void agentClusterStatusUpdate( ) throws Exception 
+	{
+		Gson gson 							= new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+		List<String> ips					= null; 
+		try{
+			String data						= redisService.get(Const.CLUSTER, Const.LIST);
+			List<String> clusters	 		= gson.fromJson(data, new TypeToken<List<String>>(){}.getType());
+			
+			if( clusters != null )
+			{
+				for( String cluster_id: clusters )
+				{
+					data							= redisService.get(cluster_id+"_"+Const.HOST, Const.LIST);
+					ips						 		= gson.fromJson(data, new TypeToken<List<String>>(){}.getType());
+					List<String> delHosts			= new ArrayList<String>();	 
+					AgentStatus status				= null;	 
+					
+					if( ips != null )
+					{
+						// IP Loop
+						for( String ip : ips )
+						{
+							// Agent id별 host 조회
+							data						= redisService.get(cluster_id+"_"+Const.HOST, ip);
+			
+							if( data == null ) continue;
+							
+							String dataStatus			= redisService.get(cluster_id+"_"+Const.AGENT_STATUS, ip);
+							if( dataStatus == null ) continue;
+							
+							status					= Util.JsonTobean(dataStatus, AgentStatus.class);
+							
+							Long currTime			= new Date().getTime();
+							
+							// Agent 수집 시간이 60초 이상일 경우 오류 발생
+							if( (currTime - status.getLast_update()) > (1000*60) )
+							{
+								status.setStatus(Const.INACTIVE);
+								
+								delHosts.add(ip);
+								
+								redisService.put(cluster_id+"_"+Const.AGENT_STATUS, ip, Util.beanToJson(status));
+								
+								try{
+									// Docker정보 삭제
+									redisService.remove(cluster_id+"_"+Const.DOCKER, ip);
+								}catch(Exception e){}
+							}
+							
+							// K8S Master 인지 체크
+							data												= redisService.get(cluster_id+"_"+Const.K8S, Const.K8S);
+							
+							if( data != null )
+							{
+								K8SMain main									= null;
+								K8SAPI k8s										= null;
+								k8s												= Util.JsonTobean(data, K8SAPI.class);
+								
+								String node_ip									= null;
+								// Node
+								main = k8s.getNode();			
+								for( Item item: main.getItems() ) {
+									node_ip										= item.getMetadata().getNode_ip();
+									if(!delHosts.contains(node_ip)) continue;
+									
+									if(item.getSpec().getTaints() != null &&  item.getSpec().getTaints().size() > 0 &&
+									   item.getSpec().getTaints().get(0).getKey() != null &&
+									   item.getSpec().getTaints().get(0).getKey().contains("master") )
+									{
+										redisService.remove(cluster_id+"_"+Const.K8S, Const.K8S);
+										break;
+									}
+								}
+							}
+						}
+					}
+				} // end of for "for( String cluster_id: clusters )"
+			} // end of if "if( clusters != null )"
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 }

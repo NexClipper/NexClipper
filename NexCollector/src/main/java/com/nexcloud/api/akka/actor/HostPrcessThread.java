@@ -37,6 +37,9 @@ public class HostPrcessThread extends Thread{
 	static final Logger 	logger 			= LoggerFactory.getLogger(HostPrcessThread.class);
 	
 	private String msg						= null;
+	private String msg_cluster				= null;
+	private String cluster_id				= null;
+	
 
 	private String node_name				= null;
 	private String node_ip					= null;
@@ -78,7 +81,7 @@ public class HostPrcessThread extends Thread{
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set(String node_name, String node_ip, List<Process> processes, long mem_total, long timestamp)
+	public synchronized void set(String node_name, String node_ip, String cluster_id, List<Process> processes, long mem_total, long timestamp)
 	{
 		Map<String,Object> data				= new HashMap<String, Object>();
 		try{
@@ -87,6 +90,7 @@ public class HostPrcessThread extends Thread{
 			data.put("processes", processes);
 			data.put("mem_totla", mem_total);
 			data.put("timestamp", timestamp);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 		}catch(Exception e){
@@ -134,7 +138,12 @@ public class HostPrcessThread extends Thread{
 					mem_total								= (Long)data.get("mem_totla");
 					timestamp								= (Long)data.get("timestamp");
 					processes								= (List<Process>)data.get("processes");
+					
+					cluster_id								= (String)data.get("cluster_id");
+					
 					msg										= "";
+					msg_cluster								= "";
+					
 					for( Process process : processes )
 					{
 						try{
@@ -148,6 +157,9 @@ public class HostPrcessThread extends Thread{
 							
 							msg += "host_process,host_name="+node_name+",host_ip="+node_ip+",pid="+process.getPid()+",name="+process.getName();
 							msg += " cpu_used_percent="+process.getCpu_usage()+",cpu_used="+cpu_used+",mem_used_percent="+mem_used_percent+",mem_used="+mem_used+",timestamp="+timestamp+"\n";
+							
+							msg_cluster += "host_process,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",pid="+process.getPid()+",name="+process.getName();
+							msg_cluster += " cpu_used_percent="+process.getCpu_usage()+",cpu_used="+cpu_used+",mem_used_percent="+mem_used_percent+",mem_used="+mem_used+",timestamp="+timestamp+"\n";
 						}catch(Exception e){
 							e.printStackTrace();
 						}
@@ -155,7 +167,7 @@ public class HostPrcessThread extends Thread{
 					
 					if( msg != null && !"".equals(msg.trim()) )
 					{
-						this.send(msg);
+						this.send(msg+msg_cluster);
 					}
 				}else
 					Thread.sleep(10);

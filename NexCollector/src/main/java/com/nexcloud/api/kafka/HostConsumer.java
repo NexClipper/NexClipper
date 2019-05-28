@@ -87,6 +87,7 @@ public class HostConsumer
 			  
 			  consumer = new KafkaConsumer<String, String>(props);
 		      consumer.subscribe(Arrays.asList(topic));
+		      logger.error("Host Consumer init finish");
 		      return true;
 		}catch(Exception e){
 			e.printStackTrace();

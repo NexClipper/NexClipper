@@ -38,7 +38,11 @@ public class K8SEndpointThread extends Thread {
 	
 	private String msg							= null;
 	
+	private String msg_cluster					= null;
+	
 	private List<Item> items					= null;
+	
+	private String cluster_id					= null;
 	
 	
 	private List<Map<String,Object>> list		= null;
@@ -75,11 +79,12 @@ public class K8SEndpointThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set( List<Item> items )
+	public synchronized void set( String cluster_id, List<Item> items )
 	{
 		Map<String,Object> data	= new HashMap<String, Object>();
 		try{
 			data.put("items", items);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -125,12 +130,16 @@ public class K8SEndpointThread extends Thread {
 				if( data != null )
 				{
 					items					= (List<Item>)data.get("items");
+					cluster_id				= (String)data.get("cluster_id");
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( Item item : items )
 					{
 						msg 							+= "k8s_endpoint,endpoint="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
+						msg_cluster						+= "k8s_endpoint,cluster_id="+cluster_id+",endpoint="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
+						
 						int available					= 0;
 						int not_ready					= 0;
 						if( item.getSubsets() != null )
@@ -148,10 +157,11 @@ public class K8SEndpointThread extends Thread {
 							}
 						}
 						msg 							+= " address_available="+available+",address_not_ready="+not_ready+"\n";
+						msg_cluster						+= " address_available="+available+",address_not_ready="+not_ready+"\n";
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
-						this.send(msg);
+						this.send(msg+msg_cluster);
 				}
 				else
 					Thread.sleep(10);

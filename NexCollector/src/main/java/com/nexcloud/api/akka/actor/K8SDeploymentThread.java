@@ -37,8 +37,12 @@ public class K8SDeploymentThread extends Thread {
 	static final Logger 	logger 				= LoggerFactory.getLogger(K8SDeploymentThread.class);
 	
 	private String msg							= null;
+	
+	private String msg_cluster					= null;
 
 	private List<Item> items					= null;
+	
+	private String cluster_id					= null;
 	
 	
 	private List<Map<String,Object>> list		= null;
@@ -75,11 +79,12 @@ public class K8SDeploymentThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set( List<Item> items )
+	public synchronized void set( String cluster_id, List<Item> items )
 	{
 		Map<String,Object> data	= new HashMap<String, Object>();
 		try{
 			data.put("items", items);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -124,8 +129,10 @@ public class K8SDeploymentThread extends Thread {
 				if( data != null )
 				{
 					items					= (List<Item>)data.get("items");
+					cluster_id				= (String)data.get("cluster_id");
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( Item item : items )
 					{
@@ -144,9 +151,12 @@ public class K8SDeploymentThread extends Thread {
 						
 						msg 							+= "k8s_deployment,deployment="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
 						msg 							+= " revision="+item.getMetadata().getAnnotations().get("deployment.kubernetes.io/revision")+",paused="+paused+",replicas="+item.getSpec().getReplicas()+",strategy_rollingupdate_max_surge="+max_surge+",strategy_rollingupdate_max_unavailable="+max_unavailable+",observed_generation="+item.getStatus().getObservedGeneration()+",per_replicas="+item.getStatus().getReplicas()+",replicas_available="+item.getStatus().getAvailableReplicas()+",replicas_unavailable="+item.getStatus().getUnavailableReplicas()+",replicas_updated="+item.getStatus().getUpdatedReplicas()+"\n";
+						
+						msg_cluster 					+= "k8s_deployment,cluster_id="+cluster_id+",deployment="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
+						msg_cluster 					+= " revision="+item.getMetadata().getAnnotations().get("deployment.kubernetes.io/revision")+",paused="+paused+",replicas="+item.getSpec().getReplicas()+",strategy_rollingupdate_max_surge="+max_surge+",strategy_rollingupdate_max_unavailable="+max_unavailable+",observed_generation="+item.getStatus().getObservedGeneration()+",per_replicas="+item.getStatus().getReplicas()+",replicas_available="+item.getStatus().getAvailableReplicas()+",replicas_unavailable="+item.getStatus().getUnavailableReplicas()+",replicas_updated="+item.getStatus().getUpdatedReplicas()+"\n";
 					}
 					if( msg != null && !"".equals(msg.trim()) )
-						this.send(msg);
+						this.send(msg+msg_cluster);
 				}
 				else
 					Thread.sleep(10);

@@ -102,6 +102,8 @@ public class JsonHostParserActor extends UntypedActor{
 
 		ResponseData resData					= null;
         Header header							= null;
+        String cluster_id						= null;
+        
         String body								= null;
         
         String pattern 							= "#####.###";
@@ -127,6 +129,9 @@ public class JsonHostParserActor extends UntypedActor{
 	         */
 			resData								= Util.JsonTobean(data, ResponseData.class);
 	        header								= resData.getHeader();
+	        
+	        cluster_id							= header.getCluster_id();
+	        
 			body								= resData.getBody();
 			body								= new String(Util.decompress(Util.hexStringToByteArray(body)));
 				
@@ -179,7 +184,10 @@ public class JsonHostParserActor extends UntypedActor{
 				cpu_core++;
 			}
 			// Host Mpa Redis In/Out
-			String hostIPs						= redisCluster.get(Const.HOST, Const.LIST);
+			String hostIPs						= redisCluster.get(cluster_id+"_"+Const.HOST, Const.LIST);
+			if(hostIPs == null )
+				hostIPs							= redisCluster.get(Const.HOST, Const.LIST);
+			
 			ips					  				= gson.fromJson(hostIPs, new TypeToken<List<String>>(){}.getType());
 			if( ips == null )
 				ips								= new ArrayList<String>();
@@ -189,9 +197,23 @@ public class JsonHostParserActor extends UntypedActor{
 			
 			redisCluster.put(Const.HOST, Const.LIST, Util.beanToJson(ips));
 			
+			redisCluster.put(cluster_id+"_"+Const.HOST, Const.LIST, Util.beanToJson(ips));
+			
+			
+			// Cluster Info Set
+			String cluster						= redisCluster.get(Const.CLUSTER, Const.LIST);
+			List<String> clusters				= gson.fromJson(cluster, new TypeToken<List<String>>(){}.getType());;
+			if( cluster == null )
+				clusters						= new ArrayList<String>();
+			
+			if( !clusters.contains(cluster_id) )
+				clusters.add(cluster_id);
+			
+			redisCluster.put(Const.CLUSTER, Const.LIST, Util.beanToJson(clusters));
+			
 			//logger.error("jsonHostParser End");
 		}catch(Exception e){
-			logger.error("jsonHostParser Exception::", e);
+			logger.error(cluster_id+" Cluster jsonHostParser Exception::", e);
 		}
 	}
 }

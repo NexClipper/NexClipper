@@ -38,7 +38,11 @@ public class K8SNamespaceThread extends Thread {
 	
 	private String msg							= null;
 	
+	private String msg_cluster					= null;
+	
 	private List<Item> items					= null;
+	
+	private String cluster_id					= null;
 	
 	
 	private List<Map<String,Object>> list		= null;
@@ -75,11 +79,12 @@ public class K8SNamespaceThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set( List<Item> items )
+	public synchronized void set( String cluster_id, List<Item> items )
 	{
 		Map<String,Object> data	= new HashMap<String, Object>();
 		try{
 			data.put("items", items);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -125,12 +130,15 @@ public class K8SNamespaceThread extends Thread {
 				if( data != null )
 				{
 					items					= (List<Item>)data.get("items");
+					cluster_id				= (String)data.get("cluster_id");
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( Item item : items )
 					{
 						msg 							+= "k8s_namespace,namespace="+item.getMetadata().getName();
+						msg_cluster						+= "k8s_namespace,cluster_id="+cluster_id+",namespace="+item.getMetadata().getName();
 						int active						= 0;
 						int terminating					= 0;
 						
@@ -141,10 +149,11 @@ public class K8SNamespaceThread extends Thread {
 							terminating					= 1;
 						
 						msg 							+= " active="+active+",terminating="+terminating+"\n";
+						msg_cluster						+= " active="+active+",terminating="+terminating+"\n";
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
-						this.send(msg);
+						this.send(msg+msg_cluster);
 				}
 				else
 					Thread.sleep(10);
