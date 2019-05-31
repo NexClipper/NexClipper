@@ -1,0 +1,3 @@
+hostPath:
+  infulx: /nfs/influxdb
+  mysql: /nfs/mysql
