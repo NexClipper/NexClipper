@@ -1,0 +1,61 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nexclipper-workflow
+  labels: 
+    app: nexclipper-workflow
+    version: v1
+  namespace: nexclipper
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: nexclipper-workflow
+      labels:
+        app: nexclipper-workflow
+    spec:
+      containers:
+        - name: nexclipper-workflow
+          image: nexclipper/nexworkflow:k8s
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              memory: 512Mi
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+              name: nex-workflow
+          env:
+            - name: KAFKA_ZOOKEEPER
+              value: "kafka-zookeeper.kafka-test-02:2181"
+            - name: KAFKA_PORT
+              value: '9092'
+            - name: KAFKA_HOST
+              value: "kafka-kafka.kafka-test-02"
+            - name: MYSQL_DBNAME
+              value: "defaultdb"
+            - name: MYSQL_URL
+              value: "mysql.nexclipper:3306"
+            - name: MYSQL_PASSWORD
+              value: "password"
+            - name: MYSQL_USERNAME
+              value: "admin"
+            - name: REDIS_HOST
+              value: redis.nexclipper
+            - name: REDIS_PORT
+              value: '6379'
+            - name: INFLUXDB_ENDPOINT
+              value: "http://influx.nexclipper:8087"
+            - name: INFLUXDB_DATASOURCE
+              value: "nexclipper"
+            - name: BROKER
+              value: rabbitmq
+            - name: RABBITMQ_HOST
+              value: rabbitmq.nexclipper
+            - name: RABBITMQ_PORT
+              value: '5672'
+            - name: RABBITMQ_USER
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest

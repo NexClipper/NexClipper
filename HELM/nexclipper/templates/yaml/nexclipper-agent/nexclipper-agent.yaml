@@ -1,0 +1,148 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: agent-sa
+  namespace: nexclipperagent
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: agent-sa-kube-system-cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: agent-sa
+  namespace: nexclipperagent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nexclipper-agent
+  namespace: nexclipperagent
+  labels:
+    app: nexclipper-agent
+spec:
+  selector:
+    matchLabels:
+      name: nexclipper-agent
+  template:
+    metadata:
+      labels:
+        name: nexclipper-agent
+    spec:
+      automountServiceAccountToken: true
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      - name: docker
+        hostPath:
+          path: /var/lib/docker
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: log
+        hostPath:
+          path: /var/log
+      - name: pki
+        hostPath:
+          path: /etc/kubernetes/pki
+      serviceAccount: agent-sa
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
+        key: node-role.kubernetes.io/master
+      - operator: Exists
+        effect: NoExecute
+        key: node-role.kubernetes.io/master
+      containers:
+      - name: nexclipper-agent
+        image: nexclipper/nexagent:master
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+        - mountPath: /var/lib/docker
+          name: docker
+        - mountPath: /dev
+          name: dev
+        - mountPath: /sys
+          name: sys
+        - mountPath: /var/log
+          name: log
+        - mountPath: /pki
+          name: pki
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nexclipper-agent-k8s
+  namespace: nexclipperagent
+  labels:
+    app: nexclipper-agent-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nexclipper-agent-k8s
+  template:
+    metadata:
+      labels:
+        name: nexclipper-agent-k8s
+    spec:
+      volumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: log
+        hostPath:
+          path: /var/log
+      - name: pki
+        hostPath:
+          path: /etc/kubernetes/certs
+      - name: docker
+        hostPath:
+          path: /var/lib/docker
+      serviceAccount: agent-sa
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      containers:
+      - name: nexclipper-agent-k8s
+        image: nexclipper/nexagent:master-k8s
+        resources:
+          limits:
+            memory: 700Mi
+          requests:
+            memory: 512Mi
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /dev
+          name: dev
+        - mountPath: /sys
+          name: sys
+        - mountPath: /var/log
+          name: log
+        - mountPath: /pki
+          name: pki
+        - mountPath: /var/lib/docker
+          name: docker
