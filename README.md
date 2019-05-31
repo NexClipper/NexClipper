@@ -35,11 +35,12 @@ NexClipper features the following capabilities:
 - Infrastructure Monitoring (Docker Container, Host, Resource)
 - Incidents Management (Rule set and alert manager) (#30)
 - Rest API service (Soon)
+- Global view for multi cluster (Soon)
 - Dashboard Enhancement to replace k8s dashboard (Soon)
 - Dashboard Enhancement for customizing (Plan)
-- Global view and multi tenancy (Plan)
 - Prometheus Integration (Plan)
 - Workload management and deployment (Plan)
+- Multi tenancy (Plan)
 - Resource analytics and forecasting (Plan)
 
 ## Architecture Overview
