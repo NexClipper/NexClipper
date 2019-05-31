@@ -105,9 +105,11 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	{
 		RedisCluster redisCluster								= null;
 		String msg												= "";
+		String msg_cluster										= "";
 		
 		String nodeName											= null;
 		String nodeIP											= null;
+		String cluster_id										= null;
 		
 		String pattern 											= "#####.###";
         DecimalFormat dformat 									= new DecimalFormat( pattern );
@@ -128,6 +130,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	        String body											= null;
 	        
 	        msg													= "";
+	        msg_cluster											= "";
 	        
 			Host host											= null;
 			Docker docker										= null;
@@ -141,12 +144,21 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			
 			resData												= Util.JsonTobean(data, ResponseData.class);
 	        header												= resData.getHeader();
+	        
+	        /**
+	         * Cluster ID
+	         */
+	        cluster_id											= header.getCluster_id();
+	        
 			body												= resData.getBody();
 			
 			body												= new String(Util.decompress(Util.hexStringToByteArray(body)));
 			
 			// Host List
-	        data												= redisCluster.get(Const.HOST, Const.LIST);
+			data												= redisCluster.get(cluster_id+"_"+Const.HOST, Const.LIST);
+			if( data == null)
+				data											= redisCluster.get(Const.HOST, Const.LIST);
+	        
 	        List<String> ips					  				= null; 
 	        
 	        // Docker snapshot info map save start
@@ -165,14 +177,20 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 				for( String ip : ips )
 				{
 					// Host 상세 정보 Redis get
-					data										= redisCluster.get(Const.HOST, ip);
+					data										= redisCluster.get(cluster_id+"_"+Const.HOST, ip);
+					if( data == null )
+						data									= redisCluster.get(Const.HOST, ip);
+					
 					host										= Util.JsonTobean(data, Host.class);
 					hostInfo.put(host.getHost_name(), ip);
 					hostCpuInfo.put(host.getHost_name(), host.getCpu().getCpu_total());
 					hostNameInfo.put(ip, host.getHost_name());
 					
 					
-					data										= redisCluster.get(Const.DOCKER, ip);
+					data										= redisCluster.get(cluster_id+"_"+Const.DOCKER, ip);
+					if( data == null )
+						data									= redisCluster.get(Const.DOCKER, ip);
+					
 		            docker										= Util.JsonTobean(data, Docker.class);
 		            if( docker == null ) continue;
 
@@ -206,16 +224,16 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			if( k8s != null )
 			{
 				// Daemonset
-				daemonsetThread.set(k8s.getDaemonset().getItems());
+				daemonsetThread.set(cluster_id, k8s.getDaemonset().getItems());
 				
 				// Deployment
-				deploymentThread.set( k8s.getDeployment().getItems());
+				deploymentThread.set( cluster_id, k8s.getDeployment().getItems());
 				
 				// Endpoint
-				endpointThread.set(k8s.getEndpoint().getItems());
+				endpointThread.set(cluster_id, k8s.getEndpoint().getItems());
 									
 				// Nameapce
-				namespaceThread.set(k8s.getNamespace().getItems());
+				namespaceThread.set(cluster_id, k8s.getNamespace().getItems());
 				
 				// Pod & Container
 				main											= k8s.getPod();
@@ -378,49 +396,58 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 						mem_limit								= 0d;
 						
 						msg										+= "k8s_container,pod="+item.getMetadata().getName()+",container="+container.getName()+",namespace="+item.getMetadata().getNamespace()+",node_name="+nodeName+",node_ip="+nodeIP;
+						msg_cluster								+= "k8s_container,cluster_id="+cluster_id+",pod="+item.getMetadata().getName()+",container="+container.getName()+",namespace="+item.getMetadata().getNamespace()+",node_name="+nodeName+",node_ip="+nodeIP;
 						
 						if( container.getResources() != null && container.getResources().getLimits() != null)
 						{
 							limit_cpu							= Double.parseDouble(container.getResources().getLimits().getCpu());
 							msg									+= " limit_cpu="+limit_cpu;
+							msg_cluster							+= " limit_cpu="+limit_cpu;
 						}
 						else 
 						{
 							limit_cpu							= 0d;
 							msg									+= " limit_cpu=0";
+							msg_cluster							+= " limit_cpu=0";
 						}
 						
 						if( container.getResources() != null && container.getResources().getRequests() != null )
 						{
 							request_cpu							= Double.parseDouble(container.getResources().getRequests().getCpu());
 							msg									+= ",request_cpu="+request_cpu;
+							msg_cluster							+= ",request_cpu="+request_cpu;
 						}
 						else 
 						{
 							request_cpu							= 0d;
 							msg									+= ",request_cpu=0";
+							msg_cluster							+= ",request_cpu=0";
 						}
 						
 						if( container.getResources() != null && container.getResources().getLimits() != null )
 						{
 							limit_mem							= Double.parseDouble(container.getResources().getLimits().getMemory() );
 							msg									+= ",limit_mem="+limit_mem;
+							msg_cluster							+= ",limit_mem="+limit_mem;
 						}
 						else 
 						{
 							limit_mem							= 0d;
 							msg									+= ",limit_mem=0";
+							msg_cluster							+= ",limit_mem=0";
 						}
 						
 						if( container.getResources() != null && container.getResources().getRequests() != null )
 						{
 							request_mem							= Double.parseDouble(container.getResources().getRequests().getMemory());
 							msg									+= ",request_mem="+request_mem;
+							msg_cluster							+= ",request_mem="+request_mem;
 						}
 						else 
 						{
 							request_mem							= 0d;
 							msg									+= ",request_mem=0";
+							msg_cluster							+= ",request_mem=0";
 						}
 						
 						pod_limit_cpu							+= limit_cpu;
@@ -451,6 +478,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 							mem_used							= Double.parseDouble(dformat.format((Double.parseDouble(Long.toString(containers.getUsed_mem()))/(1024*1024*1024))));
 							
 							msg									+=",cpu_used="+cpu_used+",cpu_used_percent="+cpu_used_percent+",mem_used="+mem_used+",mem_used_percent="+mem_used_percent;
+							msg_cluster							+=",cpu_used="+cpu_used+",cpu_used_percent="+cpu_used_percent+",mem_used="+mem_used+",mem_used_percent="+mem_used_percent;
 							
 							container.getResources().getLimits().setCpu(""+limit_cpu);
 							container.getResources().getLimits().setMemory(""+limit_mem);
@@ -466,6 +494,13 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 						}
 						
 						containerStatus							= conStatus.get(item.getMetadata().getName()+"_"+container.getName());
+						
+						if( containerStatus == null ) 
+						{
+							msg 								+= "\n";
+							msg_cluster							+= "\n";
+							continue;
+						}
 						
 						// Status Ready 1  or 0
 						msg										+= ",ready="+containerStatus.getReadyCount();
@@ -505,41 +540,114 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 						
 						// Waiting reason ImagePullBackOff
 						msg										+= ",waiting_imagepullbackoff="+containerStatus.getWaiting_image_pull_backoff()+"\n";
+						
+						
+						///////////////////////////////////////////////
+						/// Cluster ID
+						// Status Ready 1  or 0
+						msg_cluster								+= ",ready="+containerStatus.getReadyCount();
+						
+						// Restart Total Count
+						msg_cluster								+= ",restart_total="+containerStatus.getRestartCount();
+						
+						// Status Runing 1 or 0
+						msg_cluster								+= ",running="+containerStatus.getRunning();
+						
+						// Status Terminated 1 or 0
+						msg_cluster								+= ",terminated="+containerStatus.getTerminated();
+						
+						// Terminated reason Completed
+						msg_cluster								+= ",terminated_completed="+containerStatus.getTerminated_completed();
+						
+						// Terminated reason ContainerCannotRun
+						msg_cluster								+= ",terminated_containercannotrun="+containerStatus.getTerminated_container_cannot_run();
+						
+						// Terminated reason Error
+						msg_cluster								+= ",terminated_error="+containerStatus.getTerminated_error();
+						
+						// Terminated reason OOMKilled
+						msg_cluster								+= ",terminated_oomkilled="+containerStatus.getTerminated_oomkilled();
+						
+						// Status Waiting 1 or 0
+						msg_cluster								+= ",waiting="+containerStatus.getWaiting();
+						
+						// Waiting reason ContainerCreating
+						msg_cluster								+= ",waiting_containercreating="+containerStatus.getWaiting_container_creating();
+						
+						// Waiting reason CrashLoopBackOff
+						msg_cluster								+= ",waiting_crashloopbackoff="+containerStatus.getWaiting_crash_loop_backoff();
+						
+						// Waiting reason ErrImagePull
+						msg_cluster								+= ",waiting_errimagepull="+containerStatus.getWaiting_errimagepull();
+						
+						// Waiting reason ImagePullBackOff
+						msg_cluster								+= ",waiting_imagepullbackoff="+containerStatus.getWaiting_image_pull_backoff()+"\n";
+						
 					}
 					
 					// POD
 					msg 										+= "k8s_pod,pod="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace()+",node_name="+nodeName+",node_ip="+nodeIP+",pod_ip="+item.getStatus().getPodIP();
+					msg_cluster									+= "k8s_pod,cluster_id="+cluster_id+",pod="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace()+",node_name="+nodeName+",node_ip="+nodeIP+",pod_ip="+item.getStatus().getPodIP();
 					
 					// Pod phase Failed
 					if( item.getStatus().getPhase() != null && "Failed".equals(item.getStatus().getPhase()))
+					{
 						msg 									+= " phase_failed=1";
+						msg_cluster								+= " phase_failed=1";
+					}
 					else
+					{
 						msg 									+= " phase_failed=0";
+						msg_cluster								+= " phase_failed=0";
+					}
 					
 					// Pod phase Pending
 					if( item.getStatus().getPhase() != null && "Pending".equals(item.getStatus().getPhase()))
+					{
 						msg 									+= ",phase_pending=1";
+						msg_cluster								+= ",phase_pending=1";
+					}
 					else
+					{
 						msg 									+= ",phase_pending=0";
+						msg_cluster								+= ",phase_pending=0";
+					}
 					
 					// Pod phase Running
 					if( item.getStatus().getPhase() != null && "Running".equals(item.getStatus().getPhase()))
+					{
 						msg 									+= ",phase_running=1";
+						msg_cluster								+= ",phase_running=1";
+					}
 					else
+					{
 						msg 									+= ",phase_running=0";
+						msg_cluster								+= ",phase_running=0";
+					}
 					
 					// Pod phase Succeeded
 					if( item.getStatus().getPhase() != null && "Succeeded".equals(item.getStatus().getPhase()))
+					{
 						msg 									+= ",phase_succeeded=1";
+						msg_cluster								+= ",phase_succeeded=1";
+					}
 					else
+					{
 						msg 									+= ",phase_succeeded=0";
+						msg_cluster								+= ",phase_succeeded=0";
+					}
 					
 					// Pod phase Unknown
 					if( item.getStatus().getPhase() != null && "Unknown".equals(item.getStatus().getPhase()))
+					{
 						msg 									+= ",phase_unknown=1";
+						msg_cluster								+= ",phase_unknown=1";
+					}
 					else
+					{
 						msg 									+= ",phase_unknown=0";
-					
+						msg_cluster								+= ",phase_unknown=0";
+					}
 					
 					int ready_false								= 0;
 					int ready_true								= 0;
@@ -589,6 +697,27 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					// Pod Status scheduled unknown
 					msg 							+= ",scheduled_unknown="+scheduled_unknown;
+					
+					
+					///////////////////////////
+					//Cluster
+					// Pod Status Reday False
+					msg_cluster						+= ",ready_false="+ready_false;
+					// Pod Status Reday True
+					msg_cluster						+= ",ready_true="+ready_true;
+					
+					// Pod Status Reday unknown
+					msg_cluster						+= ",ready_unknown="+ready_unknown;
+					
+					// Pod Status scheduled false
+					msg_cluster						+= ",scheduled_false="+scheduled_false;
+					
+					// Pod Status scheduled True
+					msg_cluster						+= ",scheduled_true="+scheduled_true;
+					
+					// Pod Status scheduled unknown
+					msg_cluster						+= ",scheduled_unknown="+scheduled_unknown;
+					
 
 					cluster_used_cpus				+= Double.parseDouble(Float.toString(pod_cpu_used));
 					cluster_used_mem				+= pod_mem_used;
@@ -649,6 +778,9 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					msg 							+= ",limit_cpu="+pod_limit_cpu+",request_cpu="+pod_request_cpu+",cpu_used="+pod_cpu_used+",cpu_used_percent="+pod_cpu_used_percent;
 					msg 							+= ",limit_mem="+pod_limit_mem+",request_mem="+pod_request_mem+",mem_used="+pod_mem_used+",mem_used_percent="+pod_mem_used_percent+"\n";
+					
+					msg_cluster						+= ",limit_cpu="+pod_limit_cpu+",request_cpu="+pod_request_cpu+",cpu_used="+pod_cpu_used+",cpu_used_percent="+pod_cpu_used_percent;
+					msg_cluster						+= ",limit_mem="+pod_limit_mem+",request_mem="+pod_request_mem+",mem_used="+pod_mem_used+",mem_used_percent="+pod_mem_used_percent+"\n";
 				}
 				
 				cluster_used_cpus					= Double.parseDouble(dformat.format(cluster_used_cpus));
@@ -762,6 +894,9 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					msg 							+= "k8s_node,node_name="+nodeName+",node_ip="+nodeIP;
 					msg 							+= " unschedulable="+unschedulable+",allocate_cpu="+item.getStatus().getCapacity().getCpu()+",allocate_mem="+item.getStatus().getAllocatable().getMemory()+",allocate_pod="+item.getStatus().getAllocatable().getPods()+",total_cpu="+item.getStatus().getCapacity().getCpu()+",total_mem="+item.getStatus().getCapacity().getMemory()+",total_pod="+item.getStatus().getCapacity().getPods();
 					
+					msg_cluster						+= "k8s_node,cluster_id="+cluster_id+",node_name="+nodeName+",node_ip="+nodeIP;
+					msg_cluster						+= " unschedulable="+unschedulable+",allocate_cpu="+item.getStatus().getCapacity().getCpu()+",allocate_mem="+item.getStatus().getAllocatable().getMemory()+",allocate_pod="+item.getStatus().getAllocatable().getPods()+",total_cpu="+item.getStatus().getCapacity().getCpu()+",total_mem="+item.getStatus().getCapacity().getMemory()+",total_pod="+item.getStatus().getCapacity().getPods();
+					
 					//Resource resource	 			= nodeResourceMap.get(item.getMetadata().getName());
 					Resource resource	 			= nodeResourceMap.get(nodeName);
 					if( resource != null )
@@ -773,6 +908,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 						node_mem_used_percent		= Double.parseDouble(dformat.format((Double.parseDouble(resource.getUsed().getMemory())/Double.parseDouble(item.getStatus().getCapacity().getMemory()))*100));
 						
 						msg 						+= ",cpu_used="+Double.parseDouble(dformat.format(Double.parseDouble(resource.getUsed().getCpu())))+",cpu_used_percent="+node_cpu_used_percent+",mem_used="+Double.parseDouble(dformat.format(Double.parseDouble(resource.getUsed().getMemory())))+",mem_used_percent="+node_mem_used_percent;
+						msg_cluster					+= ",cpu_used="+Double.parseDouble(dformat.format(Double.parseDouble(resource.getUsed().getCpu())))+",cpu_used_percent="+node_cpu_used_percent+",mem_used="+Double.parseDouble(dformat.format(Double.parseDouble(resource.getUsed().getMemory())))+",mem_used_percent="+node_mem_used_percent;
 					}
 					
 					msg								+= ",diskpressure_false="+diskpressure_false;
@@ -794,6 +930,27 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					msg								+= ",ready_false="+ready_false;
 					msg 							+= ",ready_true="+ready_true;
 					msg 							+= ",ready_unknown="+ready_unknown+"\n";
+					
+					///////////////////////////////
+					msg_cluster						+= ",diskpressure_false="+diskpressure_false;
+					msg_cluster 					+= ",diskpressure_true="+diskpressure_true;
+					msg_cluster 					+= ",diskpressure_unknown="+diskpressure_unknown;
+					
+					msg_cluster						+= ",memorypressure_false="+memorypressure_false;
+					msg_cluster 					+= ",memorypressure_true="+memorypressure_true;
+					msg_cluster 					+= ",memorypressuree_unknown="+memorypressure_unknown;
+					
+					msg_cluster						+= ",networkunavailable_false="+networkunavailable_false;
+					msg_cluster 					+= ",networkunavailable_true="+networkunavailable_true;
+					msg_cluster 					+= ",networkunavailable_unknown="+networkunavailable_unknown;
+					
+					msg_cluster						+= ",outofdisk_false="+outofdisk_false;
+					msg_cluster 					+= ",outofdisk_true="+outofdisk_true;
+					msg_cluster 					+= ",outofdisk_unknown="+outofdisk_unknown;
+					
+					msg_cluster						+= ",ready_false="+ready_false;
+					msg_cluster 					+= ",ready_true="+ready_true;
+					msg_cluster 					+= ",ready_unknown="+ready_unknown+"\n";
 					
 					item.getMetadata().setNode_name(nodeName);
 					item.getMetadata().setNode_ip(nodeIP);
@@ -840,15 +997,20 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 				msg									+= " cpu_total="+cluster.getCpu()+",cpu_used="+cluster.getUsed_cpu()+",cpu_used_percent="+cluster.getUsed_percent_cpu();
 				msg									+= ",mem_total="+cluster.getMem()+",mem_used="+cluster.getUsed_mem()+",mem_used_percent="+cluster.getUsed_percent_mem();
 				msg									+= ",pod_total="+cluster.getPod()+",pod_used="+cluster.getUsed_pod()+",pod_used_percent="+cluster.getUsed_percent_pod()+"\n";
+				
+				msg_cluster							+= "k8s_cluster,cluster_id="+cluster_id;
+				msg_cluster							+= " cpu_total="+cluster.getCpu()+",cpu_used="+cluster.getUsed_cpu()+",cpu_used_percent="+cluster.getUsed_percent_cpu();
+				msg_cluster							+= ",mem_total="+cluster.getMem()+",mem_used="+cluster.getUsed_mem()+",mem_used_percent="+cluster.getUsed_percent_mem();
+				msg_cluster							+= ",pod_total="+cluster.getPod()+",pod_used="+cluster.getUsed_pod()+",pod_used_percent="+cluster.getUsed_percent_pod()+"\n";
 
 				// Replicaset
-				replicaThread.set(k8s.getReplicaset().getItems());
+				replicaThread.set(cluster_id, k8s.getReplicaset().getItems());
 				// Statefulset
-				statefulThread.set(k8s.getStatefulset().getItems());
+				statefulThread.set(cluster_id, k8s.getStatefulset().getItems());
 			}
 			
 			// Influx db Send
-	        this.send(msg);
+	        this.send(msg+msg_cluster);
 	        
 		}catch(Exception e){
 			logger.error("jsonK8SParser Exception::", e);
@@ -864,6 +1026,6 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 	{
 		SendDataLoader.getInstance().set(msg);
 		
-		logger.error("K8S Data Parsing Timestamp : "+(System.currentTimeMillis() - actor_start));
+		//logger.error("K8S Data Parsing Timestamp : "+(System.currentTimeMillis() - actor_start));
 	}
 }

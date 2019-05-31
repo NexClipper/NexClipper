@@ -37,6 +37,8 @@ public class HostDiskThread extends Thread {
 	static final Logger 	logger 			= LoggerFactory.getLogger(HostDiskThread.class);
 	
 	private String msg						= null;
+	private String msg_cluster				= null;
+	private String cluster_id				= null;
 
 	private String node_name				= null;
 	private String node_ip					= null;
@@ -74,7 +76,7 @@ public class HostDiskThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set(String node_name, String node_ip, List<Disk> disks, long timestamp)
+	public synchronized void set(String node_name, String node_ip, String cluster_id, List<Disk> disks, long timestamp)
 	{
 		Map<String,Object> data				= new HashMap<String, Object>();
 		try{
@@ -82,6 +84,7 @@ public class HostDiskThread extends Thread {
 			data.put("node_ip", node_ip);
 			data.put("disks", disks);
 			data.put("timestamp", timestamp);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 		}catch(Exception e){
@@ -131,19 +134,24 @@ public class HostDiskThread extends Thread {
 					timestamp				= (Long)data.get("timestamp");
 					disks					= (List<Disk>)data.get("disks");
 					
+					cluster_id				= (String)data.get("cluster_id");
 					actor_start				= System.currentTimeMillis();
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( Disk disk : disks )
 					{
 						msg += "host_disk,host_name="+node_name+",host_ip="+node_ip+",dev_name="+disk.getDevName()+",mount_name="+disk.getMountName();
 						msg += " free="+disk.getFree()+",used="+disk.getUsed()+",total="+disk.getTotal()+",used_percent="+disk.getUsed_per()+",readbyte="+disk.getReadBytes()+",writebyte="+disk.getWriteBytes()+",reads="+disk.getReads()+",writes="+disk.getWrites()+",timestamp="+timestamp+"\n";
+						
+						msg_cluster += "host_disk,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",dev_name="+disk.getDevName()+",mount_name="+disk.getMountName();
+						msg_cluster += " free="+disk.getFree()+",used="+disk.getUsed()+",total="+disk.getTotal()+",used_percent="+disk.getUsed_per()+",readbyte="+disk.getReadBytes()+",writebyte="+disk.getWriteBytes()+",reads="+disk.getReads()+",writes="+disk.getWrites()+",timestamp="+timestamp+"\n";
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
 					{
-						this.send(msg);
+						this.send(msg+msg_cluster);
 					}
 				}
 				else

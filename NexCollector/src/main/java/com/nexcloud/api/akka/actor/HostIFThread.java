@@ -37,6 +37,8 @@ public class HostIFThread extends Thread {
 	static final Logger 	logger 			= LoggerFactory.getLogger(HostIFThread.class);
 	
 	private String msg						= null;
+	private String msg_cluster				= null;
+	private String cluster_id				= null;
 
 	private String node_name				= null;
 	private String node_ip					= null;
@@ -74,7 +76,7 @@ public class HostIFThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set(String node_name, String node_ip, List<NetInterface> ifaces, long timestamp)
+	public synchronized void set(String node_name, String node_ip, String cluster_id, List<NetInterface> ifaces, long timestamp)
 	{
 		Map<String,Object> data				= new HashMap<String, Object>();
 		try{
@@ -82,6 +84,7 @@ public class HostIFThread extends Thread {
 			data.put("node_ip", node_ip);
 			data.put("ifaces", ifaces);
 			data.put("timestamp", timestamp);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -132,9 +135,11 @@ public class HostIFThread extends Thread {
 					timestamp				= (Long)data.get("timestamp");
 					ifaces					= (List<NetInterface>)data.get("ifaces");
 					
+					cluster_id				= (String)data.get("cluster_id");
 					actor_start				= System.currentTimeMillis();
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( NetInterface iface : ifaces )
 					{
@@ -142,11 +147,14 @@ public class HostIFThread extends Thread {
 						
 						msg += "host_net,host_name="+node_name+",host_ip="+node_ip+",interface="+iface.getName();
 						msg += " speed="+iface.getSpeed()+",rxbyte="+iface.getRxBytes()+",rxdropped="+iface.getRxDropped()+",rxerrors="+iface.getRxErrors()+",rxpacket="+iface.getRxPackets()+",rxoverrun="+iface.getRxOverruns()+",txbyte="+iface.getTxBytes()+",txcarrier="+iface.getTxCarrier()+",txcollision="+iface.getTxCollisions()+",txdropped="+iface.getTxDropped()+",txerror="+iface.getTxErrors()+",txoverrun="+iface.getTxOverruns()+",txpacket="+iface.getTxPackets()+",timestamp="+timestamp+"\n";
+						
+						msg_cluster += "host_net,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",interface="+iface.getName();
+						msg_cluster += " speed="+iface.getSpeed()+",rxbyte="+iface.getRxBytes()+",rxdropped="+iface.getRxDropped()+",rxerrors="+iface.getRxErrors()+",rxpacket="+iface.getRxPackets()+",rxoverrun="+iface.getRxOverruns()+",txbyte="+iface.getTxBytes()+",txcarrier="+iface.getTxCarrier()+",txcollision="+iface.getTxCollisions()+",txdropped="+iface.getTxDropped()+",txerror="+iface.getTxErrors()+",txoverrun="+iface.getTxOverruns()+",txpacket="+iface.getTxPackets()+",timestamp="+timestamp+"\n";
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
 					{
-						this.send(msg);
+						this.send(msg+msg_cluster);
 					}
 				}
 				else

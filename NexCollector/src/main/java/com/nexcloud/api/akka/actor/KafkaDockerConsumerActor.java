@@ -85,13 +85,15 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 		// kafka
 		if( "kafka".equals(sendData.getBroker()) )
 		{
+			logger.error("Docker Kafka Start");
 			while(true)
 			{
 				try{
 					if( DockerConsumer.getInstance().init(sendData.getKafka_zookeeper(), sendData.getKafka_host(), sendData.getKafka_port(), sendData.getKafka_topic(), sendData.getKafka_topic()+"group") )
 					{
+						//logger.error("Docker Data read start:");
 						ConsumerRecords<String, String> records = DockerConsumer.getInstance().read( );
-	
+						//logger.error("Docker Data::"+records.count());
 						if( records.count() > 0)
 						{
 							sendData.setRecords(records);
@@ -108,7 +110,11 @@ public class KafkaDockerConsumerActor extends UntypedActor{
 							Thread.sleep(10);
 					}
 					else
+					{
+						logger.error("Docker Docker Consummer Exception::");
 						Thread.sleep(10);
+					}
+					
 				}catch(Exception e){
 					System.out.println("Docker Akka Terminated");
 					e.printStackTrace();

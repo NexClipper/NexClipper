@@ -28,6 +28,8 @@ public class Header {
 	
 	private String node_name;
 	
+	private String cluster_id;
+	
 	private String version;
 
 	public String getAgent_key() {
@@ -76,6 +78,14 @@ public class Header {
 
 	public void setVersion(String version) {
 		this.version = version;
+	}
+
+	public String getCluster_id() {
+		return cluster_id;
+	}
+
+	public void setCluster_id(String cluster_id) {
+		this.cluster_id = cluster_id;
 	}
 }
 

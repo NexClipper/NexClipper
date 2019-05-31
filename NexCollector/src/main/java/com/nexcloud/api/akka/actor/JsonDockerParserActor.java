@@ -87,6 +87,8 @@ public class JsonDockerParserActor extends UntypedActor{
 	{
 		RedisCluster redisCluster				= null;
 		String msg								= null;
+		String msg_cluster						= null;
+		String cluster_id						= null;
 		try{
         
 	        // Redis Cluster connection
@@ -100,12 +102,16 @@ public class JsonDockerParserActor extends UntypedActor{
 	        String body							= null;
 	        
 	        msg									= "";
+	        msg_cluster							= "";
 
 	        Docker docker						= null; 
 			
 			resData								= Util.JsonTobean(data, ResponseData.class);
 			
 	        header								= resData.getHeader();
+	        
+	        cluster_id							= header.getCluster_id();
+	        
 			body								= resData.getBody();
 			
 			// Data decompress and Hex string to byte array
@@ -126,8 +132,12 @@ public class JsonDockerParserActor extends UntypedActor{
 				
 				msg +=" containers="+docker.getDocker_info().getContainers()+",running="+docker.getDocker_info().getContainersRunning()+",paused="+docker.getDocker_info().getContainersPaused()+",stopped="+docker.getDocker_info().getContainersStopped()+",timestamp="+resData.getTimestamp()+"\n";
 				
+				msg_cluster	+= "docker,cluster_id="+cluster_id+",host_name="+header.getNode_name()+",host_ip="+header.getNode_ip();
+				
+				msg_cluster +=" containers="+docker.getDocker_info().getContainers()+",running="+docker.getDocker_info().getContainersRunning()+",paused="+docker.getDocker_info().getContainersPaused()+",stopped="+docker.getDocker_info().getContainersStopped()+",timestamp="+resData.getTimestamp()+"\n";
+				
 				// Docker container info
-				containerThread.set(header.getNode_name(), header.getNode_ip(), docker.getContainers(), resData.getTimestamp());
+				containerThread.set(header.getNode_name(), header.getNode_ip(), cluster_id, docker.getContainers(), resData.getTimestamp());
 				
 				// Docker container info
 				for( Containers container : docker.getContainers() )
@@ -148,7 +158,9 @@ public class JsonDockerParserActor extends UntypedActor{
 			
 			redisCluster.put(Const.DOCKER, header.getNode_ip(), Util.beanToJson(docker));
 			
-			this.send(msg);
+			redisCluster.put(cluster_id+"_"+Const.DOCKER, header.getNode_ip(), Util.beanToJson(docker));
+			
+			this.send(msg+msg_cluster);
 		}catch(Exception e){
 			logger.error("jsonDockerParser Exception::", e);
 		}
@@ -163,6 +175,6 @@ public class JsonDockerParserActor extends UntypedActor{
 	{
 		SendDataLoader.getInstance().set(msg);
 		
-		logger.error("Docker Data Parsing Timestamp :["+actor_count+"] "+(System.currentTimeMillis() - actor_start));
+		//logger.error("Docker Data Parsing Timestamp :["+actor_count+"] "+(System.currentTimeMillis() - actor_start));
 	}
 }

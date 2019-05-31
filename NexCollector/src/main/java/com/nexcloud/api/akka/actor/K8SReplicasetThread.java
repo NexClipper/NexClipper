@@ -38,7 +38,11 @@ public class K8SReplicasetThread extends Thread {
 	
 	private String msg							= null;
 	
+	private String msg_cluster					= null;
+	
 	private List<Item> items					= null;
+	
+	private String cluster_id					= null;
 	
 	
 	private List<Map<String,Object>> list		= null;
@@ -75,11 +79,12 @@ public class K8SReplicasetThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set( List<Item> items )
+	public synchronized void set( String cluster_id, List<Item> items )
 	{
 		Map<String,Object> data	= new HashMap<String, Object>();
 		try{
 			data.put("items", items);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -125,18 +130,24 @@ public class K8SReplicasetThread extends Thread {
 				if( data != null )
 				{
 					items					= (List<Item>)data.get("items");
+					cluster_id				= (String)data.get("cluster_id");
 					
 					msg						= "";
+					msg_cluster				= "";
 					
 					for( Item item : items )
 					{
 						msg 							+= "k8s_replicaset,replicaset="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
 						msg 							+= " metadata_generation="+item.getMetadata().getGeneration()+",spec_replicas="+item.getSpec().getReplicas()+",fully_labeled_replicas="+item.getStatus().getFullyLabeledReplicas();
 						msg 							+= ",observed_generation="+item.getStatus().getObservedGeneration()+",ready_replicas="+item.getStatus().getReadyReplicas()+",recently_replicas="+item.getStatus().getReplicas()+"\n";
+						
+						msg_cluster 					+= "k8s_replicaset,cluster_id="+cluster_id+",replicaset="+item.getMetadata().getName()+",namespace="+item.getMetadata().getNamespace();
+						msg_cluster 					+= " metadata_generation="+item.getMetadata().getGeneration()+",spec_replicas="+item.getSpec().getReplicas()+",fully_labeled_replicas="+item.getStatus().getFullyLabeledReplicas();
+						msg_cluster 					+= ",observed_generation="+item.getStatus().getObservedGeneration()+",ready_replicas="+item.getStatus().getReadyReplicas()+",recently_replicas="+item.getStatus().getReplicas()+"\n";
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
-						this.send(msg);
+						this.send(msg+msg_cluster);
 				}
 				else
 					Thread.sleep(10);

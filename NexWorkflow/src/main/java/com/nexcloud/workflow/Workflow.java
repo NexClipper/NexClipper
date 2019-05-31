@@ -146,6 +146,19 @@ public class Workflow extends SpringBootServletInitializer implements WebApplica
 		}
 	}
 	
+	/**
+	 * Agent Status Update
+	 * @throws Exception
+	 */
+	@Scheduled(fixedDelay = 10000, initialDelay = 1000)
+	public void agentClusterStatus() throws Exception {
+		try{
+			workflowService.agentClusterStatusUpdate();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	/*	
 	@Bean(name = "dataSource")
 	public void dataSource() {

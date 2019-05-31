@@ -38,6 +38,8 @@ public class DockerContainerThread extends Thread {
 	static final Logger 	logger 					= LoggerFactory.getLogger(DockerContainerThread.class);
 	
 	private String msg								= null;
+	private String msg_cluster						= null;
+	private String cluster_id						= null;
 	
 	private String node_name						= null;
 	private String node_ip							= null;
@@ -76,7 +78,7 @@ public class DockerContainerThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set(String node_name, String node_ip, List<Containers> containers, long timestamp)
+	public synchronized void set(String node_name, String node_ip, String cluster_id, List<Containers> containers, long timestamp)
 	{
 		Map<String,Object> data						= new HashMap<String, Object>();
 		try{
@@ -84,6 +86,7 @@ public class DockerContainerThread extends Thread {
 			data.put("node_ip"			, node_ip);
 			data.put("containers"		, containers);
 			data.put("timestamp"		, timestamp);
+			data.put("cluster_id"		, cluster_id);
 			
 			list.add(data);
 			//inputdata++;
@@ -137,8 +140,9 @@ public class DockerContainerThread extends Thread {
 					node_ip							= (String)data.get("node_ip");
 					timestamp						= (Long)data.get("timestamp");
 					containers						= (List<Containers>)data.get("containers");
-					
+					cluster_id						= (String)data.get("cluster_id");
 					msg								= "";
+					msg_cluster						= "";
 				
 					for( Containers container : containers )
 					{
@@ -161,6 +165,13 @@ public class DockerContainerThread extends Thread {
 						msg += " cpu_used_percent="+container.getCpuPercent()+",mem_used_percent="+container.getMemPercent()+",mem_used="+container.getUsed_mem()+",mem_limit="+container.getLimit_mem()+",disk_io_read="+container.getBlock_io_read()+",disk_io_write="+container.getBlock_io_write()+",timestamp="+timestamp+"\n";
 						
 						
+						
+						msg_cluster += "docker_container,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",type="+type+",task_id="+task_id+",container_id="+container_id;
+						
+						// CPU/Memory/Disk IO
+						msg_cluster += " cpu_used_percent="+container.getCpuPercent()+",mem_used_percent="+container.getMemPercent()+",mem_used="+container.getUsed_mem()+",mem_limit="+container.getLimit_mem()+",disk_io_read="+container.getBlock_io_read()+",disk_io_write="+container.getBlock_io_write()+",timestamp="+timestamp+"\n";
+						
+						
 						// Network
 						networks							= container.getNetworks();
 						keys 								= networks.keySet().iterator();
@@ -169,11 +180,14 @@ public class DockerContainerThread extends Thread {
 				            network							= networks.get(key);
 				            msg += "docker_network,host_name="+node_name+",host_ip="+node_ip+",type="+type+",task_id="+task_id+",container_id="+container_id+",interface="+key;
 				            msg += " rx_bytes="+network.getRx_bytes()+",rx_packets="+network.getRx_packets()+",rx_errors="+network.getRx_errors()+",rx_dropped="+network.getRx_dropped()+",tx_bytes="+network.getTx_bytes()+",tx_packets="+network.getTx_packets()+",tx_errors="+network.getTx_errors()+",tx_dropped="+network.getTx_dropped()+",timestamp="+timestamp+"\n";
+				            
+				            msg_cluster += "docker_network,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",type="+type+",task_id="+task_id+",container_id="+container_id+",interface="+key;
+				            msg_cluster += " rx_bytes="+network.getRx_bytes()+",rx_packets="+network.getRx_packets()+",rx_errors="+network.getRx_errors()+",rx_dropped="+network.getRx_dropped()+",tx_bytes="+network.getTx_bytes()+",tx_packets="+network.getTx_packets()+",tx_errors="+network.getTx_errors()+",tx_dropped="+network.getTx_dropped()+",timestamp="+timestamp+"\n";
 				        }
 					}
 					
 					if( msg != null && !"".equals(msg.trim()) )
-						this.send(msg);
+						this.send(msg+msg_cluster);
 				}
 				else
 					Thread.sleep(10);

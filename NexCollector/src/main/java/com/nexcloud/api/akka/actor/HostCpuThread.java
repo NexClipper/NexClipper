@@ -37,6 +37,8 @@ public class HostCpuThread extends Thread {
 	static final Logger 	logger 			= LoggerFactory.getLogger(HostCpuThread.class);
 	
 	private String msg						= null;
+	private String msg_cluster				= null;
+	private String cluster_id				= null;
 
 	private String node_name				= null;
 	private String node_ip					= null;
@@ -74,7 +76,7 @@ public class HostCpuThread extends Thread {
 	 * @param key
 	 * @param object
 	 */
-	public synchronized void set(String node_name, String node_ip, List<CPU> cpus, long timestamp)
+	public synchronized void set(String node_name, String node_ip, String cluster_id, List<CPU> cpus, long timestamp)
 	{
 		Map<String,Object> data				= new HashMap<String, Object>();
 		try{
@@ -82,6 +84,7 @@ public class HostCpuThread extends Thread {
 			data.put("node_ip", node_ip);
 			data.put("cpus", cpus);
 			data.put("timestamp", timestamp);
+			data.put("cluster_id", cluster_id);
 			
 			list.add(data);
 		}catch(Exception e){
@@ -131,9 +134,12 @@ public class HostCpuThread extends Thread {
 					timestamp				= (Long)data.get("timestamp");
 					cpus					= (List<CPU>)data.get("cpus");
 					
+					cluster_id				= (String)data.get("cluster_id");
 					actor_start				= System.currentTimeMillis();
 					
 					msg						= "";
+					msg_cluster				= "";
+					
 					
 					int cpu_core = 0;
 					for( CPU coreCpu : cpus )
@@ -145,6 +151,13 @@ public class HostCpuThread extends Thread {
 						// CPU
 						msg +=" cpu_used_percent="+coreCpu.getCpu_per()+",cpu_idle_percent="+coreCpu.getCpu_idle_per()+",cpu_irq_percent="+coreCpu.getCpu_irq_per()+",cpu_nice_percent="+coreCpu.getCpu_nice_per()+",cpu_sorfirq_percent="+coreCpu.getCpu_sorfirq_per()+",cpu_stolen_percent="+coreCpu.getCpu_stolen_per()+",cpu_sys_percent="+coreCpu.getCpu_sys_per()+",cpu_user_percent="+coreCpu.getCpu_user_per()+",cpu_wait_percent="+coreCpu.getCpu_wait_per()+",timestamp="+timestamp+"\n";
 						
+						
+						
+						msg_cluster += "host_cpu,cluster_id="+cluster_id+",host_name="+node_name+",host_ip="+node_ip+",core="+cpu_core;
+						
+						// CPU
+						msg_cluster +=" cpu_used_percent="+coreCpu.getCpu_per()+",cpu_idle_percent="+coreCpu.getCpu_idle_per()+",cpu_irq_percent="+coreCpu.getCpu_irq_per()+",cpu_nice_percent="+coreCpu.getCpu_nice_per()+",cpu_sorfirq_percent="+coreCpu.getCpu_sorfirq_per()+",cpu_stolen_percent="+coreCpu.getCpu_stolen_per()+",cpu_sys_percent="+coreCpu.getCpu_sys_per()+",cpu_user_percent="+coreCpu.getCpu_user_per()+",cpu_wait_percent="+coreCpu.getCpu_wait_per()+",timestamp="+timestamp+"\n";
+						
 						coreCpu.setCore(cpu_core);
 						
 						cpu_core++;
@@ -152,7 +165,7 @@ public class HostCpuThread extends Thread {
 					
 					if( msg != null && !"".equals(msg.trim()) )
 					{
-						this.send(msg);
+						this.send(msg+msg_cluster);
 					}
 				}
 				else

@@ -32,6 +32,20 @@ public class K8SCluster {
 	private Double used_percent_mem;
 	
 	private Double used_percent_pod;
+	
+	private Workload nodes;
+	
+	private Workload namespaces;
+	
+	private Workload daemonsets;
+	
+	private Workload deployments;
+	
+	private Workload replicasets;
+	
+	private Workload statefulsets;
+	
+	private Workload pods;
 
 	public Integer getCpu() {
 		return cpu;
@@ -103,5 +117,78 @@ public class K8SCluster {
 
 	public void setUsed_percent_pod(Double used_percent_pod) {
 		this.used_percent_pod = used_percent_pod;
+	}
+
+	public Workload getNodes() {
+		if( nodes == null )
+			nodes	= new Workload();
+		return nodes;
+	}
+
+	public void setNodes(Workload nodes) {
+		this.nodes = nodes;
+	}
+
+	public Workload getNamespaces() {
+		if( namespaces == null )
+			namespaces	= new Workload();
+		return namespaces;
+	}
+
+	public void setNamespaces(Workload namespaces) {
+		this.namespaces = namespaces;
+	}
+
+	public Workload getDaemonsets() {
+		if( daemonsets == null )
+			daemonsets	= new Workload();
+		return daemonsets;
+	}
+
+	public void setDaemonsets(Workload daemonsets) {
+		this.daemonsets = daemonsets;
+	}
+
+	public Workload getDeployments() {
+		if( deployments == null )
+			deployments	= new Workload();
+		
+		return deployments;
+	}
+
+	public void setDeployments(Workload deployments) {
+		this.deployments = deployments;
+	}
+
+	public Workload getReplicasets() {
+		if( replicasets == null )
+			replicasets	= new Workload();
+		return replicasets;
+	}
+
+	public void setReplicasets(Workload replicasets) {
+		this.replicasets = replicasets;
+	}
+
+	public Workload getStatefulsets() {
+		if( statefulsets == null )
+			statefulsets	= new Workload();
+		
+		return statefulsets;
+	}
+
+	public void setStatefulsets(Workload statefulsets) {
+		this.statefulsets = statefulsets;
+	}
+
+	public Workload getPods() {
+		if( pods == null )
+			pods	= new Workload();
+		
+		return pods;
+	}
+
+	public void setPods(Workload pods) {
+		this.pods = pods;
 	}
 }

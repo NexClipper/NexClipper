@@ -135,11 +135,16 @@ public class CollectorService {
 			String version							= requestData.getHeader().getVersion();
 			String host_ip							= requestData.getHeader().getNode_ip();
 			String host_name						= requestData.getHeader().getNode_name();
+			String cluster_id						= requestData.getHeader().getCluster_id();
 			
 			/**
 			 * Agent Status 관리
 			 */
-			String dataStatus						= redisService.get(Const.AGENT_STATUS, host_ip);
+			String dataStatus						= redisService.get(cluster_id+"_"+Const.AGENT_STATUS, host_ip);
+			
+			if( dataStatus == null )
+				dataStatus						= redisService.get(Const.AGENT_STATUS, host_ip);
+			
 			AgentStatus status						= Util.JsonTobean(dataStatus, AgentStatus.class);
 			if( status == null )
 			{
@@ -170,7 +175,11 @@ public class CollectorService {
 			
 			//System.out.println("host_ip::"+host_ip);
 			
-			redisService.put(Const.AGENT_STATUS, host_ip, Util.beanToJson(status));
+			if( !version.startsWith("K8S"))
+			{
+				redisService.put(cluster_id+"_"+Const.AGENT_STATUS, host_ip, Util.beanToJson(status));
+				redisService.put(Const.AGENT_STATUS, host_ip, Util.beanToJson(status));
+			}
 			
 			response = new ResponseEntity<ResponseData>(resData, HttpStatus.OK);
 		}catch(Exception e){
@@ -192,6 +201,7 @@ public class CollectorService {
 			Producer	prdocuer 		= null;
 			prdocuer 					= Producer.getInstance( kafka_zookeeper, kafka_host, kafka_port, kafka_topic );
 			prdocuer.send(kafka_host, kafka_port, kafka_topic, Util.beanToJson(requestData));
+			//logger.error("["+kafka_topic+"]kafka data push");
 		}catch(Exception e){
 			e.printStackTrace();
 		}

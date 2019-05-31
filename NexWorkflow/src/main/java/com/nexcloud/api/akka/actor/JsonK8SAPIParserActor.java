@@ -15,6 +15,7 @@
 */
 package com.nexcloud.api.akka.actor;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.nexcloud.util.Util;
 import com.nexcloud.workflow.docker.domain.Containers;
 import com.nexcloud.workflow.docker.domain.Docker;
 import com.nexcloud.workflow.host.domain.Host;
+import com.nexcloud.workflow.k8s.domain.Condition;
 import com.nexcloud.workflow.k8s.domain.Container;
 import com.nexcloud.workflow.k8s.domain.ContainerStatus;
 import com.nexcloud.workflow.k8s.domain.Item;
@@ -102,6 +104,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 		
 		String nodeName									= null;
 		String nodeIP									= null;
+		String cluster_id								= null;
 		
 		String pattern 									= "#####.###";
         DecimalFormat dformat 							= new DecimalFormat( pattern );
@@ -128,12 +131,17 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 			
 			resData										= Util.JsonTobean(data, ResponseData.class);
 	        header										= resData.getHeader();
+	        
+	        cluster_id									= header.getCluster_id();
+	        
 			body										= resData.getBody();
 			
 			body										= new String(Util.decompress(Util.hexStringToByteArray(body)));
 
 			// Host Map
-	        data										= redisCluster.get(Const.HOST, Const.LIST);
+			data										= redisCluster.get(cluster_id+"_"+Const.HOST, Const.LIST);
+			if( data == null )
+				data									= redisCluster.get(Const.HOST, Const.LIST);
 	        
 	        // Docker snapshot info map save start
 			containerMap.clear();
@@ -148,14 +156,20 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 				ips					  					= gson.fromJson(data, new TypeToken<List<String>>(){}.getType());
 				for( String ip : ips )
 				{
-					data								= redisCluster.get(Const.HOST, ip);
+					data								= redisCluster.get(cluster_id+"_"+Const.HOST, ip);
+					if( data == null )
+						data							= redisCluster.get(Const.HOST, ip);
+					
 					host								= Util.JsonTobean(data, Host.class);
 					
 					hostInfo.put(host.getHost_name(), ip);
 					hostCpuInfo.put(host.getHost_name(), host.getCpu().getCpu_total());
 					hostNameInfo.put(ip, host.getHost_name());
 					
-					data										= redisCluster.get(Const.DOCKER, ip);
+					data										= redisCluster.get(cluster_id+"_"+Const.DOCKER, ip);
+					if( data == null )
+						data									= redisCluster.get(Const.DOCKER, ip);
+					
 		            docker										= Util.JsonTobean(data, Docker.class);
 		            if( docker == null ) continue;
 
@@ -551,7 +565,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 				
 				if( k8s.getDaemonset().getItems().size() > 0 )
 				{
-					redisCluster.put(Const.K8S, Const.K8S, Util.beanToJson(k8s));
+					//redisCluster.put(Const.K8S, Const.K8S, Util.beanToJson(k8s));
 					
 					// Node
 					redisCluster.put(Const.K8S, Const.NODE, Util.beanToJson(k8s.getNode()));
@@ -587,7 +601,7 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					redisCluster.put(Const.K8S, Const.STATEFULSET, Util.beanToJson(k8s.getStatefulset()));
 					
 					// cluster
-					redisCluster.put(Const.K8S, Const.K8SCLUSTER, Util.beanToJson(k8s.getK8sCluster()));
+					//redisCluster.put(Const.K8S, Const.K8SCLUSTER, Util.beanToJson(k8s.getK8sCluster()));
 					
 					// version
 					redisCluster.put(Const.K8S, Const.VERSION, Util.beanToJson(k8s.getVersion()));
@@ -597,6 +611,267 @@ public class JsonK8SAPIParserActor extends UntypedActor{
 					
 					// Event
 					redisCluster.put(Const.K8S, Const.EVENT, Util.beanToJson(k8s.getEvent()));
+					
+					
+					
+					///////////////////
+					//redisCluster.put(cluster_id+"_"+Const.K8S, Const.K8S, Util.beanToJson(k8s));
+					
+					// Node
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.NODE, Util.beanToJson(k8s.getNode()));
+					
+					// Deployment
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.DEPLOYMENT, Util.beanToJson(k8s.getDeployment()));
+					
+					// Daemonset
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.DAEMONSET, Util.beanToJson(k8s.getDaemonset()));
+					
+					// endpoint
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.ENDPOINT, Util.beanToJson(k8s.getEndpoint()));
+					
+					// namespace
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.NAMESPACE, Util.beanToJson(k8s.getNamespace()));
+					
+					// pod
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.POD, Util.beanToJson(k8s.getPod()));
+					
+					// container
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.CONTAINER, Util.beanToJson(k8s.getContainer()));
+					
+					// replicaset
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.REPLICASET, Util.beanToJson(k8s.getReplicaset()));
+					
+					// secret
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.SECRET, Util.beanToJson(k8s.getSecret()));
+					
+					// service
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.SERVICE, Util.beanToJson(k8s.getService()));
+					
+					// statfulset
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.STATEFULSET, Util.beanToJson(k8s.getStatefulset()));
+					
+					// version
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.VERSION, Util.beanToJson(k8s.getVersion()));
+					
+					// Component Status
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.COMPONENT_STATUS, Util.beanToJson(k8s.getComponentstatuses()));
+					
+					// Event
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.EVENT, Util.beanToJson(k8s.getEvent()));
+					
+					
+					
+					////////////////// Cluster Info //////////////////////////
+					// Daemonset
+					main									= k8s.getDaemonset();
+					int current_daemonset					= 0;
+					int desired_daemonset					= 0;
+					//current_daemonset						= main.getItems().size();
+					for( Item item : main.getItems() )
+					{
+						if( item.getStatus().getNumberUnavailable() == 0 )
+							current_daemonset++;
+					}
+					desired_daemonset						= main.getItems().size();
+
+					// Deployment
+					main									= k8s.getDeployment();
+					int desired_deployment					= 0;
+					int current_deployment					= 0;
+					desired_deployment						= main.getItems().size();
+					for( Item item : main.getItems() )
+					{
+						if( item.getStatus().getReplicas() == item.getStatus().getAvailableReplicas() )
+							current_deployment++;
+					}
+					
+					// Replicaset
+					main									= k8s.getReplicaset();
+					int desired_replica						= 0;
+					int current_replica						= 0;
+					desired_replica							= main.getItems().size();
+					for( Item item : main.getItems() )
+					{
+						if( item.getStatus().getReplicas() == 0 || (item.getStatus().getReplicas() == item.getStatus().getAvailableReplicas() ) )
+							current_replica++;
+					}
+					
+					// Statefulset
+					main									= k8s.getStatefulset();
+					int desired_statefulset					= 0;
+					int current_statefulset					= 0;
+					for( Item item : main.getItems() )
+					{
+						if( item.getStatus().getReplicas() == item.getStatus().getReadyReplicas() )
+							current_statefulset++;
+					}
+					desired_statefulset						= main.getItems().size();
+					
+					// Cluster
+					K8SCluster k8sCluster					= k8s.getK8sCluster();
+					
+					// Node
+					main									= k8s.getNode();
+					int unschedulable						= 0;
+					int cluster_pod_total					= 0;
+					
+					int diskpressure_false					= 0;
+					int diskpressure_true					= 0;
+					int diskpressure_unknown				= 0;
+					
+					int memorypressure_false				= 0;
+					int memorypressure_true					= 0;
+					int memorypressure_unknown				= 0;
+					
+					int networkunavailable_false			= 0;
+					int networkunavailable_true				= 0;
+					int networkunavailable_unknown			= 0;
+					
+					int outofdisk_false						= 0;
+					int outofdisk_true						= 0;
+					int outofdisk_unknown					= 0;
+					
+					int ready_false							= 0;
+					int ready_true							= 0;
+					int ready_unknown						= 0;
+					
+					List<String> hosts						= new ArrayList<String>();
+					
+					for( Item item : main.getItems() )
+					{
+						if( item.getSpec().getUnschedulable() != null && item.getSpec().getUnschedulable() )
+							unschedulable++;
+						
+						for( Condition condition : item.getStatus().getConditions() )
+						{
+							if( "DiskPressure".equals(condition.getType()) )
+							{
+								//True, False, Unknown.
+								if( "True".equals(condition.getStatus()) )
+									diskpressure_true++;
+								else if( "False".equals(condition.getStatus()) )
+									diskpressure_false++;
+								else if( "Unknown".equals(condition.getStatus()) )
+									diskpressure_unknown++;
+							}
+							
+							else if( "MemoryPressure".equals(condition.getType()) )
+							{
+								//True, False, Unknown.
+								if( "True".equals(condition.getStatus()) )
+									memorypressure_true++;
+								else if( "False".equals(condition.getStatus()) )
+									memorypressure_false++;
+								else if( "Unknown".equals(condition.getStatus()) )
+									memorypressure_unknown++;
+							}
+							
+							else if( "NetworkUnavailable".equals(condition.getType()) )
+							{
+								//True, False, Unknown.
+								if( "True".equals(condition.getStatus()) )
+									networkunavailable_true++;
+								else if( "False".equals(condition.getStatus()) )
+									networkunavailable_false++;
+								else if( "Unknown".equals(condition.getStatus()) )
+									networkunavailable_unknown++;
+							}
+							
+							else if( "OutOfDisk".equals(condition.getType()) )
+							{
+								//True, False, Unknown.
+								if( "True".equals(condition.getStatus()) )
+									outofdisk_true++;
+								else if( "False".equals(condition.getStatus()) )
+									outofdisk_false++;
+								else if( "Unknown".equals(condition.getStatus()) )
+									outofdisk_unknown++;
+							}
+							
+							else if( "Ready".equals(condition.getType()) )
+							{
+								//True, False, Unknown.
+								if( "True".equals(condition.getStatus()) )
+									ready_true++;
+								else if( "False".equals(condition.getStatus()) )
+									ready_false++;
+								else if( "Unknown".equals(condition.getStatus()) )
+									ready_unknown++;
+							}
+						}
+						
+						hosts.add(item.getMetadata().getNode_ip());
+						cluster_pod_total					+= Integer.parseInt(item.getStatus().getCapacity().getPods());
+					}
+					
+					// Pod
+					main									= k8s.getPod();
+					int pod_failed							= 0;
+					int pod_pending							= 0;
+					int pod_running							= 0;
+					int pod_succeeded						= 0;
+					int pod_unknown							= 0;
+					int pod_total							= 0;
+					
+					for( Item item : main.getItems() )
+					{
+						// Pod phase Failed
+						if( item.getStatus().getPhase() != null && "Failed".equals(item.getStatus().getPhase()))
+							pod_failed++;
+						
+						// Pod phase Pending
+						if( item.getStatus().getPhase() != null && "Pending".equals(item.getStatus().getPhase()))
+							pod_pending++;
+						
+						// Pod phase Running
+						if( item.getStatus().getPhase() != null && "Running".equals(item.getStatus().getPhase()))
+							pod_running++;
+						
+						// Pod phase Succeeded
+						if( item.getStatus().getPhase() != null && "Succeeded".equals(item.getStatus().getPhase()))
+							pod_succeeded++;
+						
+						// Pod phase Unknown
+						if( item.getStatus().getPhase() != null && "Unknown".equals(item.getStatus().getPhase()))
+							pod_unknown++;
+						
+						pod_total++;
+					}
+					
+					// namespace
+					main										= k8s.getNamespace();
+					int activeCount								= 0;
+					for( Item item : main.getItems() )
+					{
+						if( "Active".equals(item.getStatus().getPhase()) )
+							activeCount++;
+					}
+					k8s.getK8sCluster().getNamespaces().setCurrent(activeCount);
+					k8s.getK8sCluster().getNamespaces().setDesired(main.getItems().size());
+					
+					k8s.getK8sCluster().getDaemonsets().setCurrent(current_daemonset);
+					k8s.getK8sCluster().getDaemonsets().setDesired(desired_daemonset);
+					
+					k8s.getK8sCluster().getDeployments().setCurrent(current_deployment);
+					k8s.getK8sCluster().getDeployments().setDesired(desired_deployment);
+					
+					k8s.getK8sCluster().getReplicasets().setCurrent(current_replica);
+					k8s.getK8sCluster().getReplicasets().setDesired(desired_replica);
+					
+					k8s.getK8sCluster().getStatefulsets().setCurrent(current_statefulset);
+					k8s.getK8sCluster().getStatefulsets().setDesired(desired_statefulset);
+					
+					k8s.getK8sCluster().getNodes().setCurrent(ready_true);
+					k8s.getK8sCluster().getNodes().setDesired(hosts.size());
+					
+					k8s.getK8sCluster().getPods().setCurrent(pod_running);
+					k8s.getK8sCluster().getPods().setDesired(pod_total);
+					
+					
+					// cluster
+					redisCluster.put(cluster_id+"_"+Const.K8S, Const.K8SCLUSTER, Util.beanToJson(k8s.getK8sCluster()));
+					
+					redisCluster.put(Const.K8S, Const.K8SCLUSTER, Util.beanToJson(k8s.getK8sCluster()));
 				}
 			}
 			//logger.error("jsonK8sParser End");

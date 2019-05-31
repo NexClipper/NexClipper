@@ -1,10 +1,10 @@
 # NexClipper
 
-NexClipper is the container and container orchestration monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especially supports machine learning based predictive, forecasting, anormaly detection.
+NexClipper is the container and container orchestration monitoring and performance management solution specialized in Docker, DC/OS, Mesosphere, Kubernetes. NexClipper Cloud especially supports machine learning based predictive, forecasting, anomaly detection.
 
 There are two different versions of NexClipper: NexClipper Cloud and NexClipper.
 
-Please note that previsous NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
+Please note that previous  NexClipper Light project which was host level container monitoring tool was moved to [NexLight](https://github.com/NexClipper/NexClipper/tree/master/NexLight) directory.
 
 ![](docs/images/logo1_wide.png)
 
@@ -17,9 +17,9 @@ NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](http
 NexClipper Cloud is an online SaaS to monitor and manage performance of the container cluster -  Docker, DC/OS and Kubernetes.
 NexClipper Cloud features the following capabilities:
 - Fullstack dashboard (Infrastructure, DC/OS, Kubernetes)
-- Container Cluster (DC/OS, Kuberentes)
+- Container Cluster (DC/OS, Kubernetes)
 - Service Performance (for API)
-- Infrastruture Monitoring (Container, Host, Resource)
+- Infrastructure  Monitoring (Container, Host, Resource)
 - Incidents Management
 - AI Analytics (Forecasting, Anomaly detection, Metric correlation)
 
@@ -31,8 +31,8 @@ For beta service, visit https://server.nexclipper.com
 NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker and Kubernetes.
 NexClipper features the following capabilities:
 - Fullstack dashboard (Kubernetes and Infrastructure)
-- Container Cluster (Kuberentes cluster, nodes and worklodas)
-- Infrastruture Monitoring (Docker Container, Host, Resource)
+- Container Cluster (Kubernetes cluster, nodes and workloads)
+- Infrastructure Monitoring (Docker Container, Host, Resource)
 - Incidents Management (Rule set and alert manager) (#30)
 - Rest API service (Soon)
 - Dashboard Enhancement to replace k8s dashboard (Soon)
@@ -59,7 +59,7 @@ NexClipper can be deployed on Kubernetes cluster.
 - Installed Kubernetes Cluster (Master Node, Worker Node 1 more)
 - An SSH key pair on your local Linux/macOS/BSD machine.
 - ***Create namespace `nexclipper'***
-- ***Download yaml files from 'yaml' derectory ***
+- ***Download yaml files from 'yaml' directory  ***
 
 ### HELM chart Deployment
 
@@ -172,9 +172,9 @@ volumes:
 
 ### NexClipper Agent daemonset/deployment
 
-- Deploy NedClipepr Agent on Kubernetes cluster as follows
+- Deploy NexClipepr Agent on Kubernetes cluster as follows
   - agent deployed by daemonset: get host and docker container's information
-  - agent deployed by deployment: get kubernetes cluster's information
+  - agent deployed by deployment: get Kubernetes cluster's information
 
 - Update agent endpoint into Kubernetes master node ip
 ```yaml
@@ -205,7 +205,7 @@ env:
   https://<k8s master ip>:32200
 ```
 
-### For API swasgger UI
+### For API Swasgger UI
 ```
   https://<k8s master ip>:32200/swagger-ui.html 
 ```

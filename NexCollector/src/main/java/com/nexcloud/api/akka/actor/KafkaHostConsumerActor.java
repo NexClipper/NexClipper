@@ -82,12 +82,15 @@ public class KafkaHostConsumerActor extends UntypedActor{
 		// kafka
 		if( "kafka".equals(sendData.getBroker()) )
 		{
+			logger.error("Host Kafka Start");
 			while(true)
 			{
 				try{
 					if( HostConsumer.getInstance().init(sendData.getKafka_zookeeper(), sendData.getKafka_host(), sendData.getKafka_port(), sendData.getKafka_topic(), sendData.getKafka_topic()+"group") )
 					{
+						//logger.error("Host Data read start:");
 						ConsumerRecords<String, String> records = HostConsumer.getInstance().read( );
+						//logger.error("Host Data::"+records.count());
 						if( records.count() > 0)
 						{
 							sendData.setRecords(records);
@@ -104,7 +107,10 @@ public class KafkaHostConsumerActor extends UntypedActor{
 							Thread.sleep(10);
 					}
 					else
+					{
+						logger.error("Kafka Host Consummer Exception::");
 						Thread.sleep(10);
+					}
 				}catch(Exception e){
 					System.out.println("Host Akka Terminated");
 					e.printStackTrace();
