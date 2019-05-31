@@ -176,24 +176,6 @@ volumes:
   - agent deployed by daemonset: get host and docker container's information
   - agent deployed by deployment: get Kubernetes cluster's information
 
-- Update agent endpoint into Kubernetes master node ip
-```yaml
-// yaml/nexclipper-agent/nexclipper-agent.yaml
-...
-kind: DaemonSet
-...
-env:
-  - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
-...
-kind: Deployment
-...
-env:
-  - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
-...
-```
-
 - create
 ```sh
   $ kubectl create -f <yaml/nexclipper-agent/nexclipper-agent.yaml>
