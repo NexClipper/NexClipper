@@ -28,11 +28,11 @@ spec:
               name: collector
           env:
             - name: KAFKA_ZOOKEEPER
-              value: "kafka-zookeeper.kafka-test-02:2181"
+              value: "zk-svc.default:2181"
             - name: KAFKA_PORT
-              value: '9092'
+              value: '9093'
             - name: KAFKA_HOST
-              value: "kafka-kafka.kafka-test-02"
+              value: "kafka-svc.default"
             - name: MYSQL_DBNAME
               value: "defaultdb"
             - name: MYSQL_URL

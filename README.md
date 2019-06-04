@@ -35,11 +35,12 @@ NexClipper features the following capabilities:
 - Infrastructure Monitoring (Docker Container, Host, Resource)
 - Incidents Management (Rule set and alert manager) (#30)
 - Rest API service (Soon)
+- Global view for multi cluster (Soon)
 - Dashboard Enhancement to replace k8s dashboard (Soon)
 - Dashboard Enhancement for customizing (Plan)
-- Global view and multi tenancy (Plan)
 - Prometheus Integration (Plan)
 - Workload management and deployment (Plan)
+- Multi tenancy (Plan)
 - Resource analytics and forecasting (Plan)
 
 ## Architecture Overview
@@ -175,24 +176,6 @@ volumes:
 - Deploy NexClipepr Agent on Kubernetes cluster as follows
   - agent deployed by daemonset: get host and docker container's information
   - agent deployed by deployment: get Kubernetes cluster's information
-
-- Update agent endpoint into Kubernetes master node ip
-```yaml
-// yaml/nexclipper-agent/nexclipper-agent.yaml
-...
-kind: DaemonSet
-...
-env:
-  - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
-...
-kind: Deployment
-...
-env:
-  - name: agent_endpoint
-    value: 192.168.0.180:32100      # <k8s master ip>:<nodeport>
-...
-```
 
 - create
 ```sh
