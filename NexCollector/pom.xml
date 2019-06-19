@@ -187,6 +187,14 @@
 			<version>4.12</version>
 		</dependency>
 		<!-- JWT Stop -->
+
+		<!-- MQTT Start -->
+                <dependency>
+                  <groupId>org.eclipse.paho</groupId>
+                  <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                  <version>1.2.1</version>
+                </dependency>
+		<!-- paho End -->
 		
 		<!-- Pushgateway exposition-->
 		<dependency>
