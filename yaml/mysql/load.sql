@@ -264,3 +264,12 @@ CREATE TABLE `nexclipper_email` (
 );
 
 -- Dump completed on 2019-02-19  5:47:30
+
+CREATE TABLE defaultdb.nexclipper_cluster (
+  cluster_id INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  description VARCHAR(1024),
+  cluster_name VARCHAR(64) NOT NULL,
+  cluster_status char(1) NOT NULL, 
+  cluster_delete_flag char(1) NOT NULL, 
+  PRIMARY KEY (cluster_id)
+);
