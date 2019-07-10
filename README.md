@@ -71,6 +71,12 @@ NexClipper can be deployed on Kubernetes cluster.
 
 From your master node run kubectl create. 
 
+> #### namespace
+
+- create
+```sh
+  $ kubectl create -f <yaml/namespace/createNamespaces.yaml>
+```
 > #### redis
 
 - create
