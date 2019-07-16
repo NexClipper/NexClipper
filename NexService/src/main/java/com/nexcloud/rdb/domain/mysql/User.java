@@ -37,8 +37,16 @@ public class User {
 	}
 	public User(String userId, String userPasswd, String companyName) {
 		this.userId = userId;
+		this.userName = userId.split("@")[0];
 		this.userPasswd = userPasswd;
 		this.companyName = companyName;
+	}
+	public User(String userId, String userName, String companyName, String regdate, String updtdate) {
+		this.userId = userId;
+		this.userName = userName;
+		this.companyName = companyName;
+		this.regdate = regdate;
+		this.updtdate = updtdate;
 	}
 	public String getUserId() {
 		return userId;

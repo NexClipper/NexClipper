@@ -21,5 +21,23 @@ import com.nexcloud.rdb.domain.mysql.Rule;
 
 @Repository("RuleMapper")
 public interface RuleRepository {
-	public List<Rule> getRuleList();
+	public List<Rule> getRuleList( Rule rule );
+	
+	public List<Rule> getTargetSystem( );
+	
+	public List<Rule> getTarget( Rule rule );
+	
+	public List<Rule> getRulesetTargetSystem(  );
+	
+	public List<Rule> getRulesetTarget( Rule rule );
+	
+	public List<Rule> getRulesetMetric( Rule rule );
+	
+	public Rule selectRuleCheck( Rule rule );
+	
+	public int createRuleset( Rule rule );
+	
+	public int updateRuleSet( Rule rule );
+	
+	public Rule getRulesetDetail( int idx );
 }

@@ -25,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class DashboardView {
 	static final Logger logger = LoggerFactory.getLogger(DashboardView.class);
 
+	@RequestMapping(value="/multi", method=RequestMethod.GET)
+	public String multi() {
+		return "dashboard/multi";
+	}
 	@RequestMapping(value="/default", method=RequestMethod.GET)
 	public String defaultDashboard() {
 		return "dashboard/default";

@@ -28,7 +28,6 @@ public class UserController {
 	static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired private UserService userService;
-	
 	@RequestMapping(value="", method=RequestMethod.GET)
 	public String getUser() {
 		return userService.getUserList();

@@ -30,7 +30,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host")
 public class HostDockerController {
 	static final Logger logger = LoggerFactory.getLogger(HostDockerController.class);
 
@@ -43,8 +43,8 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getAllDocker( ) {
-		return hostDockerService.getAllDocker( );
+	public String getAllDocker( @PathVariable(value="clusterId", required=false) String clusterId) {
+		return hostDockerService.getAllDocker(clusterId );
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/snapshot", method=RequestMethod.GET)
@@ -62,8 +62,9 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String dockerInfo(@PathVariable(value="hostIp", required=true) String hostIp) {
-		return hostDockerService.getDocker(hostIp);
+	public String dockerInfo(@PathVariable(value="clusterId", required=false) String clusterId,
+			@PathVariable(value="hostIp", required=true) String hostIp) {
+		return hostDockerService.getDocker(clusterId, hostIp);
 	}
 	
 	
@@ -109,14 +110,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerCpuUsedByContainerId(
+	public String getDockerCpuUsedByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerCpuUsedByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerCpuUsedByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/cpu/usage", method=RequestMethod.GET)
@@ -161,14 +162,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerCpuUsedByTaskId(
+	public String getDockerCpuUsedByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerCpuUsedByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerCpuUsedByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/memory/allocate", method=RequestMethod.GET)
@@ -213,14 +214,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerMemoryAllocateByContainerId(
+	public String getDockerMemoryAllocateByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerMemoryAllocateByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerMemoryAllocateByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	
@@ -266,14 +267,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerMemoryUsedByteByContainerId(
+	public String getDockerMemoryUsedByteByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerMemoryUsedByteByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerMemoryUsedByteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/memory/used", method=RequestMethod.GET)
@@ -318,14 +319,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerMemoryUsedByteByTaskId(
+	public String getDockerMemoryUsedByteByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerMemoryUsedByteByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerMemoryUsedByteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	
@@ -371,14 +372,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerMemoryUsedPercentByContainerId(
+	public String getDockerMemoryUsedPercentByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerMemoryUsedPercentByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerMemoryUsedPercentByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/memory/usage", method=RequestMethod.GET)
@@ -423,14 +424,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerMemoryUsedPercentByTaskId(
+	public String getDockerMemoryUsedPercentByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerMemoryUsedPercentByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerMemoryUsedPercentByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/diskio/read", method=RequestMethod.GET)
@@ -475,14 +476,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerDiskioReadByContainerId(
+	public String getDockerDiskioReadByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerDiskioReadByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerDiskioReadByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/diskio/read", method=RequestMethod.GET)
@@ -527,14 +528,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerDiskioReadByTaskId(
+	public String getDockerDiskioReadByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerDiskioReadByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerDiskioReadByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/diskio/write", method=RequestMethod.GET)
@@ -579,14 +580,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerDiskioWriteByContainerId(
+	public String getDockerDiskioWriteByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerDiskioWriteByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerDiskioWriteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/diskio/write", method=RequestMethod.GET)
@@ -631,14 +632,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerDiskioWriteByTaskId(
+	public String getDockerDiskioWriteByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerDiskioWriteByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerDiskioWriteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/rxbyte", method=RequestMethod.GET)
@@ -683,14 +684,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxbyteByContainerId(
+	public String getDockerNetworkRxbyteByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxbyteByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxbyteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/rxdrop", method=RequestMethod.GET)
@@ -735,14 +736,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxdropByContainerId(
+	public String getDockerNetworkRxdropByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxdropByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxdropByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/rxerror", method=RequestMethod.GET)
@@ -787,14 +788,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxerrorByContainerId(
+	public String getDockerNetworkRxerrorByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxerrorByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxerrorByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/rxpacket", method=RequestMethod.GET)
@@ -839,14 +840,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxpacketByContainerId(
+	public String getDockerNetworkRxpacketByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxpacketByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxpacketByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/txbyte", method=RequestMethod.GET)
@@ -891,14 +892,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxbyteByContainerId(
+	public String getDockerNetworkTxbyteByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxbyteByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxbyteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/txdrop", method=RequestMethod.GET)
@@ -943,14 +944,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxdropByContainerId(
+	public String getDockerNetworkTxdropByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxdropByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxdropByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/txerror", method=RequestMethod.GET)
@@ -995,14 +996,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxerrorByContainerId(
+	public String getDockerNetworkTxerrorByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxerrorByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxerrorByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/container/{containerId}/txpacket", method=RequestMethod.GET)
@@ -1047,14 +1048,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxpacketByContainerId(
+	public String getDockerNetworkTxpacketByContainerId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="containerId", required=true) String containerId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxpacketByContainerId(hostIp, containerId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxpacketByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
 	
@@ -1100,14 +1101,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxbyteByTaskId(
+	public String getDockerNetworkRxbyteByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxbyteByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxbyteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/rxdrop", method=RequestMethod.GET)
@@ -1152,14 +1153,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxdropByTaskId(
+	public String getDockerNetworkRxdropByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxdropByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxdropByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/rxerror", method=RequestMethod.GET)
@@ -1204,14 +1205,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxerrorByTaskId(
+	public String getDockerNetworkRxerrorByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxerrorByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxerrorByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/rxpacket", method=RequestMethod.GET)
@@ -1256,14 +1257,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkRxpacketByTaskId(
+	public String getDockerNetworkRxpacketByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkRxpacketByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkRxpacketByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/txbyte", method=RequestMethod.GET)
@@ -1308,14 +1309,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxbyteByTaskId(
+	public String getDockerNetworkTxbyteByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxbyteByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxbyteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/txdrop", method=RequestMethod.GET)
@@ -1360,14 +1361,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxdropByTaskId(
+	public String getDockerNetworkTxdropByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxdropByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxdropByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/txerror", method=RequestMethod.GET)
@@ -1412,14 +1413,14 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxerrorByTaskId(
+	public String getDockerNetworkTxerrorByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxerrorByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxerrorByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/{hostIp}/docker/task/{taskId}/txpacket", method=RequestMethod.GET)
@@ -1464,13 +1465,13 @@ public class HostDockerController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDockerNetworkTxpacketByTaskId(
+	public String getDockerNetworkTxpacketByTaskId(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="taskId", required=true) String taskId
 			,@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=true, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDockerService.getDockerNetworkTxpacketByTaskId(hostIp, taskId, startTime, time, limit);
+		return hostDockerService.getDockerNetworkTxpacketByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 }

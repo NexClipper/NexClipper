@@ -40,5 +40,6 @@ public interface REDIS {
 		final String NAMESPACE 		= "namespace";
 		final String REPLICASET 	= "replicaset";
 		final String COMPONENT_STATUS 	= "component_status";
+		final String EVENT 	= "event";
 	}
 }

@@ -2205,9 +2205,9 @@ tbody.collapse.show {
 .dropdown-item:focus, .dropdown-item:hover {
     color: #16181b;
     text-decoration: none;
-    background-color: #f8f9fa; }
+    background-color: #212f3e; }
 .dropdown-item.active, .dropdown-item:active {
-    color: #fff;
+    color: #212f3e;
     text-decoration: none;
     background-color: #5867dd; }
 .dropdown-item.disabled, .dropdown-item:disabled {
@@ -2215,7 +2215,11 @@ tbody.collapse.show {
     background-color: transparent; }
 
 .dropdown-menu.show {
-    display: block; }
+    max-height: 300px;
+    overflow-y: auto;
+    display: block;
+    background-color: #34495e;
+    }
 
 .dropdown-header {
     display: block;
@@ -6340,7 +6344,7 @@ a.text-dark:focus, a.text-dark:hover {
     color: #b2b1c5; }
 .dropdown-menu > li > a:hover,
 .dropdown-menu > .dropdown-item:hover {
-    background: #f4f5f8;
+    background: #212f3e;
     text-decoration: none; }
 .dropdown-menu > li > a.active,
 .dropdown-menu > .dropdown-item.active {
@@ -10292,6 +10296,10 @@ b, strong {
 .m-datatable > .m-datatable__table > .m-datatable__body .m-datatable__row > .m-datatable__cell .m-checkbox.m-checkbox--solid > span,
 .m-datatable > .m-datatable__table > .m-datatable__foot .m-datatable__row > .m-datatable__cell .m-checkbox.m-checkbox--solid > span {
     background: #e5e3ef; }
+.m-datatable > .m-datatable__table > .m-datatable__head .m-datatable__row > .m-datatable__cell .m-checkbox.m-optionbox > span,
+.m-datatable > .m-datatable__table > .m-datatable__body .m-datatable__row > .m-datatable__cell .m-checkbox.m-optionbox > span,
+.m-datatable > .m-datatable__table > .m-datatable__foot .m-datatable__row > .m-datatable__cell .m-checkbox.m-optionbox > span {
+    background: #e5e3ef; border-radius: 10px;}
 .m-datatable > .m-datatable__table > .m-datatable__head .m-datatable__row > .m-datatable__cell .m-checkbox.m-checkbox--solid > input:checked ~ span,
 .m-datatable > .m-datatable__table > .m-datatable__body .m-datatable__row > .m-datatable__cell .m-checkbox.m-checkbox--solid > input:checked ~ span,
 .m-datatable > .m-datatable__table > .m-datatable__foot .m-datatable__row > .m-datatable__cell .m-checkbox.m-checkbox--solid > input:checked ~ span {

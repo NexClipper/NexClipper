@@ -30,8 +30,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/kubernetes/container")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/kubernetes/container")
 public class K8SContainerController {
+	
+	
 	static final Logger logger = LoggerFactory.getLogger(K8SContainerController.class);
 	@Autowired private K8sContainerService k8sContainerService;
 
@@ -46,11 +48,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/used", method=RequestMethod.GET)
-	public String getCpuUsed(
+	public String getCpuUsed(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuUsed(startTime, time, limit);
+		return k8sContainerService.getCpuUsed(clusterId, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Cpu Used Percent", httpMethod="GET", notes="Cpu Used Percent")
@@ -64,11 +66,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/used/percent", method=RequestMethod.GET)
-	public String getCpuUsedPercent(
+	public String getCpuUsedPercent(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuUsedPercent(startTime, time, limit);
+		return k8sContainerService.getCpuUsedPercent(clusterId, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Cpu Limit", httpMethod="GET", notes="Cpu Limit")
@@ -82,11 +84,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/limit", method=RequestMethod.GET)
-	public String getCpuLimit(
+	public String getCpuLimit(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuLimit(startTime, time, limit);
+		return k8sContainerService.getCpuLimit(clusterId, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Cpu Request", httpMethod="GET", notes="Cpu Request")
@@ -100,11 +102,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/request", method=RequestMethod.GET)
-	public String getCpuRequest(
+	public String getCpuRequest(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuRequest(startTime, time, limit);
+		return k8sContainerService.getCpuRequest(clusterId, startTime, time, limit);
 	}	
 	
 	@ApiOperation(value="Memory Used", httpMethod="GET", notes="Memory Used")
@@ -118,11 +120,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/used", method=RequestMethod.GET)
-	public String getMemoryUsed(
+	public String getMemoryUsed(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryUsed(startTime, time, limit);
+		return k8sContainerService.getMemoryUsed(clusterId, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Memory Used Percent", httpMethod="GET", notes="Memory Used Percent")
@@ -136,11 +138,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/used/percent", method=RequestMethod.GET)
-	public String getMemoryUsedPercent(
+	public String getMemoryUsedPercent(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryUsedPercent(startTime, time, limit);
+		return k8sContainerService.getMemoryUsedPercent(clusterId, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Limit", httpMethod="GET", notes="Memory Limit")
@@ -154,11 +156,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/limit", method=RequestMethod.GET)
-	public String getMemoryLimit(
+	public String getMemoryLimit(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryLimit(startTime, time, limit);
+		return k8sContainerService.getMemoryLimit(clusterId, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Request", httpMethod="GET", notes="Memory Request")
@@ -172,11 +174,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/request", method=RequestMethod.GET)
-	public String getMemoryRequest(
+	public String getMemoryRequest(@PathVariable(value="clusterId", required=false) String clusterId,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryRequest(startTime, time, limit);
+		return k8sContainerService.getMemoryRequest(clusterId, startTime, time, limit);
 	}
 	
 	// by container
@@ -192,12 +194,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/cpu/used", method=RequestMethod.GET)
-	public String getCpuUsedByContainer(
+	public String getCpuUsedByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuUsedByContainer(container, startTime, time, limit);
+		return k8sContainerService.getCpuUsedByContainer(clusterId, container, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Cpu Used Percent By Container", httpMethod="GET", notes="Cpu Used Percent By Container")
@@ -211,12 +213,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/cpu/used/percent", method=RequestMethod.GET)
-	public String getCpuUsedPercentByContainer(
+	public String getCpuUsedPercentByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuUsedPercentByContainer(container, startTime, time, limit);
+		return k8sContainerService.getCpuUsedPercentByContainer(clusterId, container, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Cpu Limit By Container", httpMethod="GET", notes="Cpu Limit By Container")
@@ -230,12 +232,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/cpu/limit", method=RequestMethod.GET)
-	public String getCpuLimitByContainer(
+	public String getCpuLimitByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuLimitByContainer(container, startTime, time, limit);
+		return k8sContainerService.getCpuLimitByContainer(clusterId, container, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Cpu Request By Container", httpMethod="GET", notes="Cpu Request By Container")
@@ -249,12 +251,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/cpu/request", method=RequestMethod.GET)
-	public String getCpuRequestByContainer(
+	public String getCpuRequestByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getCpuRequestByContainer(container, startTime, time, limit);
+		return k8sContainerService.getCpuRequestByContainer(clusterId, container, startTime, time, limit);
 	}	
 	
 	@ApiOperation(value="Memory Used By Container", httpMethod="GET", notes="Memory Used By Container")
@@ -268,12 +270,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/memory/used", method=RequestMethod.GET)
-	public String getMemoryUsedByContainer(
+	public String getMemoryUsedByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryUsedByContainer(container, startTime, time, limit);
+		return k8sContainerService.getMemoryUsedByContainer(clusterId, container, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Memory Used Percent By Container", httpMethod="GET", notes="Memory Used Percent By Container")
@@ -287,12 +289,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/memory/used/percent", method=RequestMethod.GET)
-	public String getMemoryUsedPercentByContainer(
+	public String getMemoryUsedPercentByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryUsedPercentByContainer(container, startTime, time, limit);
+		return k8sContainerService.getMemoryUsedPercentByContainer(clusterId, container, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Limit By Container", httpMethod="GET", notes="Memory Limit By Container")
@@ -306,12 +308,12 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/memory/limit", method=RequestMethod.GET)
-	public String getMemoryLimitByContainer(
+	public String getMemoryLimitByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryLimitByContainer(container, startTime, time, limit);
+		return k8sContainerService.getMemoryLimitByContainer(clusterId, container, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Request By Container", httpMethod="GET", notes="Memory Request By Container")
@@ -325,11 +327,11 @@ public class K8SContainerController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{container}/memory/request", method=RequestMethod.GET)
-	public String getMemoryRequestByContainer(
+	public String getMemoryRequestByContainer(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="container", required=false) String container,
 		@RequestParam(value="startTime", defaultValue="1h") String startTime,
 		@RequestParam(value="time", defaultValue="5s") String time,
 		@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sContainerService.getMemoryRequestByContainer(container, startTime, time, limit);
+		return k8sContainerService.getMemoryRequestByContainer(clusterId, container, startTime, time, limit);
 	}
 }

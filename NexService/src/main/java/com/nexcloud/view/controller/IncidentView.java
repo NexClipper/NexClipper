@@ -14,11 +14,16 @@
 * limitations under the License.
 */
 package com.nexcloud.view.controller;
+import javax.websocket.server.PathParam;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping(value = "/incident")
@@ -45,8 +50,21 @@ public class IncidentView {
 	public String rule() {
 		return "incident/rule/view";
 	}
-	@RequestMapping(value="/rule/detail", method=RequestMethod.GET)
-	public String ruleDetail() {
+	@RequestMapping(value="/emailManager", method=RequestMethod.GET)
+	public String emailManager() {
+		return "incident/emailManager/view";
+	}
+	@RequestMapping(value="/rule/{idx}/detail", method=RequestMethod.GET)
+	public ModelAndView ruleDetail( @PathVariable(value="idx") String idx ) {
+		ModelAndView mav  = new ModelAndView();
+		mav.addObject("idx", idx);
+		mav.setViewName("incident/rule/detail");
+		return mav;
+	}
+	
+	@RequestMapping(value="/rule/create", method=RequestMethod.GET)
+	public String ruleCreate(  ) {
+		
 		return "incident/rule/detail";
 	}
 }

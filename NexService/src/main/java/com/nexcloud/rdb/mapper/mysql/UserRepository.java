@@ -24,4 +24,6 @@ public interface UserRepository {
 	public List<User> getUserList();
 	public User getUser(String userId);
 	public boolean addUser(User user);
+	public boolean deleteUser(String userId);
+	public boolean changePassword(User user);
 }

@@ -22,54 +22,54 @@ import com.nexcloud.tsdb.adapter.manager.K8sPodAdapterManager;
 public class K8sPodService {
 	@Autowired private K8sPodAdapterManager adapterManager;
 
-	public String getCpuUsed (String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuUsed(startTime, time, limit);
+	public String getCpuUsed (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuUsed(clusterId, startTime, time, limit);
 	}
-	public String getCpuUsedPercent (String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuUsedPercent(startTime, time, limit);
+	public String getCpuUsedPercent (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuUsedPercent(clusterId, startTime, time, limit);
 	}
-	public String getCpuLimit (String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuLimit(startTime, time, limit);
+	public String getCpuLimit (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuLimit(clusterId, startTime, time, limit);
 	}
-	public String getCpuRequest (String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuRequest(startTime, time, limit);
-	}
-	
-	public String getMemoryUsed (String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryUsed(startTime, time, limit);
-	}
-	public String getMemoryUsedPercent (String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryUsedPercent(startTime, time, limit);
-	}
-	public String getMemoryLimit (String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryLimit(startTime, time, limit);
-	}
-	public String getMemoryRequest (String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryRequest(startTime, time, limit);
-	}
-	public String getCpuUsedByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuUsed(pod, startTime, time, limit);
-	}
-	public String getCpuUsedPercentByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuUsedPercent(pod, startTime, time, limit);
-	}
-	public String getCpuLimitByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuLimit(pod, startTime, time, limit);
-	}
-	public String getCpuRequestByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getCpuRequest(pod, startTime, time, limit);
+	public String getCpuRequest (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuRequest(clusterId, startTime, time, limit);
 	}
 	
-	public String getMemoryUsedByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryUsed(pod, startTime, time, limit);
+	public String getMemoryUsed (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryUsed(clusterId, startTime, time, limit);
 	}
-	public String getMemoryUsedPercentByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryUsedPercent(pod, startTime, time, limit);
+	public String getMemoryUsedPercent (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryUsedPercent(clusterId, startTime, time, limit);
 	}
-	public String getMemoryLimitByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryLimit(pod, startTime, time, limit);
+	public String getMemoryLimit (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryLimit(clusterId, startTime, time, limit);
 	}
-	public String getMemoryRequestByPod (String pod, String startTime, String time, int limit) {
-		return adapterManager.adapter().getMemoryRequest(pod, startTime, time, limit);
+	public String getMemoryRequest (String clusterId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryRequest(clusterId, startTime, time, limit);
+	}
+	public String getCpuUsedByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuUsed(clusterId, pod, startTime, time, limit);
+	}
+	public String getCpuUsedPercentByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuUsedPercent(clusterId, pod, startTime, time, limit);
+	}
+	public String getCpuLimitByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuLimit(clusterId, pod, startTime, time, limit);
+	}
+	public String getCpuRequestByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getCpuRequest(clusterId, pod, startTime, time, limit);
+	}
+	
+	public String getMemoryUsedByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryUsed(clusterId, pod, startTime, time, limit);
+	}
+	public String getMemoryUsedPercentByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryUsedPercent(clusterId, pod, startTime, time, limit);
+	}
+	public String getMemoryLimitByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryLimit(clusterId, pod, startTime, time, limit);
+	}
+	public String getMemoryRequestByPod (String clusterId, String pod, String startTime, String time, int limit) {
+		return adapterManager.adapter().getMemoryRequest(clusterId, pod, startTime, time, limit);
 	}
 }

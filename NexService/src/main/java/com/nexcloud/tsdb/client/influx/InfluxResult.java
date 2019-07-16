@@ -46,10 +46,10 @@ public class InfluxResult {
   private String error;
 
   public List<Map<String, Object>> getTables () {
-	  if (this.getResults() == null || 
-		  this.getResults().size() == 0) return new ArrayList<>();
-	  else if(this.getResults().get(0).series == null || 
-		  this.getResults().get(0).series.size() == 0) return new ArrayList<>();
+	  if (this.getResults() == null || this.getResults().size() == 0) 
+		  return new ArrayList<>();
+	  else if(this.getResults().get(0).series == null || this.getResults().get(0).series.size() == 0) 
+		  return new ArrayList<>();
 	  List<Map<String, Object>> tables = new ArrayList<>();
 	  List<String> columns = this.getResults().get(0).series.get(0).getColumns();
 	  List<List<Object>> values = this.getResults().get(0).series.get(0).getValues();

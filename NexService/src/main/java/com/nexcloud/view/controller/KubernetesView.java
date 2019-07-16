@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -55,17 +56,118 @@ public class KubernetesView {
 		return mav;
 	}
 
-	@RequestMapping(value="/pod", method=RequestMethod.GET)
-	public String pod() {
-		return "kubernetes/pod/view";
-	}
-	
-	@RequestMapping(value="/pod/{podName}/detail", method=RequestMethod.GET)
-	public ModelAndView podDetail(@PathVariable(value="podName", required=false) String podName) {
+	@RequestMapping(value="/workload", method=RequestMethod.GET)
+	public ModelAndView workload(@RequestParam(value="namespace", defaultValue="all") String namespace) {
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("kubernetes/pod/detail");
-		mav.addObject("podName", podName);
+		mav.setViewName("kubernetes/workload/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/daemonset", method=RequestMethod.GET)
+	public ModelAndView daemonset(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/daemonset/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/daemonset/{daemonsetName}/detail", method=RequestMethod.GET)
+	public ModelAndView daemonsetDetail(@PathVariable(value="daemonsetName", required=false) String daemonsetName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/daemonset/detail");
+		mav.addObject("daemonsetName", daemonsetName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/deployment", method=RequestMethod.GET)
+	public ModelAndView deployment(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/deployment/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+	@RequestMapping(value="/deployment/{deploymentName}/detail", method=RequestMethod.GET)
+	public ModelAndView deploymentDetail(@PathVariable(value="deploymentName", required=false) String deploymentName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/deployment/detail");
+		mav.addObject("deploymentName", deploymentName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/pod", method=RequestMethod.GET)
+	public ModelAndView pod(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/pod/view");
+		mav.addObject("namespace", namespace);
 		return mav;
 	}
 	
+	@RequestMapping(value="/pod/{podName}/detail", method=RequestMethod.GET)
+	public ModelAndView podDetail(@PathVariable(value="podName", required=false) String podName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/pod/detail");
+		mav.addObject("podName", podName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+	
+	@RequestMapping(value="/replicaset", method=RequestMethod.GET)
+	public ModelAndView replicaset(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/replicaset/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/replicaset/{replicasetName}/detail", method=RequestMethod.GET)
+	public ModelAndView replicasetDetail(@PathVariable(value="replicasetName", required=false) String replicasetName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/replicaset/detail");
+		mav.addObject("replicasetName", replicasetName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+	
+	@RequestMapping(value="/statefulset", method=RequestMethod.GET)
+	public ModelAndView statefulset(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/statefulset/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/statefulset/{statefulsetName}/detail", method=RequestMethod.GET)
+	public ModelAndView statefulsetDetail(@PathVariable(value="statefulsetName", required=false) String statefulsetName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/statefulset/detail");
+		mav.addObject("statefulsetName", statefulsetName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/services", method=RequestMethod.GET)
+	public ModelAndView services(@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/services/view");
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
+
+	@RequestMapping(value="/services/{serviceName}/detail", method=RequestMethod.GET)
+	public ModelAndView servicesDetail(@PathVariable(value="serviceName", required=false) String serviceName,
+		@RequestParam(value="namespace", defaultValue="all") String namespace) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("kubernetes/services/detail");
+		mav.addObject("serviceName", serviceName);
+		mav.addObject("namespace", namespace);
+		return mav;
+	}
 }

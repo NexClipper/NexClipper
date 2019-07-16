@@ -25,90 +25,90 @@ public class K8sContainerInfluxAdapter implements K8sContainerAdapter {
 	@Autowired private InfluxClient influxClient;
 
 	@Override
-	public String getCpuUsed(String startTime, String time, int limit) {
-		return getCpuUsed(null, startTime, time, limit);
+	public String getCpuUsed(String clusterId, String startTime, String time, int limit) {
+		return getCpuUsed(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getCpuUsedPercent(String startTime, String time, int limit) {
-		return getCpuUsedPercent(null, startTime, time, limit);
+	public String getCpuUsedPercent(String clusterId, String startTime, String time, int limit) {
+		return getCpuUsedPercent(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getCpuLimit(String startTime, String time, int limit) {
-		return getCpuLimit(null, startTime, time, limit);
+	public String getCpuLimit(String clusterId, String startTime, String time, int limit) {
+		return getCpuLimit(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getCpuRequest(String startTime, String time, int limit) {
-		return getCpuRequest(null, startTime, time, limit);
+	public String getCpuRequest(String clusterId, String startTime, String time, int limit) {
+		return getCpuRequest(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getMemoryUsed(String startTime, String time, int limit) {
-		return getMemoryUsed(null, startTime, time, limit);
+	public String getMemoryUsed(String clusterId, String startTime, String time, int limit) {
+		return getMemoryUsed(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getMemoryUsedPercent(String startTime, String time, int limit) {
-		return getMemoryUsedPercent(null, startTime, time, limit);
+	public String getMemoryUsedPercent(String clusterId, String startTime, String time, int limit) {
+		return getMemoryUsedPercent(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getMemoryLimit(String startTime, String time, int limit) {
-		return getMemoryLimit(null, startTime, time, limit);
+	public String getMemoryLimit(String clusterId, String startTime, String time, int limit) {
+		return getMemoryLimit(clusterId, null, startTime, time, limit);
 	}
 
 	@Override
-	public String getMemoryRequest(String startTime, String time, int limit) {
-		return getMemoryRequest(null, startTime, time, limit);
+	public String getMemoryRequest(String clusterId, String startTime, String time, int limit) {
+		return getMemoryRequest(clusterId, null, startTime, time, limit);
 	}
 	
 	// by container
 
 	@Override
-	public String getCpuUsed(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("cpu_used", "cpuUsed", container, startTime, time, limit));
+	public String getCpuUsed(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"cpu_used", "cpuUsed", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getCpuUsedPercent(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("cpu_used_percent", "cpuUsedPercent", container, startTime, time, limit));
+	public String getCpuUsedPercent(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"cpu_used_percent", "cpuUsedPercent", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getCpuLimit(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("limit_cpu", "cpuLimit", container, startTime, time, limit));
+	public String getCpuLimit(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"limit_cpu", "cpuLimit", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getCpuRequest(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("request_cpu", "cpuRequest", container, startTime, time, limit));
+	public String getCpuRequest(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"request_cpu", "cpuRequest", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getMemoryUsed(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("mem_used", "memoryUsed", container, startTime, time, limit));
+	public String getMemoryUsed(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"mem_used", "memoryUsed", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getMemoryUsedPercent(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("mem_used_percent", "memoryUsedPercent", container, startTime, time, limit));
+	public String getMemoryUsedPercent(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"mem_used_percent", "memoryUsedPercent", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getMemoryLimit(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("limit_mem", "memoryLimit", container, startTime, time, limit));
+	public String getMemoryLimit(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"limit_mem", "memoryLimit", container, startTime, time, limit));
 	}
 
 	@Override
-	public String getMemoryRequest(String container, String startTime, String time, int limit) {
-		return influxClient.get(getQuery("request_mem", "memoryRequest", container, startTime, time, limit));
+	public String getMemoryRequest(String clusterId, String container, String startTime, String time, int limit) {
+		return influxClient.get(getQuery(clusterId,"request_mem", "memoryRequest", container, startTime, time, limit));
 	}
-	private String getQuery(String field, String alias, String container, String startTime, String time, int limit) {
+	private String getQuery(String clusterId,String field, String alias, String container, String startTime, String time, int limit) {
 		return  "SELECT mean(" + field + ") AS " + alias
 				+ " FROM \"k8s_container\""
-				+ " WHERE time > now() - " + startTime
+				+ " WHERE cluster_id = '" + clusterId + "' AND time > now() - " + startTime
 				+ ((container != null) ? " AND node = '" + container + "'" : "")
 				+ " GROUP By time(" + time + ") fill(linear)"
 				+ " ORDER By time asc"

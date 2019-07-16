@@ -25,77 +25,77 @@ public class HostCpuPrometheusAdapter implements HostCpuAdapter {
 	@Autowired private PrometheusClient prometheusClient;
 
 	@Override
-	public String getCpuUsedPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuUsedPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return prometheusClient.get("container_cpu_usage_seconds_total");
 	}
 
 	@Override
-	public String getCpuIdlePercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuIdlePercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return prometheusClient.get("container_cpu_system_seconds_total");
 	}
 
 	@Override
-	public String getCpuIrqPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuIrqPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return prometheusClient.get("container_cpu_usage_seconds_total");
 	}
 
 	@Override
-	public String getCpuNicePercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuNicePercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return prometheusClient.get("container_cpu_user_seconds_total");
 	}
 
 	@Override
-	public String getCpuSorfirqPercentByHostIp(String hostIp, String startTime, String time,
+	public String getCpuSorfirqPercentByHostIp(String clusterId, String hostIp, String startTime, String time,
 			int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuStolenPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuStolenPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuSysPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuSysPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuWaitPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuWaitPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public String getCpuTotalCoreByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuTotalCoreByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public String getCpuLoad1ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad1ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public String getCpuLoad5ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad5ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
-	public String getCpuLoad15ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad15ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 //	PrometheusClient prometheusClient = new PrometheusClient();
 
 	@Override
-	public String getCpuUserPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuUserPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -25,11 +25,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 	
 	@Autowired private InfluxClient influxClient;
 
-	public String getCpuUsedPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuUsedPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_used_percent) AS used"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			//+ " ORDER By time asc"
@@ -37,11 +37,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuUserPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuUserPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_used_percent) AS used"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			//+ " ORDER By time asc"
@@ -49,11 +49,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuIdlePercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuIdlePercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_idle_percent) AS idle"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -61,11 +61,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuIrqPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuIrqPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_irq_percent) AS irq"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -73,11 +73,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuNicePercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuNicePercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_nice_percent) AS nice"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -85,22 +85,22 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuSorfirqPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuSorfirqPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_sorfirq_percent) AS sorfirq"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
 			+ " LIMIT " + limit 
 		);
 	}
-	public String getCpuStolenPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuStolenPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_stolen_percent) AS stolen"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -108,11 +108,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuSysPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuSysPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_sys_percent) AS sys"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -120,11 +120,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuWaitPercentByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuWaitPercentByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_wait_percent) AS wait"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -132,11 +132,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuTotalCoreByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuTotalCoreByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_total) AS core"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -144,11 +144,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuLoad1ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad1ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(load1) AS load1"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -156,11 +156,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuLoad5ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad5ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(load5) AS load5"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"
@@ -168,11 +168,11 @@ public class HostCpuInfluxAdapter implements HostCpuAdapter {
 		);
 	}
 	
-	public String getCpuLoad15ByHostIp(String hostIp, String startTime, String time, int limit) {
+	public String getCpuLoad15ByHostIp(String clusterId, String hostIp, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(load15) AS load15"
 			+ " FROM \"host\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " GROUP By time(" + time + "), host_ip fill(linear)"
 			+ " ORDER By time asc"

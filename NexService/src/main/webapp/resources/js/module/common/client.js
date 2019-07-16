@@ -16,8 +16,13 @@
 var spinnerCount = 0;
 function Client () {
 	this.url;
+	this.async = true;
+	this.clusterFlag = true;
+	this.clusterId = '1';
+	this.result;
 	this.type = 'get';
 	this.refresh = true;
+	this.data;
 	this.param;
 	this.callback;
 	this.bindData;
@@ -55,22 +60,46 @@ Client.prototype.bindData = function(bindData) {
 	this.bindData = bindData;
 	return this;
 }
+Client.prototype.setClusterId = function(clusterId) {
+	this.clusterId = clusterId;
+	return this;
+}
+Client.prototype.getNotCluster = function() {
+	this.clusterFlag = false;
+	this.get();
+}
+Client.prototype.asyncFalse = function() {
+	this.async = false;
+	return this;
+}
+
 Client.prototype.get = function() {
 	var _this = this;
 	if (spinnerCount === 0 && this.refresh) {
 		_this.startSpinner();
 	}
 	spinnerCount++;
+	var urlSplit = _this.url;
+	if (this.clusterFlag)
+		urlSplit = "/api/v1/cluster/" + _this.clusterId + _this.url.split("/api/v1")[1];
 	$.ajax({
-		url: this.url,
-		type: this.type,
-		//async : false,
+		url: urlSplit,
+		type: _this.type,
+		async : _this.async,
 		data: this.param,
 		dataType: "json",
 		success: function(data){
 			if (data != null && typeof data.responseCode != "undefined" && data.responseCode == 200
-					&& typeof data.responseBody != "undefined")
-				_this.callback(JSON.parse(data.responseBody), _this.bindData);
+					&& typeof data.responseBody != "undefined") {
+				try {
+					if (_this.async)
+						_this.callback(JSON.parse(data.responseBody), _this.bindData);
+					else
+						_this.result = JSON.parse(data.responseBody), _this.bindData;
+				} catch (e) {
+					console.log(e);
+				}
+			}
 		},
 		error : function (jqXHR, textStatus, errorThrown) {
 			console.log('error \n[' + textStatus + ']\n' + errorThrown);
@@ -83,4 +112,30 @@ Client.prototype.get = function() {
 			// console.log("complete");
 		}
 	});
+	return _this.result;
 }
+Client.prototype.post = function(){
+	var _this = this;
+	$.ajax({
+		url: this.url,
+		type: 'POST',
+		data: this.data,
+		dataType: 'text',
+		beforeSend: function(jqXHR) {},
+		success: function(data) {
+			_this.callback(data, _this.bindData);
+		}, 
+		error : function (jqXHR, textStatus, errorThrown) {
+			console.log('error \n[' + textStatus + ']\n' + errorThrown);
+		},
+		complete: function(jqXHR) {
+			//console.log("complete");
+		} 
+	});
+}
+
+Client.prototype.data = function(data){
+	this.data = data;
+	return this;
+}
+

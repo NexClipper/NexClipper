@@ -68,7 +68,10 @@ SimpleList.prototype.drawTd = function (fields) {
 	this.data.forEach(function(item){
 		html += '<tr>';
 		fields.forEach (function (field){
-			html += '<td class="text-left">'+item[field]+'</td>';
+			if (typeof item[field] != "undefined")
+				html += '<td class="text-left">'+item[field]+'</td>';
+			else
+				html += '<td class="text-left">-</td>';
 		})
 		html += '</tr>';
 		

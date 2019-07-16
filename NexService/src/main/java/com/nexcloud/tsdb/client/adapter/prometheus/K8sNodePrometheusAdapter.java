@@ -24,121 +24,121 @@ public class K8sNodePrometheusAdapter implements K8sNodeAdapter {
 	@Autowired private PrometheusClient prometheusClient;
 
 	@Override
-	public String getCpuUsed(String startTime, String time, int limit) {
+	public String getCpuUsed(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuUsedPercent(String startTime, String time, int limit) {
+	public String getCpuUsedPercent(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuAllocate(String startTime, String time, int limit) {
+	public String getCpuAllocate(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuTotal(String startTime, String time, int limit) {
+	public String getCpuTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsed(String startTime, String time, int limit) {
+	public String getMemoryUsed(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsedPercent(String startTime, String time, int limit) {
+	public String getMemoryUsedPercent(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryAllocate(String startTime, String time, int limit) {
+	public String getMemoryAllocate(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryTotal(String startTime, String time, int limit) {
+	public String getMemoryTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodAllocate(String startTime, String time, int limit) {
+	public String getPodAllocate(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodTotal(String startTime, String time, int limit) {
+	public String getPodTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuUsed(String node, String startTime, String time, int limit) {
+	public String getCpuUsed(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuUsedPercent(String node, String startTime, String time, int limit) {
+	public String getCpuUsedPercent(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuAllocate(String node, String startTime, String time, int limit) {
+	public String getCpuAllocate(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuTotal(String node, String startTime, String time, int limit) {
+	public String getCpuTotal(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsed(String node, String startTime, String time, int limit) {
+	public String getMemoryUsed(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsedPercent(String node, String startTime, String time, int limit) {
+	public String getMemoryUsedPercent(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryAllocate(String node, String startTime, String time, int limit) {
+	public String getMemoryAllocate(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryTotal(String node, String startTime, String time, int limit) {
+	public String getMemoryTotal(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodAllocate(String node, String startTime, String time, int limit) {
+	public String getPodAllocate(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodTotal(String node, String startTime, String time, int limit) {
+	public String getPodTotal(String clusterId, String node, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}

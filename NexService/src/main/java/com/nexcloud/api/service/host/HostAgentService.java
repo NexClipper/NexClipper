@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,13 +33,12 @@ import com.nexcloud.util.response.Success;
 public class HostAgentService {
 	@Autowired private RedisClient redisClient;
 	
-	public String getAgentStatus( ) {
+	public String getAgentStatus(String clusterId) {
 		Gson gson 					= new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-		String data					= redisClient.get(REDIS.HASH.HOST, REDIS.KEY.LIST);
+		String data					= redisClient.get(clusterId + "_" + REDIS.HASH.HOST, REDIS.KEY.LIST);
 		Success success				= Util.JsonTobean(data, Success.class);
 		
 		List<Object> agents			= new ArrayList<Object>();
-		
 		// Redis Data get Success
 		if( success.getResponseCode() == HTTP.CODE.OK && success.getResponseBody() != null )
 		{
@@ -48,12 +48,10 @@ public class HostAgentService {
 			
 			for( String ip : ips )
 			{
-				data				= redisClient.get(REDIS.HASH.AGENT_STATUS, ip);
+				data				= redisClient.get(clusterId + "_" + REDIS.HASH.AGENT_STATUS, ip);
 				success				= Util.JsonTobean(data, Success.class);
 				if( success.getResponseCode() == HTTP.CODE.OK && success.getResponseBody() != null )
 					agents.add(gson.fromJson(success.getResponseBody(), new TypeToken<Object>(){}.getType()));
-				else
-					return data;
 			}
 			
 			return Util.beanToJson(new Success(HTTP.CODE.OK, HTTP.MESSAGE.OK, "Redis", Util.beanToJson(agents)));
@@ -64,8 +62,8 @@ public class HostAgentService {
 		}
 	}
 	
-	public String getAgentStatus(String hostIp) {
-		return redisClient.get(REDIS.HASH.AGENT_STATUS, hostIp);
+	public String getAgentStatus(String clusterId, String hostIp) {
+		return redisClient.get(clusterId + "_" + REDIS.HASH.AGENT_STATUS, hostIp);
 	}
 	
 }

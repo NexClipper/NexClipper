@@ -25,11 +25,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 	
 	@Autowired private InfluxClient influxClient;
 	
-	public String getDockerCpuUsedByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerCpuUsedByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(cpu_used_percent) AS cpu_used_percent"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -37,11 +37,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerCpuUsedByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
+	public String getDockerCpuUsedByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
 		return influxClient.get(
 				"SELECT mean(cpu_used_percent) AS cpu_used_percent"
 				+ " FROM \"docker_container\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id fill(linear)"
@@ -49,11 +49,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerMemoryAllocateByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerMemoryAllocateByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(mem_limit) AS mem_allocate"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -61,11 +61,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerMemoryUsedByteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerMemoryUsedByteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(mem_used) AS mem_used"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -73,11 +73,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerMemoryUsedByteByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
+	public String getDockerMemoryUsedByteByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
 		return influxClient.get(
 				"SELECT mean(mem_used) AS mem_used"
 				+ " FROM \"docker_container\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id fill(linear)"
@@ -85,11 +85,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerMemoryUsedPercentByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerMemoryUsedPercentByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(mem_used_percent) AS mem_used_percent"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -97,11 +97,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerMemoryUsedPercentByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
+	public String getDockerMemoryUsedPercentByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
 		return influxClient.get(
 				"SELECT mean(mem_used_percent) AS mem_used_percent"
 				+ " FROM \"docker_container\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id fill(linear)"
@@ -109,11 +109,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerDiskioReadByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerDiskioReadByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(disk_io_read) AS disk_io_read"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -121,11 +121,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerDiskioReadByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
+	public String getDockerDiskioReadByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
 		return influxClient.get(
 				"SELECT mean(disk_io_read) AS disk_io_read"
 				+ " FROM \"docker_container\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id fill(linear)"
@@ -133,11 +133,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerDiskioWriteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
+	public String getDockerDiskioWriteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(disk_io_write) AS disk_io_write"
 			+ " FROM \"docker_container\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND container_id='" + containerId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -145,11 +145,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 		);
 	}
 	
-	public String getDockerDiskioWriteByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
+	public String getDockerDiskioWriteByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
 		return influxClient.get(
 				"SELECT mean(disk_io_write) AS disk_io_write"
 				+ " FROM \"docker_container\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id fill(linear)"
@@ -157,11 +157,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxbyteByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkRxbyteByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_bytes) AS rx_bytes"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -169,11 +169,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxdropByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkRxdropByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_dropped) AS rx_dropped"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -181,11 +181,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxerrorByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkRxerrorByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_errors) AS rx_errors"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -193,11 +193,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxpacketByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkRxpacketByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_packets) AS rx_packets"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -205,11 +205,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxbyteByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkTxbyteByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_bytes) AS tx_bytes"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -217,11 +217,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxdropByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkTxdropByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_dropped) AS tx_dropped"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -229,11 +229,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxerrorByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkTxerrorByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_errors) AS tx_errors"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -241,11 +241,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxpacketByContainerId (String hostIp, String containerId, String startTime, String time, int limit){
+	public String getDockerNetworkTxpacketByContainerId (String clusterId, String hostIp, String containerId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_packets) AS tx_packets"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND container_id='" + containerId + "'"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -253,11 +253,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	/////
-	public String getDockerNetworkRxbyteByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkRxbyteByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_bytes) AS rx_bytes"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -265,11 +265,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxdropByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkRxdropByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_dropped) AS rx_dropped"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -277,11 +277,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxerrorByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkRxerrorByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_errors) AS rx_errors"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -289,11 +289,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkRxpacketByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkRxpacketByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(rx_packets) AS rx_packets"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -301,11 +301,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxbyteByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkTxbyteByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_bytes) AS tx_bytes"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -313,11 +313,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxdropByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkTxdropByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_dropped) AS tx_dropped"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -325,11 +325,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxerrorByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkTxerrorByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_errors) AS tx_errors"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"
@@ -337,11 +337,11 @@ public class HostDockerInfluxAdapter implements HostDockerAdapter {
 			);
 	}
 	
-	public String getDockerNetworkTxpacketByTaskId (String hostIp, String taskId, String startTime, String time, int limit){
+	public String getDockerNetworkTxpacketByTaskId (String clusterId, String hostIp, String taskId, String startTime, String time, int limit){
 		return influxClient.get(
 				"SELECT mean(tx_packets) AS tx_packets"
 				+ " FROM \"docker_network\""
-				+ " WHERE host_ip='" + hostIp + "'"
+				+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 				+ " AND time > now() - " + startTime
 				+ " AND (task_id=~ /.*"+taskId+".*/)"
 				+ " GROUP By time(" + time + "),task_id,interface fill(linear)"

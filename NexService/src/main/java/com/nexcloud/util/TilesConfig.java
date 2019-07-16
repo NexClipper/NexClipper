@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package com.nexcloud.util;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -31,9 +32,9 @@ public class TilesConfig {
 	}
  
 	@Bean
-	public TilesConfigurer tilesConfigurer() {
+	public TilesConfigurer tilesConfigurer(@Value("${view.type}")String VIEW_TYPE) {
 		TilesConfigurer tiles = new TilesConfigurer();
-		tiles.setDefinitions(new String[] { "/WEB-INF/layout/tiles/tiles.xml" });
+		tiles.setDefinitions(new String[] { "/WEB-INF/" + VIEW_TYPE + "/layout/tiles/tiles.xml" });
 		return tiles;
 	}
 }

@@ -32,9 +32,9 @@ import com.nexcloud.util.response.Success;
 public class HostService {
 	@Autowired private RedisClient redisClient;
 	
-	public String getHosts() {
+	public String getHosts(String clusterId) {
 		Gson gson 					= new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-		String data					= redisClient.get(REDIS.HASH.HOST, REDIS.KEY.LIST);
+		String data					= redisClient.get(clusterId + "_" + REDIS.HASH.HOST, REDIS.KEY.LIST);
 		Success success				= Util.JsonTobean(data, Success.class);
 		
 		List<Object> hosts			= new ArrayList<Object>();
@@ -47,7 +47,7 @@ public class HostService {
 			
 			for( String ip : ips )
 			{
-				data				= redisClient.get(REDIS.HASH.HOST, ip);
+				data				= redisClient.get(clusterId + "_" + REDIS.HASH.HOST, ip);
 				success				= Util.JsonTobean(data, Success.class);
 				if( success.getResponseCode() == HTTP.CODE.OK && success.getResponseBody() != null )
 					hosts.add(gson.fromJson(success.getResponseBody(), new TypeToken<Object>(){}.getType()));
@@ -63,13 +63,13 @@ public class HostService {
 		}
 	}
 	
-	public String getHost(String hostIp) {
-		return redisClient.get(REDIS.HASH.HOST, hostIp);
+	public String getHost(String clusterId,String hostIp) {
+		return redisClient.get(clusterId + "_" + REDIS.HASH.HOST, hostIp);
 		
 	}
 	
-	public String getIps( ) {
-		return redisClient.get(REDIS.HASH.HOST, REDIS.KEY.LIST);
+	public String getIps(String clusterId ) {
+		return redisClient.get(clusterId + "_" + REDIS.HASH.HOST, REDIS.KEY.LIST);
 		
 	}
 }

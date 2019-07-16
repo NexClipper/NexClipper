@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host/{hostIp}/network")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host/{hostIp}/network")
 public class HostNetworkController {
 	static final Logger logger = LoggerFactory.getLogger(HostNetworkController.class);
 	
@@ -82,14 +82,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkRxbyte(
+	public String getNetworkRxbyte(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkRxbyte(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkRxbyte(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/rx/drop", method=RequestMethod.GET)
@@ -134,14 +134,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkRxdrop(
+	public String getNetworkRxdrop(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkRxdrop(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkRxdrop(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/rx/error", method=RequestMethod.GET)
@@ -186,14 +186,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkRxerror(
+	public String getNetworkRxerror(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkRxerror(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkRxerror(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/rx/overrun", method=RequestMethod.GET)
@@ -238,14 +238,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkRxoverrun(
+	public String getNetworkRxoverrun(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkRxoverrun(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkRxoverrun(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/rx/packet", method=RequestMethod.GET)
@@ -290,14 +290,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkRxpacket(
+	public String getNetworkRxpacket(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkRxpacket(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkRxpacket(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/byte", method=RequestMethod.GET)
@@ -342,14 +342,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxbyte(
+	public String getNetworkTxbyte(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxbyte(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxbyte(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/drop", method=RequestMethod.GET)
@@ -394,14 +394,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxdrop(
+	public String getNetworkTxdrop(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxdrop(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxdrop(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/error", method=RequestMethod.GET)
@@ -446,14 +446,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxerror(
+	public String getNetworkTxerror(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxerror(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxerror(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/overrun", method=RequestMethod.GET)
@@ -498,14 +498,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxoverrun(
+	public String getNetworkTxoverrun(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxoverrun(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxoverrun(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/packet", method=RequestMethod.GET)
@@ -550,14 +550,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxpacket(
+	public String getNetworkTxpacket(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxpacket(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxpacket(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/carrier", method=RequestMethod.GET)
@@ -602,14 +602,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxcarrier(
+	public String getNetworkTxcarrier(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxcarrier(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxcarrier(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/tx/collision", method=RequestMethod.GET)
@@ -654,14 +654,14 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkTxcollision(
+	public String getNetworkTxcollision(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkTxcollision(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkTxcollision(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/interface/{interfaceId}/speed", method=RequestMethod.GET)
@@ -706,13 +706,13 @@ public class HostNetworkController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getNetworkSpeed(
+	public String getNetworkSpeed(@PathVariable(value="clusterId", required=false) String clusterId,
 			 @PathVariable(value="hostIp", required=true) String hostIp
 			,@PathVariable(value="interfaceId", required=true) String interfaceId
 			,@RequestParam(value="startTime", required=false, defaultValue="1h") String startTime
 			,@RequestParam(value="time", required=false, defaultValue="5s") String time
 			,@RequestParam(value="limit", required=false, defaultValue="1000") int limit
 	) {
-		return hostNetworkService.getNetworkSpeed(hostIp, interfaceId, startTime, time, limit);
+		return hostNetworkService.getNetworkSpeed(clusterId, hostIp, interfaceId, startTime, time, limit);
 	}
 }

@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host")
 public class HostAgentController {
 	static final Logger logger = LoggerFactory.getLogger(HostAgentController.class);
 
@@ -47,8 +47,8 @@ public class HostAgentController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	@RequestMapping(value="/agent/status", method=RequestMethod.GET)
-	public String agentStatus( ) {
-		return hostAgentService.getAgentStatus( );
+	public String agentStatus(@PathVariable(value="clusterId", required=false) String clusterId) {
+		return hostAgentService.getAgentStatus(clusterId);
 	}
 	
 	/**
@@ -71,7 +71,7 @@ public class HostAgentController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	@RequestMapping(value="/{hostIp}/agent/status", method=RequestMethod.GET)
-	public String agentStatus( @PathVariable(value="hostIp", required=false) String hostIp) {
-		return hostAgentService.getAgentStatus(hostIp);
+	public String agentStatus(@PathVariable(value="clusterId", required=false) String clusterId, @PathVariable(value="hostIp", required=false) String hostIp) {
+		return hostAgentService.getAgentStatus(clusterId, hostIp);
 	}
 }

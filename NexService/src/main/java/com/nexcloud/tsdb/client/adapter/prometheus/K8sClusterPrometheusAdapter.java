@@ -25,55 +25,55 @@ public class K8sClusterPrometheusAdapter implements K8sClusterAdapter {
 	@Autowired private PrometheusClient prometheusClient;
 
 	@Override
-	public String getCpuTotal(String startTime, String time, int limit) {
+	public String getCpuTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuUsed(String startTime, String time, int limit) {
+	public String getCpuUsed(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getCpuUsedPercent(String startTime, String time, int limit) {
+	public String getCpuUsedPercent(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryTotal(String startTime, String time, int limit) {
+	public String getMemoryTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsed(String startTime, String time, int limit) {
+	public String getMemoryUsed(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getMemoryUsedPercent(String startTime, String time, int limit) {
+	public String getMemoryUsedPercent(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodTotal(String startTime, String time, int limit) {
+	public String getPodTotal(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodUsed(String startTime, String time, int limit) {
+	public String getPodUsed(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getPodUsedPercent(String startTime, String time, int limit) {
+	public String getPodUsedPercent(String clusterId, String startTime, String time, int limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}

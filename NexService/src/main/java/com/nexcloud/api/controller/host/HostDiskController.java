@@ -32,20 +32,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host/{hostIp}/disk")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host/{hostIp}/disk")
 public class HostDiskController {
 	static final Logger logger = LoggerFactory.getLogger(HostDiskController.class);
 	
 	@Autowired
 	private HostDiskService hostDiskService;
-
-	@RequestMapping(value="/check", method=RequestMethod.GET)
-	public String check() {
-		logger.debug("disk check");
-		return "disk check";
-	}
-	
-	
 	@RequestMapping(value="/free", method=RequestMethod.GET)
 	@ApiOperation(value="Host별  mount된 disk free byte", httpMethod="GET", notes="disk free byte")
 	@ApiImplicitParams({
@@ -88,14 +80,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskFreeByte(
+	public String getDiskFreeByte(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskFreeByte(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskFreeByte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	
@@ -141,14 +133,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskUsagePercent(
+	public String getDiskUsagePercent(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskUsagePercent(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskUsagePercent(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 
 	@RequestMapping(value="/readbyte", method=RequestMethod.GET)
@@ -193,14 +185,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskReadbyte(
+	public String getDiskReadbyte(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskReadbyte(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskReadbyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/writebyte", method=RequestMethod.GET)
@@ -245,14 +237,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskWritebyte(
+	public String getDiskWritebyte(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskWritebyte(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskWritebyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/total", method=RequestMethod.GET)
@@ -297,14 +289,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskTotal(
+	public String getDiskTotal(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskTotal(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskTotal(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/used", method=RequestMethod.GET)
@@ -349,14 +341,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskUsedbyte(
+	public String getDiskUsedbyte(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskUsedbyte(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskUsedbyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/reads", method=RequestMethod.GET)
@@ -401,14 +393,14 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskReads(
+	public String getDiskReads(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskReads(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskReads(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/writes", method=RequestMethod.GET)
@@ -453,13 +445,13 @@ public class HostDiskController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getDiskWrites(
+	public String getDiskWrites(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="mountName", required=true, defaultValue="/") String mountName,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostDiskService.getDiskWrites(hostIp, mountName, startTime, time, limit);
+		return hostDiskService.getDiskWrites(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 }

@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/kubernetes/node")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/kubernetes/node")
 public class K8SNodeController {
 	static final Logger logger = LoggerFactory.getLogger(K8SNodeController.class);
 
@@ -49,11 +49,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/used", method=RequestMethod.GET)
-	public String getCpuUsed(
+	public String getCpuUsed(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuUsed(startTime, time, limit);
+		return k8sNodeService.getCpuUsed(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Used Percent", httpMethod="GET", notes="Cpu Used Percent")
 	@ApiImplicitParams({
@@ -66,11 +66,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/used/percent", method=RequestMethod.GET)
-	public String getCpuUsedPercent(
+	public String getCpuUsedPercent(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuUsedPercent(startTime, time, limit);
+		return k8sNodeService.getCpuUsedPercent(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Allocate", httpMethod="GET", notes="Cpu Allocate")
 	@ApiImplicitParams({
@@ -83,11 +83,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/allocate", method=RequestMethod.GET)
-	public String getCpuAllocate(
+	public String getCpuAllocate(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuAllocate(startTime, time, limit);
+		return k8sNodeService.getCpuAllocate(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Total", httpMethod="GET", notes="Cpu Total")
 	@ApiImplicitParams({
@@ -100,11 +100,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/cpu/total", method=RequestMethod.GET)
-	public String getCpuTotal(
+	public String getCpuTotal(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuTotal(startTime, time, limit);
+		return k8sNodeService.getCpuTotal(clusterId, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Used", httpMethod="GET", notes="Memory Used")
@@ -118,11 +118,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/used", method=RequestMethod.GET)
-	public String getMemoryUsed(
+	public String getMemoryUsed(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryUsed(startTime, time, limit);
+		return k8sNodeService.getMemoryUsed(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Used Percent", httpMethod="GET", notes="Memory Used Percent")
 	@ApiImplicitParams({
@@ -135,11 +135,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/used/percent", method=RequestMethod.GET)
-	public String getMemoryUsedPercent(
+	public String getMemoryUsedPercent(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryUsedPercent(startTime, time, limit);
+		return k8sNodeService.getMemoryUsedPercent(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Allocate", httpMethod="GET", notes="Memory Allocate")
 	@ApiImplicitParams({
@@ -152,11 +152,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/allocate", method=RequestMethod.GET)
-	public String getMemoryAllocate(
+	public String getMemoryAllocate(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryAllocate(startTime, time, limit);
+		return k8sNodeService.getMemoryAllocate(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Total", httpMethod="GET", notes="Memory Total")
 	@ApiImplicitParams({
@@ -169,11 +169,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/memory/total", method=RequestMethod.GET)
-	public String getMemoryTotal(
+	public String getMemoryTotal(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryTotal(startTime, time, limit);
+		return k8sNodeService.getMemoryTotal(clusterId, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Pod Allocate", httpMethod="GET", notes="Pod Allocate")
@@ -187,11 +187,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/pod/allocate", method=RequestMethod.GET)
-	public String getPodAllocate(
+	public String getPodAllocate(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getPodAllocate(startTime, time, limit);
+		return k8sNodeService.getPodAllocate(clusterId, startTime, time, limit);
 	}
 	@ApiOperation(value="Pod Total", httpMethod="GET", notes="Pod Total")
 	@ApiImplicitParams({
@@ -204,11 +204,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/pod/total", method=RequestMethod.GET)
-	public String getPodTotal(
+	public String getPodTotal(@PathVariable(value="clusterId", required=false) String clusterId,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getPodTotal(startTime, time, limit);
+		return k8sNodeService.getPodTotal(clusterId, startTime, time, limit);
 	}
 	
 	// by node
@@ -227,12 +227,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/cpu/used", method=RequestMethod.GET)
-	public String getCpuUsedByNode(
+	public String getCpuUsedByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node") String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuUsedByNode(node, startTime, time, limit);
+		return k8sNodeService.getCpuUsedByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Used Percent By Node", httpMethod="GET", notes="Cpu Used Percent By Node")
 	@ApiImplicitParams({
@@ -247,12 +247,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/cpu/used/percent", method=RequestMethod.GET)
-	public String getCpuUsedPercentByNode(
+	public String getCpuUsedPercentByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuUsedPercentByNode(node, startTime, time, limit);
+		return k8sNodeService.getCpuUsedPercentByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Allocate By Node", httpMethod="GET", notes="Cpu Allocate By Node")
 	@ApiImplicitParams({
@@ -267,12 +267,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/cpu/allocate", method=RequestMethod.GET)
-	public String getCpuAllocateByNode(
+	public String getCpuAllocateByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuAllocateByNode(node, startTime, time, limit);
+		return k8sNodeService.getCpuAllocateByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Cpu Total By Node", httpMethod="GET", notes="Cpu Total By Node")
 	@ApiImplicitParams({
@@ -287,12 +287,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/cpu/total", method=RequestMethod.GET)
-	public String getCpuTotalByNode(
+	public String getCpuTotalByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getCpuTotalByNode(node, startTime, time, limit);
+		return k8sNodeService.getCpuTotalByNode(clusterId, node, startTime, time, limit);
 	}
 	
 	@ApiOperation(value="Memory Used By Node", httpMethod="GET", notes="Memory Used By Node")
@@ -308,12 +308,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/memory/used", method=RequestMethod.GET)
-	public String getMemoryUsedByNode(
+	public String getMemoryUsedByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryUsedByNode(node, startTime, time, limit);
+		return k8sNodeService.getMemoryUsedByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Used Percent By Node", httpMethod="GET", notes="Memory Used Percent By Node")
 	@ApiImplicitParams({
@@ -328,12 +328,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/memory/used/percent", method=RequestMethod.GET)
-	public String getMemoryUsedPercentByNode(
+	public String getMemoryUsedPercentByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryUsedPercentByNode(node, startTime, time, limit);
+		return k8sNodeService.getMemoryUsedPercentByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Allocate By Node", httpMethod="GET", notes="Memory Allocate By Node")
 	@ApiImplicitParams({
@@ -348,12 +348,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/memory/allocate", method=RequestMethod.GET)
-	public String getMemoryAllocateByNode(
+	public String getMemoryAllocateByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryAllocateByNode(node, startTime, time, limit);
+		return k8sNodeService.getMemoryAllocateByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Memory Total By Node", httpMethod="GET", notes="Memory Total By Node")
 	@ApiImplicitParams({
@@ -368,12 +368,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/memory/total", method=RequestMethod.GET)
-	public String getMemoryTotalByNode(
+	public String getMemoryTotalByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getMemoryTotalByNode(node, startTime, time, limit);
+		return k8sNodeService.getMemoryTotalByNode(clusterId, node, startTime, time, limit);
 	}
 
 	@ApiOperation(value="Pod Allocate By Node", httpMethod="GET", notes="Pod Allocate By Node")
@@ -389,12 +389,12 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/pod/allocate", method=RequestMethod.GET)
-	public String getPodAllocateByNode(
+	public String getPodAllocateByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getPodAllocateByNode(node, startTime, time, limit);
+		return k8sNodeService.getPodAllocateByNode(clusterId, node, startTime, time, limit);
 	}
 	@ApiOperation(value="Pod Total By Node", httpMethod="GET", notes="Pod Total By Node")
 	@ApiImplicitParams({
@@ -409,11 +409,11 @@ public class K8SNodeController {
 	}) 
 	@ApiResponses(value={@ApiResponse( code=200, message="SUCCESS"), @ApiResponse( code=500, message="Internal Server Error")})
 	@RequestMapping(value="/{node}/pod/total", method=RequestMethod.GET)
-	public String getPodTotalByNode(
+	public String getPodTotalByNode(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="node", required=false) String node,
 			@RequestParam(value="startTime", defaultValue="1h") String startTime,
 			@RequestParam(value="time", defaultValue="5s") String time,
 			@RequestParam(value="limit", defaultValue="1000") int limit) {
-		return k8sNodeService.getPodTotalByNode(node, startTime, time, limit);
+		return k8sNodeService.getPodTotalByNode(clusterId, node, startTime, time, limit);
 	}
 }

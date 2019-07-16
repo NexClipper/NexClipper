@@ -25,11 +25,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 	
 	@Autowired private InfluxClient influxClient;
 	
-	public String getNetworkRxbyte(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkRxbyte(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(rxbyte) AS rxbyte"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -38,11 +38,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 	}
 	
 	
-	public String getNetworkRxdrop(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkRxdrop(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(rxdropped) AS rxdropped"
 			+ " FROM \"host_net\"" 
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -50,11 +50,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkRxerror(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkRxerror(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(rxerrors) AS rxerrors"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -62,11 +62,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkRxoverrun(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkRxoverrun(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(rxoverrun) AS rxoverrun"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -74,11 +74,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkRxpacket(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkRxpacket(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(rxpacket) AS rxpacket"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -87,11 +87,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 	}
 	
 	//
-	public String getNetworkTxbyte(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxbyte(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txbyte) AS txbyte"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -100,11 +100,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 	}
 	
 	
-	public String getNetworkTxdrop(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxdrop(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txdropped) AS txdropped"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -112,11 +112,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkTxerror(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxerror(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txerrors) AS txerrors"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -124,11 +124,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkTxoverrun(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxoverrun(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txoverrun) AS txoverrun"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -136,11 +136,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkTxpacket(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxpacket(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txpacket) AS txpacket"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -148,11 +148,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkTxcarrier(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxcarrier(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txcarrier) AS txcarrier"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -160,11 +160,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkTxcollision(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkTxcollision(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(txcollision) AS txcollision"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"
@@ -172,11 +172,11 @@ public class HostNetworkInfluxAdapter implements HostNetworkAdapter {
 		);
 	}
 	
-	public String getNetworkSpeed(String hostIp, String interfaceId, String startTime, String time, int limit) {
+	public String getNetworkSpeed(String clusterId, String hostIp, String interfaceId, String startTime, String time, int limit) {
 		return influxClient.get(
 			"SELECT mean(speed) AS speed"
 			+ " FROM \"host_net\""
-			+ " WHERE host_ip='" + hostIp + "'"
+			+ " WHERE cluster_id = '" + clusterId + "' AND host_ip='" + hostIp + "'"
 			+ " AND time > now() - " + startTime
 			+ " AND interface='" + interfaceId + "'"
 			+ " GROUP By time(" + time + ") fill(linear)"

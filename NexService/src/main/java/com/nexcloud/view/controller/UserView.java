@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 package com.nexcloud.view.controller;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,8 @@ public class UserView {
 		mav.setViewName("user/join");
 		String emptyCheckStr = emptyCheck(userId, companyName, password, rpassword);
 		if ("Success".equals(emptyCheckStr)) {
+			if (!isEmail(userId))
+				return mav.addObject("msg", "It is not an email format.");
 			if (idCheck(userId))
 				return mav.addObject("msg", "There is a duplicate ID.");
 			if (!password.equals(rpassword))
@@ -74,6 +77,9 @@ public class UserView {
 			return true;
 		else
 			return false;
+	}
+	public boolean isEmail(String email) {
+	    return email.matches("^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}");
 	}
 	private String emptyCheck (
 			String userId, String companyName, String password, String rpassword) {

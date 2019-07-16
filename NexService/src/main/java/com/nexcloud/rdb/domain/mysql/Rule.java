@@ -52,6 +52,46 @@ public class Rule {
 	private String slack_channel;
 	
 	private String severity;
+	
+	private String equility;
+	
+	private String calc_value;
+	
+	private String calc_value_sel;
+	
+	private String duration;
+	
+	public String getEquility() {
+		return equility;
+	}
+
+	public void setEquility(String equility) {
+		this.equility = equility;
+	}
+
+	public String getCalc_value() {
+		return calc_value;
+	}
+
+	public void setCalc_value(String calc_value) {
+		this.calc_value = calc_value;
+	}
+
+	public String getCalc_value_sel() {
+		return calc_value_sel;
+	}
+
+	public void setCalc_value_sel(String calc_value_sel) {
+		this.calc_value_sel = calc_value_sel;
+	}
+
+	public String getDuration() {
+		return duration;
+	}
+
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 
 	public Integer getIdx() {
 		return idx;

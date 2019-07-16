@@ -19,3 +19,7 @@ function textCut (str) {
 	else 
 		return str.substr(0, 30) + '...'
 }
+function timeFormat(str) {
+	var s = str.split("Z")[0];
+	return s.split("T")[0] + " " + s.split("T")[1]
+}

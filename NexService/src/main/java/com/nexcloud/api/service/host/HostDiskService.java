@@ -23,35 +23,35 @@ import com.nexcloud.tsdb.adapter.manager.HostDiskAdapterManager;
 public class HostDiskService {
 	@Autowired private HostDiskAdapterManager adapterManager;
 	
-	public String getDiskFreeByte(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskFreeByte(hostIp, mountName, startTime, time, limit);
+	public String getDiskFreeByte(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskFreeByte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskUsagePercent(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskUsagePercent(hostIp, mountName, startTime, time, limit);
+	public String getDiskUsagePercent(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskUsagePercent(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskReadbyte(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskReadbyte(hostIp, mountName, startTime, time, limit);
+	public String getDiskReadbyte(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskReadbyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskWritebyte(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskWritebyte(hostIp, mountName, startTime, time, limit);
+	public String getDiskWritebyte(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskWritebyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskTotal(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskTotal(hostIp, mountName, startTime, time, limit);
+	public String getDiskTotal(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskTotal(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskUsedbyte(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskUsedbyte(hostIp, mountName, startTime, time, limit);
+	public String getDiskUsedbyte(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskUsedbyte(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskReads(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskReads(hostIp, mountName, startTime, time, limit);
+	public String getDiskReads(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskReads(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 	
-	public String getDiskWrites(String hostIp, String mountName, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDiskWrites(hostIp, mountName, startTime, time, limit);
+	public String getDiskWrites(String clusterId, String hostIp, String mountName, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDiskWrites(clusterId, hostIp, mountName, startTime, time, limit);
 	}
 }

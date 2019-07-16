@@ -22,15 +22,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT   
 			user_id userId,
 			user_name userName,
-			user_passwd userPasswd,
-			upper_user_id upperUserId,
 			company_name companyName,
-			dept_name deptName,
-			phone_num phoneNum,
-			access_date accessDate,
-			user_state userState,
-			regdate,
-			updtdate			
+			date_format(regdate,'%Y-%m-%d %H:%i:%s') regdate,
+			date_format(updtdate,'%Y-%m-%d %H:%i:%s') updtdate		
 		FROM
 			nexclipper_user
     </select>
@@ -48,8 +42,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="addUser">
     	INSERT INTO 
 	    	nexclipper_user
-	   			(user_id, user_passwd, company_name)
+	   			(user_id, user_name, user_passwd, company_name)
 	    	VALUES
-	   			(#{userId}, #{userPasswd}, #{companyName})
+	   			(#{userId}, #{userName}, #{userPasswd}, #{companyName})
     </insert>
+	<delete id="deleteUser">
+		DELETE FROM 
+			nexclipper_user
+		WHERE
+			user_id = #{userId}
+	</delete>
+    <update id="changePassword">
+    	UPDATE 
+    		nexclipper_user
+		SET 
+			user_passwd = #{userPasswd}
+		WHERE 
+			user_id = #{userId}
+    </update>
 </mapper>

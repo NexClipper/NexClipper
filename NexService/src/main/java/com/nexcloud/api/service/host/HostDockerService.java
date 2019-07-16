@@ -36,9 +36,9 @@ public class HostDockerService {
 	@Autowired private RedisClient redisClient;
 	@Autowired private HostDockerAdapterManager adapterManager;
 	
-	public String getAllDocker( ) {
+	public String getAllDocker(String clusterId ) {
 		Gson gson 					= new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-		String data					= redisClient.get(REDIS.HASH.HOST, REDIS.KEY.LIST);
+		String data					= redisClient.get(clusterId + "_" + REDIS.HASH.HOST, REDIS.KEY.LIST);
 		Success success				= Util.JsonTobean(data, Success.class);
 		
 		List<Map<String,Object>> dockers			= new ArrayList<Map<String,Object>>();
@@ -49,21 +49,14 @@ public class HostDockerService {
 		
 			List<String> ips		= gson.fromJson(success.getResponseBody(), new TypeToken<List<String>>(){}.getType());
 			ips						= Util.asc(ips);
-			
 			for( String ip : ips )
 			{
-				data				= redisClient.get(REDIS.HASH.DOCKER, ip);
+				data				= redisClient.get(clusterId + "_" + REDIS.HASH.DOCKER, ip);
 				success				= Util.JsonTobean(data, Success.class);
 				if( success.getResponseCode() == HTTP.CODE.OK && success.getResponseBody() != null )
 				{
-					//map				= null;
-					//map				= new HashMap<String, Object>();
 					map.put(ip, gson.fromJson(success.getResponseBody(), new TypeToken<Object>(){}.getType()));
-					
-					//dockers.add(gson.fromJson(success.getResponseBody(), new TypeToken<Object>(){}.getType()));
 				}
-				else
-					return data;
 			}
 			
 			return Util.beanToJson(new Success(HTTP.CODE.OK, HTTP.MESSAGE.OK, "Redis", Util.beanToJson(map)));
@@ -74,115 +67,115 @@ public class HostDockerService {
 		}
 	}
 
-	public String getDocker(String hostIp) {
-		return redisClient.get(REDIS.HASH.DOCKER, hostIp);
+	public String getDocker(String clusterId, String hostIp) {
+		return redisClient.get(clusterId + "_" + REDIS.HASH.DOCKER, hostIp);
 	}
 	
-	public String getDockerCpuUsedByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerCpuUsedByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerCpuUsedByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerCpuUsedByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerCpuUsedByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerCpuUsedByTaskId(hostIp, taskId, startTime, time, limit);
+	public String getDockerCpuUsedByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerCpuUsedByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
-	public String getDockerMemoryAllocateByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerMemoryAllocateByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerMemoryAllocateByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerMemoryAllocateByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerMemoryUsedByteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerMemoryUsedByteByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerMemoryUsedByteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerMemoryUsedByteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerMemoryUsedByteByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerMemoryUsedByteByTaskId(hostIp, taskId, startTime, time, limit);
+	public String getDockerMemoryUsedByteByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerMemoryUsedByteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
-	public String getDockerMemoryUsedPercentByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerMemoryUsedPercentByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerMemoryUsedPercentByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerMemoryUsedPercentByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerMemoryUsedPercentByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerMemoryUsedPercentByTaskId(hostIp, taskId, startTime, time, limit);
+	public String getDockerMemoryUsedPercentByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerMemoryUsedPercentByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
-	public String getDockerDiskioReadByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerDiskioReadByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerDiskioReadByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerDiskioReadByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerDiskioReadByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerDiskioReadByTaskId(hostIp, taskId, startTime, time, limit);
+	public String getDockerDiskioReadByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerDiskioReadByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
-	public String getDockerDiskioWriteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerDiskioWriteByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerDiskioWriteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerDiskioWriteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerDiskioWriteByTaskId(String hostIp, String taskId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerDiskioWriteByTaskId(hostIp, taskId, startTime, time, limit);
+	public String getDockerDiskioWriteByTaskId(String clusterId, String hostIp, String taskId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerDiskioWriteByTaskId(clusterId, hostIp, taskId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxbyteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxbyteByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxbyteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxbyteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxdropByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxdropByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxdropByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxdropByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxerrorByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxerrorByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxerrorByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxerrorByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxpacketByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxpacketByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxpacketByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxpacketByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxbyteByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxbyteByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxbyteByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxbyteByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxdropByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxdropByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxdropByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxdropByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxerrorByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxerrorByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxerrorByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxerrorByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxpacketByContainerId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxpacketByContainerId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxpacketByContainerId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxpacketByContainerId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxbyteByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxbyteByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxbyteByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxbyteByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxdropByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxdropByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxdropByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxdropByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxerrorByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxerrorByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxerrorByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxerrorByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkRxpacketByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkRxpacketByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkRxpacketByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkRxpacketByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxbyteByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxbyteByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxbyteByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxbyteByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxdropByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxdropByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxdropByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxdropByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxerrorByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxerrorByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxerrorByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxerrorByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 	
-	public String getDockerNetworkTxpacketByTaskId(String hostIp, String containerId, String startTime, String time, int limit) {
-		return adapterManager.adapter().getDockerNetworkTxpacketByTaskId(hostIp, containerId, startTime, time, limit);
+	public String getDockerNetworkTxpacketByTaskId(String clusterId, String hostIp, String containerId, String startTime, String time, int limit) {
+		return adapterManager.adapter().getDockerNetworkTxpacketByTaskId(clusterId, hostIp, containerId, startTime, time, limit);
 	}
 }

@@ -15,6 +15,7 @@
 */
 function MDT () {
 	this.area;
+	this.initData;
 	this.table;
 	this.options = {
 		data : {
@@ -66,7 +67,8 @@ MDT.prototype.columns = function (columns) {
 	return this;
 }
 MDT.prototype.data = function (data) {
-	this.options.data.source = data;
+	this.initData = data;
+	this.options.data.source = this.initData;
 	return this;
 }
 MDT.prototype.event = function (event) {
@@ -74,9 +76,84 @@ MDT.prototype.event = function (event) {
 	return this;
 }
 
+MDT.prototype.event = function (event) {
+	this.event = event;
+	return this;
+}
 
+MDT.prototype.searchEvent = function () {
+	var _this = this;
+	$("#" + _this.area + "SearchBtn").click(function(){
+		_this.search();
+	})
+	$("#" + _this.area + "SearchInput").keydown(function(key){
+		if(key.keyCode == 13)
+			_this.search();
+	})
+}
+MDT.prototype.search = function () {
+	var _this = this;
+	var searchResult = []; 
+	var searchText = $("#" + _this.area + "SearchInput").val();
+	_this.initData.forEach(function(item){
+		var searchCheck = false;
+		Object.keys(item).forEach(function(key){
+			if (typeof item[key] == "string" && item[key].indexOf(searchText) != -1) searchCheck = true;
+		})
+		if (searchCheck) searchResult.push(item);
+	})
+	_this.searchData(searchResult).searchDraw();
+	_this.searchEvent();
+	if (typeof _this.event != "undefined")
+		_this.event();
+}
+MDT.prototype.searchData = function (data) {
+	this.options.data.source = data;
+	return this;
+}
+MDT.prototype.searchDraw = function () {
+	$("#" + this.area).mDatatable("destroy");
+	this.table = $("#" + this.area).mDatatable(this.options);
+}
+MDT.prototype.appendData = function (data) {
+	var _this = this;
+	data.forEach(function(d){
+		_this.options.data.source.push(d);
+	})
+	$("#" + this.area).mDatatable("destroy");
+	this.table = $("#" + this.area).mDatatable(this.options);
+	return this;
+}
+MDT.prototype.getData = function () {
+	return this.options.data.source;
+}
+MDT.prototype.setData = function (data) {
+	return this.options.data.source = data;
+}
+MDT.prototype.refresh = function () {
+	$("#" + this.area).mDatatable("destroy");
+	this.table = $("#" + this.area).mDatatable(this.options);
+	return this;
+}
+MDT.prototype.makeSearch = function () {
+	var searchHtml = '';
+	searchHtml +='<div class="row"><div class="col-lg-8"></div><div class="col-lg-4">';
+	searchHtml +='<div class="form-group m-form__group">';
+	searchHtml +='	<div class="input-group">';
+	searchHtml +='		<input type="text" class="form-control" placeholder="Search for..." aria-label="Search for..." aria-describedby="basic-addon2" id="' + this.area + 'SearchInput">';
+	searchHtml +='		<div class="input-group-append">';
+	searchHtml +='			<button class="btn btn-success" id = "' + this.area + 'SearchBtn" type="button">Search</button>';
+	searchHtml +='		</div>';
+	searchHtml +='	</div>';
+	searchHtml +='</div>';
+	searchHtml +='</div></div>';
+	$("#" + this.area).append(searchHtml);
+	this.searchEvent();
+	return this;
+}
 MDT.prototype.draw = function () {
 	this.event();
 	$("#" + this.area).mDatatable("destroy");
 	this.table = $("#" + this.area).mDatatable(this.options);
+	return this;
 }

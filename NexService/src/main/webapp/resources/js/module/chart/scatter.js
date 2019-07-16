@@ -64,7 +64,7 @@ function Scatter () {
 		
 		tooltip: {
 			headerFormat: '<b>{series.name}</b><br>',
-			pointFormat: 'Cpu {point.y}% <br> Memory {point.x}%'
+			pointFormat: 'CPU {point.y}% <br> Memory {point.x}%'
 		},
 		legend: false,
 		colors: ['#f4516c'],

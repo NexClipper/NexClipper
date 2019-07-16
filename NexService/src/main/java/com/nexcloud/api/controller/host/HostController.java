@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host")
 public class HostController {
 	static final Logger logger = LoggerFactory.getLogger(HostController.class);
 
@@ -47,8 +47,8 @@ public class HostController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	@RequestMapping(value="/snapshot", method=RequestMethod.GET)
-	public String getHosts() { 
-		return hostService.getHosts();
+	public String getHosts(@PathVariable(value="clusterId", required=false) String clusterId) { 
+		return hostService.getHosts(clusterId);
 	}
 	
 	
@@ -72,9 +72,9 @@ public class HostController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	@RequestMapping(value="/{hostIp}/snapshot", method=RequestMethod.GET)
-	public String getHost(
+	public String getHost(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=false) String hostIp) {
-		return hostService.getHost(hostIp);
+		return hostService.getHost(clusterId, hostIp);
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class HostController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	@RequestMapping(value="/ips", method=RequestMethod.GET)
-	public String getIps() { 
-		return hostService.getIps();
+	public String getIps(@PathVariable(value="clusterId", required=false) String clusterId) { 
+		return hostService.getIps(clusterId);
 	}
 }

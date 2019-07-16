@@ -32,20 +32,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestController
-@RequestMapping(value = "/api/v1/host/{hostIp}/cpu")
+@RequestMapping(value = "/api/v1/cluster/{clusterId}/host/{hostIp}/cpu")
 public class HostCpuController {
 	static final Logger logger = LoggerFactory.getLogger(HostCpuController.class);
 	
 	@Autowired
 	private HostCpuService hostCpuService;
 	
-	@RequestMapping(value="/check", method=RequestMethod.GET)
-	public String check() {
-		logger.debug("cpu check");
-		return "cpu check";
-	}
-	
-	@RequestMapping(value="/used/percent",method=RequestMethod.GET)
 	@ApiOperation(value="Host별 CPU usage", httpMethod="GET", notes="cpu used percent")
 	@ApiImplicitParams({
 		@ApiImplicitParam(
@@ -81,14 +74,14 @@ public class HostCpuController {
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
 	
-	public String getCpuUsedPercentByHostIp(
+	public String getCpuUsedPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
 		logger.debug("used");
-		return hostCpuService.getCpuUsedPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuUsedPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -128,13 +121,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuIdlePercentByHostIp(
+	public String getCpuIdlePercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuIdlePercentByHostIp(hostIp, startTime, time, limit); 
+		return hostCpuService.getCpuIdlePercentByHostIp(clusterId, hostIp, startTime, time, limit); 
 	}
 	
 	
@@ -173,13 +166,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuIrqPercentByHostIp(
+	public String getCpuIrqPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuIrqPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuIrqPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -218,13 +211,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuNicePercentByHostIp(
+	public String getCpuNicePercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuNicePercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuNicePercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -264,13 +257,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuSorfirqPercentByHostIp(
+	public String getCpuSorfirqPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuSorfirqPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuSorfirqPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -309,13 +302,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuStolenPercentByHostIp(
+	public String getCpuStolenPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 			@PathVariable(value="hostIp", required=true) String hostIp,
 			@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 			@RequestParam(value="time", required=true, defaultValue="5s") String time,
 			@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuStolenPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuStolenPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -354,13 +347,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuSysPercentByHostIp(
+	public String getCpuSysPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuSysPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuSysPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -399,13 +392,13 @@ public class HostCpuController {
 			@ApiResponse( code=200, message="SUCCESS"),
 			@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuUserPercentByHostIp(
+	public String getCpuUserPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuUserPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuUserPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	
@@ -444,13 +437,13 @@ public class HostCpuController {
 		@ApiResponse( code=200, message="SUCCESS"),
 		@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuWaitPercentByHostIp(
+	public String getCpuWaitPercentByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuWaitPercentByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuWaitPercentByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/total",method=RequestMethod.GET)
@@ -488,13 +481,13 @@ public class HostCpuController {
 		@ApiResponse( code=200, message="SUCCESS"),
 		@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuTotalCoreByHostIp(
+	public String getCpuTotalCoreByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuTotalCoreByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuTotalCoreByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/load1",method=RequestMethod.GET)
@@ -532,13 +525,13 @@ public class HostCpuController {
 		@ApiResponse( code=200, message="SUCCESS"),
 		@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuLoad1ByHostIp(
+	public String getCpuLoad1ByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuLoad1ByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuLoad1ByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/load5",method=RequestMethod.GET)
@@ -576,13 +569,13 @@ public class HostCpuController {
 		@ApiResponse( code=200, message="SUCCESS"),
 		@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuLoad5ByHostIp(
+	public String getCpuLoad5ByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuLoad5ByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuLoad5ByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 	
 	@RequestMapping(value="/load15",method=RequestMethod.GET)
@@ -620,12 +613,12 @@ public class HostCpuController {
 		@ApiResponse( code=200, message="SUCCESS"),
 		@ApiResponse( code=500, message="Internal Server Error")
 	})
-	public String getCpuLoad15ByHostIp(
+	public String getCpuLoad15ByHostIp(@PathVariable(value="clusterId", required=false) String clusterId,
 		@PathVariable(value="hostIp", required=true) String hostIp,
 		@RequestParam(value="startTime", required=true, defaultValue="1h") String startTime,
 		@RequestParam(value="time", required=true, defaultValue="5s") String time,
 		@RequestParam(value="limit", required=true, defaultValue="1000") int limit
 	) {
-		return hostCpuService.getCpuLoad15ByHostIp(hostIp, startTime, time, limit);
+		return hostCpuService.getCpuLoad15ByHostIp(clusterId, hostIp, startTime, time, limit);
 	}
 }
