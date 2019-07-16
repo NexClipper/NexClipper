@@ -67,7 +67,7 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: nexclipper-agent
-        image: nexclipper/nexagent:master
+        image: nexclipper/nexagent:0.1.0
         imagePullPolicy: Always
         securityContext:
           privileged: true
@@ -129,7 +129,7 @@ spec:
       hostIPC: true
       containers:
       - name: nexclipper-agent-k8s
-        image: nexclipper/nexagent:master-k8s
+        image: nexclipper/nexagent-k8s:0.1.0
         resources:
           limits:
             memory: 700Mi
