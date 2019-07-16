@@ -44,14 +44,14 @@
 								</span>
 							</span>
 						</li>
-						<li class="m-menu__item " aria-haspopup="true" >
+						<!-- <li class="m-menu__item " aria-haspopup="true" >
 							<a href="/kubernetes/cluster" class="m-menu__link ">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
 									<span></span>
 								</i>
 								<span class="m-menu__link-text">Cluster</span>
 							</a>
-						</li>
+						</li> -->
 						<li class="m-menu__item " aria-haspopup="true" >
 							<a  href="/kubernetes/node" class="m-menu__link ">
 								<i class="m-menu__link-bullet m-menu__link-bullet--dot">
@@ -243,7 +243,7 @@
 					<span class="m-menu__link-text">Agent</span>
 				</a>
 			</li> -->
-			<li class="m-menu__item  m-menu__item--submenu " aria-haspopup="true"  data-menu-submenu-toggle="hover">
+			<!-- <li class="m-menu__item  m-menu__item--submenu " aria-haspopup="true"  data-menu-submenu-toggle="hover">
 				<a  href="#" class="m-menu__link m-menu__toggle">
 					<i class="m-menu__link-icon flaticon-alert-1"></i>
 					<span class="m-menu__link-text">Manager</span>
@@ -269,7 +269,7 @@
 						</li>
  					</ul>
 				</div> 
-			</li>
+			</li> -->
 			<li class="m-menu__item  m-menu__item" id = "accountTab" style="display: none;">
 				<a href="/account/default" class="m-menu__link">
 					<i class="m-menu__link-icon flaticon-dashboard"></i>

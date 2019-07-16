@@ -122,13 +122,9 @@ function getColumns (workload, checkColumn) {
 		template : function(row){
 			var labels = row.label;
 			var r = '';
-			if (typeof labels != "undefined") {
-				Object.keys(labels).forEach(function(key){
-					r += '<span class="badge badge-secondary">' + key + ':' + labels[key] + '</span>'
-				})	
-			} else {
-					r += '<span class="badge badge-secondary">-</span>'
-			}
+			Object.keys(labels).forEach(function(key){
+				r += '<span class="badge badge-secondary">' + key + ':' + labels[key] + '</span>'
+			})
 			return r;
 		}
 	});
