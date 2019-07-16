@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nexserivce
-          image: nexclipper/nexservice:k8s
+          image: nexclipper/nexservice:0.1.0
           resources:
             limits:
               memory: 1Gi

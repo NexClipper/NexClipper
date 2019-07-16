@@ -67,13 +67,13 @@ spec:
         key: node-role.kubernetes.io/master
       containers:
       - name: nexclipper-agent
-        image: nexclipper/nexagent:master
+        image: nexclipper/nexagent:0.1.0
         imagePullPolicy: Always
         securityContext:
           privileged: true
         env:
         - name: cluster_id
-          value: default
+          value: "1"
         volumeMounts:
         - mountPath: /var/run/docker.sock
           name: docker-sock
@@ -129,7 +129,7 @@ spec:
       hostIPC: true
       containers:
       - name: nexclipper-agent-k8s
-        image: nexclipper/nexagent:master-k8s
+        image: nexclipper/nexagent-k8s:0.1.0
         resources:
           limits:
             memory: 700Mi
@@ -140,7 +140,7 @@ spec:
           privileged: true
         env:
         - name: cluster_id
-          value: default
+          value: "1"
         volumeMounts:
         - mountPath: /dev
           name: dev
