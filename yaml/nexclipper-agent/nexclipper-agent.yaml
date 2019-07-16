@@ -73,7 +73,7 @@ spec:
           privileged: true
         env:
         - name: cluster_id
-          value: default
+          value: "1"
         volumeMounts:
         - mountPath: /var/run/docker.sock
           name: docker-sock
@@ -140,7 +140,7 @@ spec:
           privileged: true
         env:
         - name: cluster_id
-          value: default
+          value: "1"
         volumeMounts:
         - mountPath: /dev
           name: dev
