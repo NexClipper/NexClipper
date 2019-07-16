@@ -273,3 +273,4 @@ CREATE TABLE defaultdb.nexclipper_cluster (
   cluster_delete_flag char(1) NOT NULL, 
   PRIMARY KEY (cluster_id)
 );
+insert into defaultdb.nexclipper_cluster (description, cluster_name, cluster_status, cluster_delete_flag) values('default', 'default', 'Y','Y')
