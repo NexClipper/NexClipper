@@ -1,0 +1,31 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis
+  namespace: nexclipper
+  labels:
+    app: redis
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis:3.2.9
+        imagePullPolicy: IfNotPresent 
+        name: redis
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /redis-master-data             
+      volumes:
+      - name: data
+        emptyDir: {}
+status: {}

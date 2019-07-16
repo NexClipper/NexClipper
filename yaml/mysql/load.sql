@@ -255,4 +255,21 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+CREATE TABLE `nexclipper_email` (
+  `email_no` INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(64) NOT NULL,
+  `email_type` char(1) NOT NULL, 
+  `email_password` VARCHAR(256),
+  PRIMARY KEY (email_no)
+);
+
 -- Dump completed on 2019-02-19  5:47:30
+
+CREATE TABLE defaultdb.nexclipper_cluster (
+  cluster_id INT(11) unsigned NOT NULL AUTO_INCREMENT,
+  description VARCHAR(1024),
+  cluster_name VARCHAR(64) NOT NULL,
+  cluster_status char(1) NOT NULL, 
+  cluster_delete_flag char(1) NOT NULL, 
+  PRIMARY KEY (cluster_id)
+);

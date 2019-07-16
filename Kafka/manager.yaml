@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka-manager
-  namespace: nexclipper
 spec:
   replicas: 1
   selector:
@@ -29,7 +28,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: kafka-manager
-  namespace: nexclipper
 spec:
   selector:
     app: kafka-manager

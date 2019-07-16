@@ -35,14 +35,6 @@ $ wget https://raw.githubusercontent.com/NexClipper/NexClipper/dev/HELM/nexclipp
 $ helm install --set hostPath.influx=<influx data path>,hostPath.mysql=<mysql data path> nexclipper-0.1.0.tgz
 ```
 
-> Create Mysql table and data
-```sh
-  $ kubectl exec -it <mysql pod id> -n nexclipper sh
-  > mysql -uadmin -ppassword
-  > use defaultdb
-  > (Execute stript of load.sql at https://github.com/NexClipper/NexClipper/blob/master/yaml/mysql/load.sql) 
-```
-
 
 ## Uninstall chart
 
