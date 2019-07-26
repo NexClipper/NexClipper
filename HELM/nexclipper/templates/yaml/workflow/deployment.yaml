@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nexclipper-workflow
-          image: nexclipper/nexworkflow:k8s
+          image: nexclipper/nexworkflow:0.1.0
           resources:
             limits:
               memory: 1Gi

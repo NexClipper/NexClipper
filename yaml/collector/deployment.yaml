@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nexclipper-collector
-          image: nexclipper/nexcollector:k8s
+          image: nexclipper/nexcollector:0.1.0
           resources:
             limits:
               memory: 1Gi
