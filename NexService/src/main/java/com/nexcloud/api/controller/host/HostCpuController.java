@@ -38,7 +38,7 @@ public class HostCpuController {
 	
 	@Autowired
 	private HostCpuService hostCpuService;
-	
+	@RequestMapping(value="/used/percent",method=RequestMethod.GET)
 	@ApiOperation(value="Host별 CPU usage", httpMethod="GET", notes="cpu used percent")
 	@ApiImplicitParams({
 		@ApiImplicitParam(
