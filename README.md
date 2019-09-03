@@ -51,6 +51,7 @@ Linkedin: https://www.linkedin.com/company/nexcloud/
 
 Twitter: https://twitter.com/NexClipper
 
+## CNCF
 NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](https://landscape.cncf.io/category=monitoring&format=card-mode&grouping=category).
 
 ![](docs/images/cncf.png)
