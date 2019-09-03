@@ -5,12 +5,10 @@
 
 ![](docs/images/logo1_wide.png)
 
-NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](https://landscape.cncf.io/category=monitoring&format=card-mode&grouping=category).
-
-![](docs/images/cncf.png)
 
 
-## NexClipper (On-Premise)
+
+## About NexClipper 
 
 NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker and Kubernetes.
 NexClipper features the following capabilities:
@@ -53,3 +51,6 @@ Linkedin: https://www.linkedin.com/company/nexcloud/
 
 Twitter: https://twitter.com/NexClipper
 
+NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](https://landscape.cncf.io/category=monitoring&format=card-mode&grouping=category).
+
+![](docs/images/cncf.png)
