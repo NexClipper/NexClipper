@@ -33,7 +33,9 @@ For online demo,  visit  http://demo.nexclipper.io/
 ![](docs/images/NexClipper_dashboard.png)
 
 
+
 - If you want to try current NexClipper version, Go to [Here](https://github.com/NexClipper/NexClipper/tree/0.0.1)
+
 
 ## Licensing
 
