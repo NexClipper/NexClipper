@@ -1,59 +1,111 @@
-# NexClipper
+* We have rebuilt NexClipper with new architecture & components. All-new NexClipper version 0.2.0 is to be released soon.
 
-### We're currently working on rebuilding NexClipper with new architecture & components. All-new NexClipper is on its way soon.
+  Previous version (NexClipper v0.1.0) has been moved to NexClipperBasic repository: [NexClipperBasic](https://github.com/NexClipper/NexClipperBasic)
 
+  
 
-![](docs/images/logo1_wide.png)
+  ![img](./docs/img/logo1_wide.png)
 
+  # NexClipper Monitoring System
 
+  Monitor & Manage Enterprise Cloud Native Infrastructure with NexClipper, an OSS CNCF (Cloud Native Computing Foundation) Member Company
 
+  - **Cloud Native** : Manage Kubernetes & Container Clusters with Real-Time Visibility & Insight on Metrics
+  - **CNCF EcoSystem** : Improve OSS Interoperability & Compatibility through OpenMetrics Protocol Adoption, Contributing to CNCF Community
+  - **Enterprise Architecture** : Monitor Multi-Cluster & Multi-Tenancy Environments through Global Views and Unlimited Metrics Retention
 
-## About NexClipper 
+  
 
-NexClipper is an open source software to monitor and manage performance of the container cluster -  Docker and Kubernetes.
-NexClipper features the following capabilities:
-- Fullstack dashboard (Kubernetes and Infrastructure)
-- Container Cluster (Kubernetes cluster, nodes and workloads)
-- Infrastructure Monitoring (Docker Container, Host, Resource)
-- Incidents Management (Rule set and alert manager) (Soon)
-- Rest API service (Soon)
-- Global view for multi cluster (Soon)
-- Dashboard Enhancement to replace k8s dashboard (Soon)
-- Dashboard Enhancement for customizing (Plan)
-- Prometheus exporter Integration (Plan)
-- Workload management and deployment (Plan)
-- Multi tenancy (Plan)
-- Resource analytics and forecasting (Plan)
+  ## Improve Interoperability by OpenMetrics
 
-For online demo,  visit  http://demo.nexclipper.io/
+  - NexClipper Offers 'Metrics Pipeline' Which Transmits Metrics in OpenMetrics Protocol, an Open Standard for Exposing Metrics.
+  - Metrics Pipeline Routes to NexClipper Global View, and Can Be Compatibly Integrated with 3rd Party Monitoring Platforms such as Prometheus, DataDog, New Relic, Sysdig and etc, All Supporting OpenMetrics Exposition Format, to Reveal Different Insights.
+  - NexClipper Provides Prometheus Exporter Catalog with Installation Instructions for Help Setup Easily
 
+  
 
-## NexClipper Dashboard
+  ## Make Prometheus Easier to Manage
 
-![](docs/images/NexClipper_dashboard.png)
+  - NexClipper's Agent-Server Way of Exposition Guarantees Transmitting Metrics within Firewalls outward for Prometheus Viewing in External Network Environment.
+  - Metrics Pipeline Easily Consolidates Metrics from Different System Sources, and Allows Prometheus to Connect for Integrated (Multi-Cluster) Viewing.
 
+  
 
+  ## Monitor Anywhere, at Any Scales
 
-- If you want to try current NexClipper version, Go to [Here](https://github.com/NexClipper/NexClipper/tree/0.0.1)
+  - NexClipper Comes with Limitless Horizontal Scalability and Allows Infinite Metrics Data Retention.
+  - It's for Enterprise : Designed for Managing Multi-Cluster & Multi-Tenancy Monitoring, NexClipper Integrates Metrics Exposed from Multiple Sources for Global Viewing to Give Full Insights.
 
+  
 
-## Licensing
+  # Overview
 
-NexClipper is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/NexClipper/NexClipper/blob/master/LICENSE) for the full license text.
+  ## Features
 
-## Contact
+  - Infrastructure monitoring (Host, Process, Container, Network)
+  - Kubernetes monitoring (Nodes, Workloads, Resources)
+  - Scrape Prometheus metrics
+  - Export metrics for other monitoring system through OpenMetrics
+  - Integrated full stack dashboard
+  - Customizable dashboard
+  - Global view and multi tenancy
+  - Help search and install for Prometheus exporter 
+  - Incidents Management (RuleSet, Alert)
 
-Email: nexclipper@nexclipper.io
+  
 
-Homepage: https://www.nexclipper.io/
+  ## Roadmap
 
-Facebook : https://www.facebook.com/nexclipper/
+  ### v0.2.0
 
-Linkedin: https://www.linkedin.com/company/nexcloud/
+  - Setup basic project structure
+  - Infrastructure monitoring: Host, Process, Container
+  - Kubernetes monitoring: Nodes, Workloads
 
-Twitter: https://twitter.com/NexClipper
+  ### v0.3.0
 
-## CNCF
-NexClipper is a silver member of [Cloud Native Computing Foundation (CNCF)](https://landscape.cncf.io/category=monitoring&format=card-mode&grouping=category).
+  - Scrape Prometheus metrics
+  - Export metrics for other monitoring system through OpenMetrics
 
-![](docs/images/cncf.png)
+  ### v0.4.0
+
+  - Integrated full stack dashboard
+  - Prometheus exporter for help search and install easily
+
+  ### v0.5.0
+
+  - Global view and multi tenancy
+  - Customizable dashboard
+  - Incidents Management
+
+  
+
+  ## Architecture Overview
+
+  ![architecture-overview.png](./docs/img/architecture-overview.png)
+
+  
+
+  ## Metrics Pipeline
+
+  ![metrics-pipeline.png](./docs/img/metrics-pipeline.png)
+
+  - Provide system metrics from scraped data from clusters to other monitoring system like Prometheus through OpenMetrics standard format.
+
+  - Scrape metrics from various sources using OpenMetrics or Prometheus exposition format by agent. Agent based metric collecting strategy overcome in restricted or complex network environment.
+
+  
+
+  ## Prometheus Exporter Management
+
+  - Show Recommended Prometheus exporters for current system and services (well-known system first)
+  - Grouping and categorizing many exporters
+  - Help find and installation Prometheus exporter to setup monitoring system easily
+
+  
+
+  ## Global View
+
+  - Scrape metrics from system and services, exporters by local agent
+  - NexServer collects metrics from agents save these data to time series database
+  - Dashboard shows status and metrics from multiple sources

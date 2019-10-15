@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+service Collector {
+    rpc Ping (stream Status) returns (stream Status) {}
+
+    rpc UpdateAgent(Agent) returns (Response) {}
+    rpc UpdateProcess(ProcessAll) returns (Response) {}
+    rpc UpdateContainer(ContainerAll) returns (Response) {}
+
+    rpc ReportMetrics(Metrics) returns (Response) {}
+
+    rpc ReportNodeMetrics(NodeMetrics) returns (Response) {}
+    rpc ReportProcessMetrics(ProcessMetrics) returns (Response) {}
+    rpc ReportContainerMetrics(ContainerMetrics) returns (Response) {}
+
+    rpc UpdateK8sCluster(K8sCluster) returns (Response) {}
+    rpc ReportK8sMetrics(K8sMetrics) returns (Response) {}
+}
+
+message Request {
+    repeated int32 data_int32 = 1;
+    repeated int64 data_int64 = 2;
+    repeated string data_string = 3;
+}
+
+message Response {
+    bool success = 1;
+    uint32 code = 2;
+    string error = 3;
+    repeated int32 data_int32 = 4;
+    repeated int64 data_int64 = 5;
+    repeated string data_string = 6;
+}
+
+message Status {
+    string uuid = 1;
+    int64 timestamp = 2;
+}
+
+message Metric {
+    double value = 1;
+    int64 ts = 2;
+
+    string cluster = 3;
+    string node = 4;
+
+    enum SourceType {
+        NONE = 0;
+        NODE = 1;
+        PROCESS = 2;
+        CONTAINER = 3;
+        K8S_NODE = 10;
+        K8S_POD = 11;
+        K8S_CONTAINER = 12;
+    }
+    SourceType source_type = 5;
+    string source = 6;
+    int32 source_int = 7;
+    string endpoint = 8;
+    string name = 9;
+    string label = 10;
+    string type = 11;
+}
+
+message Metrics {
+    repeated Metric metrics = 2;
+}
+
+message Agent {
+    string version = 1;
+    string machineId = 2;
+    string cluster = 3;
+    Node node = 4;
+}
+
+message Node {
+    string host = 1;
+    string os = 2;
+    string platform = 3;
+    string platform_family = 4;
+    string platform_version = 5;
+    string virtualization_system = 6;
+    string virtualization_role = 7;
+    uint64 uptime = 8;
+    string ipv4 = 9;
+    string ipv6 = 10;
+    uint32 port = 11;
+    Metrics metrics = 12;
+}
+
+message NodeMetrics {
+    string cluster = 1;
+    string host = 2;
+    Metrics metrics = 3;
+}
+
+message Process {
+    string container = 1;
+    int32 pid = 2;
+    string name = 3;
+    string cmd = 4;
+    string user = 5;
+    string group = 6;
+    Metrics metrics = 7;
+}
+
+message ProcessAll {
+    string cluster = 1;
+    string host = 2;
+    repeated Process processes = 3;
+}
+
+message ProcessMetrics {
+    string cluster = 1;
+    string host = 2;
+    string container = 3;
+    int32 pid = 4;
+    string name = 5;
+    Metrics metrics = 6;
+}
+
+message Container {
+    string type = 1;
+    string container_id = 2;
+    string name = 3;
+    string image = 4;
+    Metrics metrics = 6;
+}
+
+message ContainerAll {
+    string cluster = 1;
+    string host = 2;
+    repeated Container containers = 3;
+}
+
+message ContainerMetrics {
+    string cluster = 1;
+    string host = 2;
+    string container_id = 3;
+    Metrics metrics = 4;
+}
+
+message CPU {
+    int32 cpu = 1;
+    string vendor_id = 2;
+    string family = 3;
+    string model = 4;
+    int32 stepping = 5;
+    string physical_id = 6;
+    string core_id = 7;
+    int32 cores = 8;
+    string model_name = 9;
+    double mhz = 10;
+    int32 cache_size = 11;
+    string microcode = 12;
+}
+
+message K8sObject {
+    string api_version = 4;
+    string metadata = 1;
+    string spec = 2;
+    string status = 3;
+    string kind = 5;
+    string name = 6;
+    map<string, string> labels = 7;
+    string k8s_cluster = 8;
+    string k8s_namespace = 9;
+}
+
+message K8sCluster {
+    K8sObject object = 1;
+    string agent_cluster = 2;
+    repeated K8sNamespace k8s_namespaces = 3;
+    repeated K8sObject k8s_nodes = 4;
+}
+
+message K8sNamespace {
+    K8sObject object = 1;
+    repeated K8sObject items = 2;
+    repeated K8sObject workloads = 3;
+    repeated K8sPod pods = 4;
+}
+
+message K8sPod {
+    K8sObject object = 1;
+    string qos = 2;
+    repeated Container containers = 3;
+}
+
+message K8sNodeMetric {
+    string node_name = 1;
+    repeated Metric metrics = 2;
+}
+
+message K8sContainerMetric {
+    string container = 1;
+    repeated Metric metrics = 2;
+}
+
+message K8sPodMetric {
+    string namespace = 1;
+    string pod_name = 2;
+    repeated K8sContainerMetric k8s_container_metrics = 3;
+}
+
+message K8sMetrics {
+    string agent_cluster = 1;
+    string k8s_cluster = 2;
+    repeated K8sNodeMetric k8s_node_metrics = 3;
+    repeated K8sPodMetric k8s_pod_metrics = 4;
+}
