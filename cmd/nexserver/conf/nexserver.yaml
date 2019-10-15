@@ -1,0 +1,16 @@
+Server:
+  BindAddress: 0.0.0.0
+  AgentListenPort: 18000
+
+TLS:
+  Use: false
+  CertFile:
+  KeyFile:
+
+Database:
+  Host: localhost
+  Port: 5432
+  User: postgres
+  Password:
+  DbName: nexclipper
+  SslMode: disable

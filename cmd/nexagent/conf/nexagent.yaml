@@ -1,0 +1,13 @@
+Agent:
+  ServerAddress: localhost:18000
+  ClusterName: default
+  ReportInterval: 5
+
+TLS:
+  Use: false
+  CertFile:
+  KeyFile:
+
+Kubernetes:
+  ClusterName: k8s-local
+  Namespace: nexclipper

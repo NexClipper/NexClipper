@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexserver
+  labels:
+    app.kubernetes.io/name: nexserver
+    app.kubernetes.io/version: 0.2.0
+  namespace: nexclipper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nexserver
+      app.kubernetes.io/version: 0.2.0
+  template:
+    metadata:
+      name: nexserver
+      labels:
+        app.kubernetes.io/name: nexserver
+        app.kubernetes.io/version: 0.2.0
+    spec:
+      containers:
+        - name: nexserver
+          image: registry.nexclipper.io/nexserver:0.2.0
+          resources:
+            limits:
+              memory: 1Gi
+            requests:
+              memory: 512Mi
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18000
+              name: agent-port
+          env:
+            - name: NEXSERVER_DB_HOST
+              value: "database"
+            - name: NEXSERVER_DB_PORT
+              value: "5432"
+            - name: NEXSERVER_DB_USER
+              value: "postgres"
+            - name: NEXSERVER_DB_PASS
+              value: ""
+            - name: NEXSERVER_DB_NAME
+              value: "nexclipper"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexserver
+  labels:
+    app.kubernetes.io/name: nexserver
+    app.kubernetes.io/version: 0.2.0
+  namespace: nexclipper
+spec:
+  type: NodePort
+  ports:
+    - port: 18000
+      protocol: TCP
+      targetPort: 18000
+      name: agent-port
+  selector:
+    app.kubernetes.io/name: nexserver
+    app.kubernetes.io/version: 0.2.0
