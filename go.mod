@@ -1,4 +1,4 @@
-module github.com/NexClipper/nexclipper-engine
+module github.com/NexClipper/NexClipper
 
 go 1.12
 
