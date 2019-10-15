@@ -1,0 +1,133 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: nexagent-sa
+  namespace: nexclipper
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: lease-access
+  namespace: nexclipper
+rules:
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["get", "create", "update", "list"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: lease-access
+  namespace: nexclipper
+subjects:
+  - kind: User
+    name: system:serviceaccount:nexclipper:nexagent-sa
+roleRef:
+  kind: Role
+  name: lease-access
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nexagent-sa-kube-system-cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: nexagent-sa
+    namespace: nexclipper
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nexagent
+  namespace: nexclipper
+  labels:
+    app.kubernetes.io/name: nexagent
+    app.kubernetes.io/version: 0.2.0
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nexagent
+      app.kubernetes.io/version: 0.2.0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nexagent
+        app.kubernetes.io/version: 0.2.0
+    spec:
+      automountServiceAccountToken: true
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+        - name: docker
+          hostPath:
+            path: /var/lib/docker
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: log
+          hostPath:
+            path: /var/log
+        - name: etc
+          hostPath:
+            path: /etc
+        - name: pki
+          hostPath:
+            path: /etc/kubernetes/pki
+      serviceAccount: nexagent-sa
+      hostNetwork: true
+      hostPID: true
+      hostIPC: true
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+          key: node-role.kubernetes.io/master
+        - operator: Exists
+          effect: NoExecute
+          key: node-role.kubernetes.io/master
+      containers:
+        - name: nexagent
+          image: registry.nexclipper.io/nexagent:0.2.0
+          resources:
+            limits:
+              memory: 700Mi
+            requests:
+              memory: 512Mi
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          env:
+            - name: NEXAGENT_SERVER_ADDRESS
+              value: nexserver.nexclipper
+            - name: NEXAGENT_KUBERNETES_NAME
+              value: k8s-test-cluster
+            - name: NEXAGENT_KUBERNETES_NAMESPACE
+              value: nexclipper
+          volumeMounts:
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+            - mountPath: /var/lib/docker
+              name: docker
+            - mountPath: /dev
+              name: dev
+            - mountPath: /sys
+              name: sys
+            - mountPath: /var/log
+              name: log
+            - mountPath: /pki
+              name: pki
+            - mountPath: /etc
+              name: etc
