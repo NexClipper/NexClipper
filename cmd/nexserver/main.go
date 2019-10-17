@@ -32,6 +32,12 @@ func initApp() *cli.App {
 			EnvVar: "NEXSERVER_AGENT_PORT",
 			Value:  18000,
 		},
+		cli.IntFlag{
+			Name:   "api",
+			Usage:  "Listening port for REST API",
+			EnvVar: "NEXSERVER_API_PORT",
+			Value:  18001,
+		},
 		cli.BoolFlag{
 			Name:   "tls",
 			Usage:  "Use TLS secure communication channel",
@@ -97,8 +103,9 @@ func initApp() *cli.App {
 		} else {
 			bindAddress := c.String("server")
 			agentPort := c.Int("agent")
+			apiPort := c.Int("api")
 
-			nexServer.SetServerConfig(bindAddress, agentPort)
+			nexServer.SetServerConfig(bindAddress, agentPort, apiPort)
 
 			dbHost := c.String("db.host")
 			dbPort := c.Int("db.port")

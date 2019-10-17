@@ -47,6 +47,7 @@ var kasp = keepalive.ServerParameters{
 type ServerConfig struct {
 	BindAddress     string
 	AgentListenPort int
+	ApiPort         int
 }
 
 type DatabaseConfig struct {
@@ -488,6 +489,8 @@ func (s *NexServer) Start() error {
 	}
 	log.Println("Server: listen at", listenPort)
 
+	s.SetupApiHandler()
+
 	srv := grpc.NewServer(
 		grpc.KeepaliveEnforcementPolicy(kaep),
 		grpc.KeepaliveParams(kasp))
@@ -540,9 +543,10 @@ func NewNexServer() *NexServer {
 	return server
 }
 
-func (s *NexServer) SetServerConfig(bindAddress string, agentPort int) {
+func (s *NexServer) SetServerConfig(bindAddress string, agentPort, apiPort int) {
 	s.config.Server.BindAddress = bindAddress
 	s.config.Server.AgentListenPort = agentPort
+	s.config.Server.ApiPort = apiPort
 }
 
 func (s *NexServer) SetDatabaseConfig(dbHost string, dbPort int, dbUser, dbPass, dbName, dbSslMode string) {
