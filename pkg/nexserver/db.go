@@ -63,6 +63,8 @@ func (s *NexServer) ConnectDatabase() (*gorm.DB, error) {
 	s.dbLock["TYPE"] = &sync.RWMutex{}
 	s.dbLock["LABEL"] = &sync.RWMutex{}
 
+	s.db.Table("agents").Updates(map[string]interface{}{"online": false})
+
 	return s.db, nil
 }
 
