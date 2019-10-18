@@ -9,12 +9,17 @@ import (
 
 func (s *NexServer) SetupApiHandler() {
 	gin.SetMode("release")
-
 	router := gin.Default()
-	router.Use(cors.Default())
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	config.AllowMethods = []string{"*"}
+	config.AllowHeaders = []string{"*"}
+	config.AllowCredentials = true
+
+	router.Use(cors.New(config))
 
 	router.GET("/api/health", s.ApiHealth)
-
 	clusters := router.Group("/api/clusters")
 	{
 		clusters.GET("", s.ApiClusterList)
