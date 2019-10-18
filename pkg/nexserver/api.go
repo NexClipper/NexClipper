@@ -2,6 +2,7 @@ package nexserver
 
 import (
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -10,6 +11,8 @@ func (s *NexServer) SetupApiHandler() {
 	gin.SetMode("release")
 
 	router := gin.Default()
+	router.Use(cors.Default())
+
 	router.GET("/api/health", s.ApiHealth)
 
 	clusters := router.Group("/api/clusters")
