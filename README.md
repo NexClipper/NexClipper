@@ -40,6 +40,10 @@ Monitor & Manage Enterprise Cloud Native Infrastructure with NexClipper, an OSS 
 
 # Overview
 
+## Install
+
+[Install and Run](https://github.com/NexClipper/NexClipper/blob/master/docs/install_and_run.md)
+
 ## Features
 
 - Infrastructure monitoring (Host, Process, Container, Network)
