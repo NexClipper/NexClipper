@@ -1,5 +1,3 @@
-**We have rebuilt NexClipper with new architecture & components. All-new NexClipper version 0.2.0 is to be released soon.**
-
 **Previous version (NexClipper v0.1.0) has been moved to NexClipperBasic repository: [NexClipperBasic](https://github.com/NexClipper/NexClipperBasic)**
 
 
