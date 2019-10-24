@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 )
 
 func (s *NexServer) SetupApiHandler() {
@@ -25,6 +26,11 @@ func (s *NexServer) SetupApiHandler() {
 		clusters.GET("", s.ApiClusterList)
 		clusters.GET("/:cid/agents", s.ApiAgentList)
 		clusters.GET("/:cid/nodes", s.ApiNodeList)
+	}
+	snapshot := router.Group("/api/snapshot")
+	{
+		snapshot.GET("/:cid/nodes", s.ApiSnapshotNodes)
+		snapshot.GET("/:cid/nodes/:nodeId", s.ApiSnapshotNodes)
 	}
 	router.GET("/api/agents", s.ApiAgentListAll)
 	router.GET("/api/nodes", s.ApiNodeListAll)
@@ -84,15 +90,15 @@ func (s *NexServer) ApiClusterList(c *gin.Context) {
 }
 
 func (s *NexServer) ApiAgentList(c *gin.Context) {
-	cID := c.Param("cid")
-	if cID == "" {
+	cId := c.Param("cid")
+	if cId == "" {
 		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
 		return
 	}
 
 	var agents []Agent
 
-	result := s.db.Where("cluster_id=?", cID).Find(&agents)
+	result := s.db.Where("cluster_id=?", cId).Find(&agents)
 	if result.Error != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", result.Error))
@@ -174,15 +180,15 @@ func (s *NexServer) ApiAgentListAll(c *gin.Context) {
 }
 
 func (s *NexServer) ApiNodeList(c *gin.Context) {
-	cID := c.Param("cid")
-	if cID == "" {
+	cId := c.Param("cid")
+	if cId == "" {
 		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
 		return
 	}
 
 	var nodes []Node
 
-	result := s.db.Where("cluster_id=?", cID).Find(&nodes)
+	result := s.db.Where("cluster_id=?", cId).Find(&nodes)
 	if result.Error != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", result.Error))
@@ -223,7 +229,8 @@ func (s *NexServer) ApiNodeList(c *gin.Context) {
 
 func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 	rows, err := s.db.Table("nodes").
-		Select("nodes.id, nodes.host, nodes.ipv4, nodes.os, nodes.platform, nodes.platform_family, nodes.platform_version, nodes.agent_id, clusters.name").
+		Select("nodes.id, nodes.host, nodes.ipv4, nodes.os, " +
+			"nodes.platform, nodes.platform_family, nodes.platform_version, nodes.agent_id, clusters.name").
 		Joins("left join clusters on nodes.cluster_id=clusters.id").Rows()
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad",
@@ -243,17 +250,12 @@ func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 	}
 	clusterMap := make(map[string][]*NodeItem)
 
-	var id uint
-	var host string
-	var ip string
-	var os string
-	var platform string
-	var platformFamily string
-	var platformVersion string
-	var agentId uint
 	var clusterName string
 	for rows.Next() {
-		err := rows.Scan(&id, &host, &ip, &os, &platform, &platformFamily, &platformVersion, &agentId, &clusterName)
+		nodeItem := NodeItem{}
+		err := rows.Scan(&nodeItem.Id, &nodeItem.Host, &nodeItem.Ip,
+			&nodeItem.Os, &nodeItem.Platform, &nodeItem.PlatformFamily, &nodeItem.PlatformVersion,
+			&nodeItem.AgentId, &clusterName)
 		if err != nil {
 			continue
 		}
@@ -263,16 +265,7 @@ func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 		}
 
 		items := clusterMap[clusterName]
-		items = append(items, &NodeItem{
-			Id:              id,
-			Host:            host,
-			Ip:              ip,
-			Os:              os,
-			Platform:        platform,
-			PlatformFamily:  platformFamily,
-			PlatformVersion: platformVersion,
-			AgentId:         agentId,
-		})
+		items = append(items, &nodeItem)
 		clusterMap[clusterName] = items
 	}
 
@@ -280,5 +273,69 @@ func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 		"status":  "ok",
 		"message": "",
 		"data":    clusterMap,
+	})
+}
+
+func (s *NexServer) ApiSnapshotNodes(c *gin.Context) {
+	cId := c.Param("cid")
+	if cId == "" {
+		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
+		return
+	}
+
+	nodeId := c.Param("nodeId")
+	nodeQuery := ""
+	if nodeId != "" {
+		nodeQuery = fmt.Sprintf("AND m2.node_id=%s", nodeId)
+	}
+
+	rows, err := s.db.Raw(fmt.Sprintf(`
+SELECT nodes.host as node, nodes.id, m1.ts, m1.value, metric_names.name, metric_labels.label
+FROM metric_names, metric_labels, nodes, metrics m1
+JOIN (
+    SELECT m2.node_id, MAX(ts) ts
+    FROM metrics m2
+    WHERE m2.node_id != 0 AND m2.ts >= NOW() - interval '15 seconds' %s
+    GROUP BY m2.node_id) newest
+ON newest.node_id=m1.node_id AND newest.ts=m1.ts
+WHERE m1.name_id=metric_names.id AND m1.node_id=nodes.id AND m1.label_id=metric_labels.id;`, nodeQuery)).Rows()
+	if err != nil {
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
+		return
+	}
+
+	type NodeMetric struct {
+		Node        string    `json:"node"`
+		NodeId      uint      `json:"node_id"`
+		Ts          time.Time `json:"ts"`
+		Value       float64   `json:"value"`
+		MetricName  string    `json:"metric_name"`
+		MetricLabel string    `json:"metric_label"`
+	}
+
+	results := make(map[string][]NodeMetric)
+
+	for rows.Next() {
+		var nodeMetric NodeMetric
+
+		err := rows.Scan(&nodeMetric.Node, &nodeMetric.NodeId, &nodeMetric.Ts, &nodeMetric.Value,
+			&nodeMetric.MetricName, &nodeMetric.MetricLabel)
+		if err != nil {
+			continue
+		}
+
+		nodeMetrics, found := results[nodeMetric.Node]
+		if !found {
+			results[nodeMetric.Node] = make([]NodeMetric, 0, 16)
+		}
+
+		nodeMetrics = append(nodeMetrics, nodeMetric)
+		results[nodeMetric.Node] = nodeMetrics
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    results,
 	})
 }

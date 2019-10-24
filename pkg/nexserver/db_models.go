@@ -76,7 +76,7 @@ type Process struct {
 	gorm.Model
 
 	Name string `gorm:"size:256"`
-	PID  int32
+	PID  int32  `gorm:"index"`
 	Cmd  string
 	Info postgres.Jsonb
 
@@ -100,7 +100,7 @@ type MetricName struct {
 	Name string `gorm:"size:256;unique_index"`
 	Help string
 
-	TypeID uint
+	TypeID uint `gorm:"index"`
 
 	Metrics []Metric
 	Events  []Event
@@ -124,18 +124,18 @@ type MetricType struct {
 }
 
 type Metric struct {
-	Ts    time.Time
-	Value float64
+	Ts    time.Time `gorm:"index"`
+	Value float64   `gorm:"index"`
 
-	EndpointID uint
-	TypeID     uint
-	NameID     uint
-	LabelID    uint
+	EndpointID uint `gorm:"index"`
+	TypeID     uint `gorm:"index"`
+	NameID     uint `gorm:"index"`
+	LabelID    uint `gorm:"index"`
 
-	ClusterID   uint
-	NodeID      uint
-	ProcessID   uint
-	ContainerID uint
+	ClusterID   uint `gorm:"index"`
+	NodeID      uint `gorm:"index"`
+	ProcessID   uint `gorm:"index"`
+	ContainerID uint `gorm:"index"`
 }
 
 type K8sMetric struct {

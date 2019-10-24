@@ -47,10 +47,17 @@ func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Met
 }
 
 func (s *NexAgent) addNodeCpuMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
-	cpuStats, err := cpu.Times(true)
+	cpuStats, err := cpu.Times(false)
 	if err != nil {
 		return metrics
 	}
+
+	perCpuStats, err := cpu.Times(true)
+	if err != nil {
+		return metrics
+	}
+
+	cpuStats = append(cpuStats, perCpuStats...)
 
 	for _, cpuStat := range cpuStats {
 		cpuMetrics := BasicMetrics{
