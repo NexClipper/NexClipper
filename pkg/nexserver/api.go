@@ -1,10 +1,12 @@
 package nexserver
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -31,6 +33,11 @@ func (s *NexServer) SetupApiHandler() {
 	{
 		snapshot.GET("/:cid/nodes", s.ApiSnapshotNodes)
 		snapshot.GET("/:cid/nodes/:nodeId", s.ApiSnapshotNodes)
+	}
+	metrics := router.Group("/api/metrics")
+	{
+		metrics.GET("/:cid/nodes", s.ApiMetricsNodes)
+		metrics.GET("/:cid/nodes/:nodeId", s.ApiMetricsNodes)
 	}
 	router.GET("/api/agents", s.ApiAgentListAll)
 	router.GET("/api/nodes", s.ApiNodeListAll)
@@ -331,6 +338,136 @@ WHERE m1.name_id=metric_names.id AND m1.node_id=nodes.id AND m1.label_id=metric_
 
 		nodeMetrics = append(nodeMetrics, nodeMetric)
 		results[nodeMetric.Node] = nodeMetrics
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    results,
+	})
+}
+
+type Query struct {
+	Timezone    string   `json:"timezone"`
+	MetricNames []string `json:"metricNames"`
+	DateRange   []string `json:"dateRange"`
+	Granularity string   `json:"granularity"`
+}
+
+func (s *NexServer) findMetricIdByNames(names []string) []string {
+	if len(names) == 0 {
+		return []string{}
+	}
+
+	quotedNames := make([]string, 0, len(names))
+	for _, name := range names {
+		quotedNames = append(quotedNames, fmt.Sprintf("'%s'", name))
+	}
+	namesQuery := strings.Join(quotedNames, ",")
+	q := fmt.Sprintf("SELECT id FROM metric_names WHERE name IN (%s)", namesQuery)
+
+	rows, err := s.db.Raw(q).Rows()
+	if err != nil {
+		log.Printf("failed to get metric names: %v", err)
+		return []string{}
+	}
+
+	results := make([]string, 0, 4)
+	var id string
+
+	for rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			log.Printf("failed to get metric names id: %v", err)
+			continue
+		}
+
+		results = append(results, id)
+	}
+
+	return results
+}
+
+func (s *NexServer) ApiMetricsNodes(c *gin.Context) {
+	cId := c.Param("cid")
+	if cId == "" {
+		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
+		return
+	}
+
+	nodeId := c.Param("nodeId")
+	nodeQuery := ""
+	if nodeId != "" {
+		nodeQuery = fmt.Sprintf("AND metrics.node_id=%s", nodeId)
+	}
+
+	q := c.DefaultQuery("query", "")
+	if q == "" {
+		s.ApiResponseJson(c, 404, "bad", "invalid query")
+		return
+	}
+
+	var query Query
+	err := json.Unmarshal([]byte(q), &query)
+	if err != nil {
+		s.ApiResponseJson(c, 404, "bad", "invalid query")
+		return
+	}
+
+	metricNameIds := s.findMetricIdByNames(query.MetricNames)
+	metricNameQuery := ""
+	if len(metricNameIds) > 0 {
+		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
+	}
+	granularity := query.Granularity
+	if granularity == "" {
+		granularity = "minute"
+	}
+
+	metricQuery := fmt.Sprintf(`
+SELECT nodes.host as node, nodes.id as node_id, value, bucket,
+       metric_names.name, metric_labels.label FROM
+    (SELECT metrics.node_id as node_id, avg(value) as value,
+            metrics.name_id, metrics.label_id,
+           date_trunc('%s', ts) as bucket
+    FROM metrics
+    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s %s %s
+    GROUP BY bucket, metrics.node_id, metrics.name_id, metrics.label_id)
+        as metrics_bucket, nodes, metric_names, metric_labels
+WHERE
+    metrics_bucket.node_id=nodes.id AND
+      metrics_bucket.name_id=metric_names.id AND
+      metrics_bucket.label_id=metric_labels.id
+ORDER BY bucket;
+`, granularity, query.DateRange[0], query.DateRange[1], cId, nodeQuery, metricNameQuery)
+
+	rows, err := s.db.Raw(metricQuery).Rows()
+	if err != nil {
+		log.Printf("failed to get metric data: %v", err)
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
+		return
+	}
+
+	type MetricItem struct {
+		Node        string  `json:"node"`
+		NodeId      uint    `json:"node_id"`
+		Value       float64 `json:"value"`
+		Bucket      string  `json:"bucket"`
+		MetricName  string  `json:"metric_name"`
+		MetricLabel string  `json:"metric_label"`
+	}
+	results := make([]MetricItem, 0, 16)
+
+	for rows.Next() {
+		var item MetricItem
+
+		err := rows.Scan(&item.Node, &item.NodeId, &item.Value, &item.Bucket, &item.MetricName, &item.MetricLabel)
+		if err != nil {
+			log.Printf("failed to get record: %v", err)
+			continue
+		}
+
+		results = append(results, item)
 	}
 
 	c.JSON(200, gin.H{
