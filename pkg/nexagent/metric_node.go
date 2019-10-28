@@ -17,22 +17,23 @@ func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Met
 		return nil
 	}
 
+	label := fmt.Sprintf("host=%s", s.hostName)
 	loadMetrics := BasicMetrics{
 		&BasicMetric{
-			Name:  "node_cpu_load_avg",
-			Label: fmt.Sprintf("host=%s,min=1", s.hostName),
+			Name:  "node_cpu_load_avg_1",
+			Label: label,
 			Type:  "gauge",
 			Value: avgStat.Load1,
 		},
 		&BasicMetric{
-			Name:  "node_cpu_load_avg",
-			Label: fmt.Sprintf("host=%s,min=5", s.hostName),
+			Name:  "node_cpu_load_avg_5",
+			Label: label,
 			Type:  "gauge",
 			Value: avgStat.Load5,
 		},
 		&BasicMetric{
-			Name:  "node_cpu_load_avg",
-			Label: fmt.Sprintf("host=%s,min=15", s.hostName),
+			Name:  "node_cpu_load_avg_15",
+			Label: label,
 			Type:  "gauge",
 			Value: avgStat.Load15,
 		},
