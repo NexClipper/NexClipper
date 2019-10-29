@@ -53,32 +53,32 @@ func (s *NexAgent) addNodeCpuMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metr
 		return metrics
 	}
 
-	perCpuStats, err := cpu.Times(true)
-	if err != nil {
-		return metrics
-	}
-
-	cpuStats = append(cpuStats, perCpuStats...)
-
 	for _, cpuStat := range cpuStats {
+		label := fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU)
 		cpuMetrics := BasicMetrics{
 			&BasicMetric{
 				Name:  "node_cpu_user",
-				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
+				Label: label,
 				Type:  "gauge",
 				Value: cpuStat.User,
 			},
 			&BasicMetric{
 				Name:  "node_cpu_system",
-				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
+				Label: label,
 				Type:  "gauge",
 				Value: cpuStat.System,
 			},
 			&BasicMetric{
 				Name:  "node_cpu_idle",
-				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
+				Label: label,
 				Type:  "gauge",
 				Value: cpuStat.Idle,
+			},
+			&BasicMetric{
+				Name:  "node_cpu_iowait",
+				Label: label,
+				Type:  "gauge",
+				Value: cpuStat.Iowait,
 			},
 		}
 
