@@ -511,13 +511,15 @@ SELECT nodes.host as node, nodes.id as node_id, value, bucket,
             metrics.name_id, metrics.label_id,
            date_trunc('%s', ts) as bucket
     FROM metrics
-    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s %s %s
+    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s 
+      AND metrics.process_id=0
+      AND metrics.container_id=0 %s %s
     GROUP BY bucket, metrics.node_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, nodes, metric_names, metric_labels
 WHERE
     metrics_bucket.node_id=nodes.id AND
-      metrics_bucket.name_id=metric_names.id AND
-      metrics_bucket.label_id=metric_labels.id
+    metrics_bucket.name_id=metric_names.id AND
+    metrics_bucket.label_id=metric_labels.id
 ORDER BY bucket;
 `, granularity, query.DateRange[0], query.DateRange[1], cId, nodeQuery, metricNameQuery)
 
