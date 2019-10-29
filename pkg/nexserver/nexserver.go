@@ -279,7 +279,12 @@ func (s *NexServer) ReportMetrics(ctx context.Context, in *pb.Metrics) (*pb.Resp
 		return nil, status.Error(codes.PermissionDenied, "invalid agent")
 	}
 
-	s.addMetrics(in, agent.ClusterID, nil)
+	node := s.getNodeByAgent(agent)
+	if node == nil {
+		return nil, status.Error(codes.PermissionDenied, "invalid agent")
+	}
+
+	s.addMetrics(in, agent.ClusterID, node.ID, nil)
 
 	return s.response(true, 0, ""), nil
 }
@@ -421,7 +426,7 @@ func (s *NexServer) UpdateProcess(ctx context.Context, in *pb.ProcessAll) (*pb.R
 			processPtr = &processItem
 		}
 
-		s.addMetrics(psInfo.Metrics, cluster.ID, *processPtr)
+		s.addMetrics(psInfo.Metrics, cluster.ID, node.ID, *processPtr)
 	}
 
 	return s.response(true, 0, ""), nil
@@ -469,7 +474,7 @@ func (s *NexServer) UpdateContainer(ctx context.Context, in *pb.ContainerAll) (*
 			containerPtr = &containerItem
 		}
 
-		s.addMetrics(containerInfo.Metrics, cluster.ID, *containerPtr)
+		s.addMetrics(containerInfo.Metrics, cluster.ID, node.ID, *containerPtr)
 	}
 
 	return s.response(true, 0, ""), nil

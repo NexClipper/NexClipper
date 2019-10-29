@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, source interface{}) (int, int) {
+func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, nodeId uint, source interface{}) (int, int) {
 	var metricEndpoint *MetricEndpoint
 	var metricType *MetricType
 	var metricName *MetricName
@@ -13,7 +13,6 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, source interface{
 	var sourceType pb.Metric_SourceType
 
 	var metric Metric
-	var node *Node
 	var container *Container
 	var process *Process
 
@@ -28,18 +27,18 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, source interface{
 		metricLabel = s.getMetricLabel(reportMetric.Label)
 
 		switch sourceType {
-		case pb.Metric_NODE:
-			if source != nil {
-				srcNode := source.(Node)
-				node = &srcNode
-			} else {
-				node = s.getNode(reportMetric.Source, clusterId)
-				if node == nil {
-					skippedCount += 1
-					continue
-				}
-			}
-			metric.NodeID = node.ID
+		//case pb.Metric_NODE:
+		//	if source != nil {
+		//		srcNode := source.(Node)
+		//		node = &srcNode
+		//	} else {
+		//		node = s.getNode(reportMetric.Source, clusterId)
+		//		if node == nil {
+		//			skippedCount += 1
+		//			continue
+		//		}
+		//	}
+		//	metric.NodeID = node.ID
 		case pb.Metric_CONTAINER:
 			if source != nil {
 				srcContainer := source.(Container)
@@ -77,6 +76,7 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, source interface{
 		}
 
 		metric.ClusterID = clusterId
+		metric.NodeID = nodeId
 		metric.EndpointID = metricEndpoint.ID
 		metric.TypeID = metricType.ID
 		metric.NameID = metricName.ID
