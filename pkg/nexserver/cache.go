@@ -290,7 +290,7 @@ func (s *NexServer) getK8sObjectById(k8sObjectId uint) *K8sObject {
 }
 
 func (s *NexServer) getK8sPod(podName string, namespaceId uint, k8sClusterId uint) *K8sPod {
-	key := fmt.Sprintf("K8S_POD_%d_%d_%s", namespaceId, k8sClusterId)
+	key := fmt.Sprintf("K8S_POD_%d_%d_%s", namespaceId, k8sClusterId, podName)
 
 	value, found := s.cache.Get(key)
 	if !found {
