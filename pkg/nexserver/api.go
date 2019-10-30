@@ -98,7 +98,8 @@ func (s *NexServer) ParseQuery(c *gin.Context) *Query {
 	}
 
 	query.Timezone = strings.ReplaceAll(c.DefaultQuery("timezone", "UTC"), "'", "")
-	query.Granularity = strings.ReplaceAll(c.DefaultQuery("granularity", "minute"), "'", "")
+	query.Granularity = strings.ReplaceAll(
+		c.DefaultQuery("granularity", "minute"), "'", "")
 	query.DateRange = c.QueryArray("dateRange")
 	query.MetricNames = c.QueryArray("metricNames")
 
@@ -167,7 +168,7 @@ func (s *NexServer) ApiSummaryClusters(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT m1.cluster_id, clusters.name, metric_names.name, SUM(m1.value)
+SELECT m1.cluster_id, clusters.name, metric_names.name, ROUND(SUM(m1.value))
 FROM metric_names, metric_labels, nodes, clusters, metrics m1
 JOIN (
     SELECT m2.node_id, MAX(ts) ts
@@ -228,7 +229,7 @@ func (s *NexServer) ApiSummaryNodes(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT m1.node_id, nodes.host, metric_names.name, SUM(m1.value)
+SELECT m1.node_id, nodes.host, metric_names.name, ROUND(SUM(m1.value), 2)
 FROM metric_names, metric_labels, nodes, metrics m1
 JOIN (
     SELECT m2.node_id, MAX(ts) ts
@@ -526,7 +527,7 @@ func (s *NexServer) ApiSnapshotNodes(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT nodes.host as node, nodes.id, m1.ts, m1.value, metric_names.name, metric_labels.label
+SELECT nodes.host as node, nodes.id, m1.ts, ROUND(m1.value, 2), metric_names.name, metric_labels.label
 FROM metric_names, metric_labels, nodes, metrics m1
 JOIN (
     SELECT m2.node_id, m2.name_id, MAX(ts) ts
@@ -641,7 +642,7 @@ func (s *NexServer) ApiMetricsNodes(c *gin.Context) {
 	}
 
 	metricQuery := fmt.Sprintf(`
-SELECT nodes.host as node, nodes.id as node_id, value, bucket,
+SELECT nodes.host as node, nodes.id as node_id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.node_id as node_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
@@ -733,7 +734,7 @@ func (s *NexServer) ApiSnapshotProcesses(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT m1.process_id, processes.name as process_name, m1.ts, m1.value, metric_names.name, metric_labels.label
+SELECT m1.process_id, processes.name as process_name, m1.ts, ROUND(m1.value), metric_names.name, metric_labels.label
 FROM metric_names, metric_labels, processes, metrics m1
 JOIN (
     SELECT m2.process_id, MAX(ts) ts, name_id
@@ -814,7 +815,8 @@ func (s *NexServer) ApiSnapshotContainers(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT m1.container_id, containers.name as container_name, m1.ts, m1.value, metric_names.name, metric_labels.label
+SELECT m1.container_id, containers.name as container_name, m1.ts, ROUND(m1.value), 
+	metric_names.name, metric_labels.label
 FROM metric_names, metric_labels, containers, metrics m1
 JOIN (
     SELECT m2.container_id, name_id, MAX(ts) ts
@@ -903,7 +905,7 @@ func (s *NexServer) ApiMetricsProcesses(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT processes.name as process, processes.id, value, bucket,
+SELECT processes.name as process, processes.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.process_id as process_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
@@ -987,7 +989,7 @@ func (s *NexServer) ApiMetricsContainers(c *gin.Context) {
 	}
 
 	q := fmt.Sprintf(`
-SELECT containers.name as container, containers.id, value, bucket,
+SELECT containers.name as container, containers.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
