@@ -249,9 +249,9 @@ func (s *NexAgent) sendDockerMetrics(ts *time.Time) {
 
 	resp, err := s.collectorClient.UpdateContainer(s.ctx, containersAll)
 	if err != nil {
-		log.Printf("Failed UpdateContainer: %v\n", err)
+		log.Printf("sendDockerMetrics: failed UpdateContainer: %v\n", err)
 	}
 	if !resp.Success {
-		log.Printf("Failed UpdateContainer from remote: %v\n", err)
+		log.Printf("sendDockerMetrics: failed UpdateContainer from remote: %v\n", err)
 	}
 }

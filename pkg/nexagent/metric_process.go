@@ -77,7 +77,7 @@ func (s *NexAgent) calculateProcessLoad(ps *process.Process, now *time.Time) (fl
 func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Network error: %v\n", r)
+			log.Printf("sendProcessMetrics: %v\n", r)
 		}
 	}()
 	s.clearProcessUpdateFlag()
@@ -213,9 +213,9 @@ func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 
 	resp, err := s.collectorClient.UpdateProcess(s.ctx, processAll)
 	if err != nil {
-		log.Printf("Failed UpdateProcess: %v\n", err)
+		log.Printf("sendProcessMetrics: failed to send: %v\n", err)
 	}
 	if !resp.Success {
-		log.Printf("Failed UpdateProcess from remote: %v\n", err)
+		log.Printf("sendProcessMetrics: response: %v\n", err)
 	}
 }

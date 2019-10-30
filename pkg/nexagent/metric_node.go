@@ -13,7 +13,7 @@ import (
 func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
 	avgStat, err := load.Avg()
 	if err != nil {
-		log.Printf("Failed get load average stat: %v\n", err)
+		log.Printf("addNodeLoadMetric: failed get load average stat: %v\n", err)
 		return nil
 	}
 
@@ -41,8 +41,8 @@ func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Met
 
 	s.appendMetrics(metrics, &loadMetrics, "/node/metrics", pb.Metric_NODE, s.hostName, 0, ts)
 
-	log.Printf("Load Avg. load1: %v, load5: %v, load15: %v\n",
-		avgStat.Load1, avgStat.Load5, avgStat.Load15)
+	//log.Printf("Load Avg. load1: %v, load5: %v, load15: %v\n",
+	//	avgStat.Load1, avgStat.Load5, avgStat.Load15)
 
 	return metrics
 }
@@ -151,7 +151,7 @@ func (s *NexAgent) addNodeMemoryMetric(metrics *pb.Metrics, ts *time.Time) *pb.M
 func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Network error: %v\n", r)
+			log.Printf("sendNodeMetrics: %v\n", r)
 		}
 	}()
 

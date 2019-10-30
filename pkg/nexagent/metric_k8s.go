@@ -101,7 +101,7 @@ func (s *NexAgent) getNodeMetrics() (*NodeMetricsList, error) {
 func (s *NexAgent) getK8sPodMetrics(ts *time.Time) ([]*pb.K8SPodMetric, error) {
 	podMetrics, err := s.getPodMetrics()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get PodMetrics: %v\n", err)
+		return nil, fmt.Errorf("getK8sPodMetrics: failed to get PodMetrics: %v\n", err)
 	}
 
 	tsUnix := ts.Unix()
@@ -159,7 +159,7 @@ func (s *NexAgent) getK8sPodMetrics(ts *time.Time) ([]*pb.K8SPodMetric, error) {
 func (s *NexAgent) getK8sNodeMetrics(ts *time.Time) ([]*pb.K8SNodeMetric, error) {
 	nodeMetrics, err := s.getNodeMetrics()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get NodeMetrics: %v\n", err)
+		return nil, fmt.Errorf("getK8sNodeMetrics: failed to get NodeMetrics: %v\n", err)
 	}
 
 	tsUnix := ts.Unix()
@@ -207,7 +207,7 @@ func (s *NexAgent) getK8sNodeMetrics(ts *time.Time) ([]*pb.K8SNodeMetric, error)
 func (s *NexAgent) addK8sNodes(cluster *pb.K8SCluster) []*pb.K8SObject {
 	nodes, err := s.k8sClientSet.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil || nodes == nil || nodes.Items == nil {
-		log.Printf("Failed to get node resources: %v\n", err)
+		log.Printf("addK8sNodes: failed to get node resources: %v\n", err)
 		return nil
 	}
 
@@ -241,7 +241,7 @@ func (s *NexAgent) addK8sNodes(cluster *pb.K8SCluster) []*pb.K8SObject {
 func (s *NexAgent) addK8sNamespaces(cluster *pb.K8SCluster) []*pb.K8SNamespace {
 	namespaces, err := s.k8sClientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
 	if err != nil || namespaces == nil || namespaces.Items == nil {
-		log.Printf("Failed to get namespace resources: %v\n", err)
+		log.Printf("addK8sNamespaces: failed to get namespace resources: %v\n", err)
 		return nil
 	}
 
@@ -278,31 +278,31 @@ func (s *NexAgent) addK8sNamespaces(cluster *pb.K8SCluster) []*pb.K8SNamespace {
 func (s *NexAgent) addK8sWorkloads(ns *pb.K8SNamespace) ([]*pb.K8SObject, []*pb.K8SPod) {
 	deployments, err := s.k8sClientSet.AppsV1().Deployments(ns.Object.Name).List(metav1.ListOptions{})
 	if err != nil || deployments == nil || deployments.Items == nil {
-		log.Printf("Failed to get deployment resources: %v\n", err)
+		log.Printf("addK8sWorkloads: failed to get deployment resources: %v\n", err)
 		return nil, nil
 	}
 
 	rs, err := s.k8sClientSet.AppsV1().ReplicaSets(ns.Object.Name).List(metav1.ListOptions{})
 	if err != nil || rs == nil || rs.Items == nil {
-		log.Printf("Failed to get replicaset resources: %v\n", err)
+		log.Printf("addK8sWorkloads: failed to get replicaset resources: %v\n", err)
 		return nil, nil
 	}
 
 	sfs, err := s.k8sClientSet.AppsV1().StatefulSets(ns.Object.Name).List(metav1.ListOptions{})
 	if err != nil || sfs == nil || sfs.Items == nil {
-		log.Printf("Failed to get statefulset resources: %v\n", err)
+		log.Printf("addK8sWorkloads: failed to get statefulset resources: %v\n", err)
 		return nil, nil
 	}
 
 	ds, err := s.k8sClientSet.AppsV1().DaemonSets(ns.Object.Name).List(metav1.ListOptions{})
 	if err != nil || ds == nil || ds.Items == nil {
-		log.Printf("Failed to get daemonset resources: %v\n", err)
+		log.Printf("addK8sWorkloads: failed to get daemonset resources: %v\n", err)
 		return nil, nil
 	}
 
 	pods, err := s.k8sClientSet.CoreV1().Pods(ns.Object.Name).List(metav1.ListOptions{})
 	if err != nil || pods == nil || pods.Items == nil {
-		log.Printf("Failed to get pod resources: %v\n", err)
+		log.Printf("addK8sWorkloads: failed to get pod resources: %v\n", err)
 		return nil, nil
 	}
 
@@ -428,7 +428,7 @@ func (s *NexAgent) addK8sWorkloads(ns *pb.K8SNamespace) ([]*pb.K8SObject, []*pb.
 						containerType = cIDs[0]
 						containerId = cIDs[1]
 					} else {
-						log.Printf("unknown container id: %v\n", container.ContainerID)
+						log.Printf("addK8sWorkloads: unknown container id: %v\n", container.ContainerID)
 						continue
 					}
 				} else {
@@ -443,8 +443,6 @@ func (s *NexAgent) addK8sWorkloads(ns *pb.K8SNamespace) ([]*pb.K8SObject, []*pb.
 				})
 			}
 			k8sPod.Containers = containers
-		} else {
-			log.Printf("Pod don't have any containers or no information")
 		}
 
 		ns.Pods = append(ns.Pods, k8sPod)
@@ -454,6 +452,10 @@ func (s *NexAgent) addK8sWorkloads(ns *pb.K8SNamespace) ([]*pb.K8SObject, []*pb.
 }
 
 func (s *NexAgent) updateK8sCluster() {
+	if s.connected == false {
+		return
+	}
+
 	k8sCluster := &pb.K8SCluster{
 		Object: &pb.K8SObject{
 			Name: s.config.Kubernetes.ClusterName,
@@ -472,11 +474,9 @@ func (s *NexAgent) updateK8sCluster() {
 
 	resp, err := s.collectorClient.UpdateK8SCluster(s.ctx, k8sCluster)
 	if err != nil {
-		log.Printf("Failed to update kubernetes information: %v\n", err)
+		log.Printf("updateK8sCluster: failed to update kubernetes information: %v\n", err)
 	} else if resp.Code != uint32(codes.OK) {
-		log.Printf("Failed to update kubernetes information: %v\n", resp.Error)
-	} else {
-		log.Println("Update kubernetes information OK")
+		log.Printf("updateK8sCluster: failed to update kubernetes information: %v\n", resp.Error)
 	}
 }
 
@@ -500,11 +500,11 @@ func (s *NexAgent) sendK8sMetrics(ts *time.Time) error {
 
 	resp, err := s.collectorClient.ReportK8SMetrics(s.ctx, k8sMetrics)
 	if err != nil {
-		return fmt.Errorf("Failed to report K8S metrics: %v\n", err)
+		return fmt.Errorf("sendK8sMetrics: failed to report K8S metrics: %v\n", err)
 	}
 
 	if !resp.Success {
-		return fmt.Errorf("Failed to report K8S metrics: %v\n", resp.Error)
+		return fmt.Errorf("sendK8sMetrics: failed to report K8S metrics: %v\n", resp.Error)
 	}
 
 	return nil
@@ -527,14 +527,14 @@ func (s *NexAgent) setupLeaseLock() {
 
 	s.k8sConfig.Wrap(
 		transport.ContextCanceller(
-			ctx, fmt.Errorf("the leader of agent is shutting down")))
+			ctx, fmt.Errorf("setupLeaseLock: the leader of agent is shutting down")))
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-ch
 
-		log.Printf("Received termination, signalling shutdown")
+		log.Printf("setupLeaseLock: received termination, signalling shutdown")
 		cancel()
 	}()
 
@@ -556,7 +556,7 @@ func (s *NexAgent) setupLeaseLock() {
 				if identity == s.machineId {
 					return
 				}
-				log.Printf("New leader elected: %v\n", identity)
+				log.Printf("setupLeaseLock: new leader elected: %v\n", identity)
 			},
 		},
 		ReleaseOnCancel: true,
