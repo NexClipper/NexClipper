@@ -54,6 +54,13 @@ func (s *NexServer) SetupApiHandler() {
 		metrics.GET("/:clusterId/nodes/:nodeId/containers", s.ApiMetricsContainers)
 		metrics.GET("/:clusterId/nodes/:nodeId/containers/:containerId", s.ApiMetricsContainers)
 	}
+	summary := v1.Group("/summary")
+	{
+		summary.GET("/clusters", s.ApiSummaryClusters)
+		summary.GET("/clusters/:clusterId", s.ApiSummaryClusters)
+		summary.GET("/clusters/:clusterId/nodes", s.ApiSummaryNodes)
+		summary.GET("/clusters/:clusterId/nodes/:nodeId", s.ApiSummaryNodes)
+	}
 
 	go func() {
 		err := router.Run(fmt.Sprintf("%s:%d", s.config.Server.BindAddress, s.config.Server.ApiPort))
@@ -131,7 +138,7 @@ WHERE metric_names.type_id=metric_types.id`).Rows()
 		Help string `json:"help"`
 		Type string `json:"type"`
 	}
-	var metricNames []MetricNameItem
+	metricNames := make([]MetricNameItem, 0, 16)
 
 	for rows.Next() {
 		metricNameItem := MetricNameItem{}
@@ -152,27 +159,163 @@ WHERE metric_names.type_id=metric_types.id`).Rows()
 	})
 }
 
-func (s *NexServer) ApiClusterList(c *gin.Context) {
-	var clusters []Cluster
+func (s *NexServer) ApiSummaryClusters(c *gin.Context) {
+	targetClusterId := c.Param("clusterId")
+	clusterQuery := ""
+	if targetClusterId != "" {
+		clusterQuery = fmt.Sprintf(" AND m2.cluster_id=%s", targetClusterId)
+	}
 
-	result := s.db.Find(&clusters)
-	if result.Error != nil {
-		s.ApiResponseJson(c, 500, "bad",
-			fmt.Sprintf("failed to get data: %v", result.Error))
+	q := fmt.Sprintf(`
+SELECT m1.cluster_id, clusters.name, metric_names.name, SUM(m1.value)
+FROM metric_names, metric_labels, nodes, clusters, metrics m1
+JOIN (
+    SELECT m2.node_id, MAX(ts) ts
+    FROM metrics m2
+    WHERE m2.ts >= NOW() - interval '60 seconds'
+      AND m2.process_id=0
+      AND m2.container_id=0 %s
+    GROUP BY m2.node_id) newest
+ON newest.node_id=m1.node_id AND newest.ts=m1.ts
+WHERE m1.name_id=metric_names.id
+  AND m1.node_id=nodes.id
+  AND m1.label_id=metric_labels.id
+  AND m1.process_id=0
+  AND m1.container_id=0
+  AND m1.cluster_id=clusters.id
+GROUP BY m1.cluster_id, clusters.name, metric_names.name`, clusterQuery)
+
+	rows, err := s.db.Raw(q).Rows()
+	if err != nil {
+		log.Printf("failed to get data: %v", err)
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
+		return
+	}
+
+	items := make(map[string]map[string]float64)
+	var clusterId uint
+	var clusterName string
+	var metricName string
+	var value float64
+	for rows.Next() {
+		err := rows.Scan(&clusterId, &clusterName, &metricName, &value)
+		if err != nil {
+			log.Printf("failed to get data: %v", err)
+			continue
+		}
+
+		clusterMetrics, found := items[clusterName]
+		if !found {
+			clusterMetrics = make(map[string]float64)
+			items[clusterName] = clusterMetrics
+		}
+
+		clusterMetrics[metricName] = value
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    items,
+	})
+}
+
+func (s *NexServer) ApiSummaryNodes(c *gin.Context) {
+	targetClusterId := c.Param("clusterId")
+	if targetClusterId == "" {
+		s.ApiResponseJson(c, 404, "bad", "missing parameters")
+		return
+	}
+
+	q := fmt.Sprintf(`
+SELECT m1.node_id, nodes.host, metric_names.name, SUM(m1.value)
+FROM metric_names, metric_labels, nodes, metrics m1
+JOIN (
+    SELECT m2.node_id, MAX(ts) ts
+    FROM metrics m2
+    WHERE m2.ts >= NOW() - interval '60 seconds'
+      AND m2.process_id=0
+      AND m2.container_id=0
+      AND m2.cluster_id=%s
+    GROUP BY m2.node_id) newest
+ON newest.node_id=m1.node_id AND newest.ts=m1.ts
+WHERE m1.name_id=metric_names.id
+  AND m1.node_id=nodes.id
+  AND m1.label_id=metric_labels.id
+  AND m1.process_id=0
+  AND m1.container_id=0
+GROUP BY m1.node_id, nodes.host, metric_names.name`, targetClusterId)
+
+	rows, err := s.db.Raw(q).Rows()
+	if err != nil {
+		log.Printf("failed to get data: %v", err)
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
+		return
+	}
+
+	items := make(map[string]map[string]float64)
+	var hostId uint
+	var host string
+	var metricName string
+	var value float64
+	for rows.Next() {
+		err := rows.Scan(&hostId, &host, &metricName, &value)
+		if err != nil {
+			log.Printf("failed to get data: %v", err)
+			continue
+		}
+
+		nodeMetrics, found := items[host]
+		if !found {
+			nodeMetrics = make(map[string]float64)
+			items[host] = nodeMetrics
+		}
+
+		nodeMetrics[metricName] = value
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    items,
+	})
+}
+
+func (s *NexServer) ApiClusterList(c *gin.Context) {
+	rows, err := s.db.Raw(`
+SELECT clusters.id as cluster_id, clusters.name, 
+       coalesce(k8s_clusters.id::integer, 0) as k8s_agent_cluster_id
+FROM clusters
+LEFT JOIN k8s_clusters ON clusters.id=k8s_clusters.agent_cluster_id`).Rows()
+	if err != nil {
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
 	}
 
 	type ClusterItem struct {
-		Id   uint   `json:"id"`
-		Name string `json:"name"`
+		Id         uint   `json:"id"`
+		Name       string `json:"name"`
+		Kubernetes bool   `json:"kubernetes"`
 	}
-	var items []ClusterItem
+	items := make([]ClusterItem, 0, 16)
 
-	for _, cluster := range clusters {
-		items = append(items, ClusterItem{
-			Id:   cluster.ID,
-			Name: cluster.Name,
-		})
+	for rows.Next() {
+		var clusterItem ClusterItem
+		var k8sAgentClusterId uint
+
+		err := rows.Scan(&clusterItem.Id, &clusterItem.Name, &k8sAgentClusterId)
+		if err != nil {
+			log.Printf("failed to get data: %v", err)
+			continue
+		}
+
+		if k8sAgentClusterId == 0 {
+			clusterItem.Kubernetes = false
+		} else {
+			clusterItem.Kubernetes = true
+		}
+
+		items = append(items, clusterItem)
 	}
 
 	c.JSON(200, gin.H{
@@ -204,7 +347,7 @@ func (s *NexServer) ApiAgentList(c *gin.Context) {
 		Ip      string `json:"ip"`
 		Online  bool   `json:"online"`
 	}
-	var items []AgentItem
+	items := make([]AgentItem, 0, 16)
 
 	for _, agent := range agents {
 		items = append(items, AgentItem{
@@ -240,13 +383,11 @@ func (s *NexServer) ApiAgentListAll(c *gin.Context) {
 	}
 	clusterMap := make(map[string][]*AgentItem)
 
-	var id uint
-	var version string
-	var ip string
-	var online bool
 	var clusterName string
 	for rows.Next() {
-		err := rows.Scan(&id, &version, &ip, &online, &clusterName)
+		var agentItem AgentItem
+
+		err := rows.Scan(&agentItem.Id, &agentItem.Version, &agentItem.Ip, &agentItem.Online, &clusterName)
 		if err != nil {
 			continue
 		}
@@ -256,12 +397,7 @@ func (s *NexServer) ApiAgentListAll(c *gin.Context) {
 		}
 
 		items := clusterMap[clusterName]
-		items = append(items, &AgentItem{
-			Id:      id,
-			Version: version,
-			Ip:      ip,
-			Online:  online,
-		})
+		items = append(items, &agentItem)
 		clusterMap[clusterName] = items
 	}
 
@@ -298,8 +434,8 @@ func (s *NexServer) ApiNodeList(c *gin.Context) {
 		PlatformVersion string `json:"platform_version"`
 		AgentId         uint   `json:"agent_id"`
 	}
-	var items []NodeItem
 
+	items := make([]NodeItem, 0, 16)
 	for _, node := range nodes {
 		items = append(items, NodeItem{
 			Id:              node.ID,
