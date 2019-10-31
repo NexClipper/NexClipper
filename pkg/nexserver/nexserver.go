@@ -29,7 +29,7 @@ import (
 const (
 	AppName          = "NexServer"
 	AppDescription   = "NexServer for NexClipper Monitoring System"
-	NexServerVersion = "0.2.0"
+	NexServerVersion = "0.3.0"
 	ConfigFilename   = "nexserver.yaml"
 )
 

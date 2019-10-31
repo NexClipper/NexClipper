@@ -29,7 +29,7 @@ import (
 const (
 	AppName          = "NexAgent"
 	AppDescription   = "NexAgent for NexClipper Monitoring System"
-	NexAgentVersion  = "0.2.0"
+	NexAgentVersion  = "0.3.0"
 	K8sLeaseLockName = "nexagent-lease-lock"
 )
 
@@ -70,6 +70,7 @@ type AgentConfig struct {
 	Cluster        string
 	ServerAddress  string
 	ReportInterval int
+	ApiPort        int
 }
 
 type TLSConfig struct {
@@ -362,6 +363,8 @@ func (s *NexAgent) Start() error {
 		}
 	}()
 
+	s.SetupApiHandler()
+
 	for {
 		s.resetContext()
 		conn, err := s.connectServer()
@@ -512,6 +515,10 @@ func (s *NexAgent) SetServerAddress(serverAddress string) {
 
 func (s *NexAgent) SetAgentCluster(agentCluster string) {
 	s.config.Agent.Cluster = agentCluster
+}
+
+func (s *NexAgent) SetApiPort(restApiPort int) {
+	s.config.Agent.ApiPort = restApiPort
 }
 
 func NewNexAgent() *NexAgent {

@@ -1,6 +1,7 @@
 Server:
   BindAddress: 0.0.0.0
   AgentListenPort: 18000
+  RestApiPort: 18001
 
 TLS:
   Use: false

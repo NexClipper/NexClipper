@@ -2,6 +2,7 @@ Agent:
   ServerAddress: localhost:18000
   ClusterName: default
   ReportInterval: 5
+  RestApiPort: 18002
 
 TLS:
   Use: false
