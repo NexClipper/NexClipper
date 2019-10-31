@@ -25,6 +25,7 @@ func (s *NexServer) SetupApiHandler() {
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/health", s.ApiHealth)
+		v1.GET("/clusters", s.ApiClusterList)
 		v1.GET("/agents", s.ApiAgentListAll)
 		v1.GET("/nodes", s.ApiNodeListAll)
 		v1.GET("/metric_names", s.ApiMetricNameList)
@@ -32,7 +33,6 @@ func (s *NexServer) SetupApiHandler() {
 
 	clusters := v1.Group("/clusters")
 	{
-		clusters.GET("", s.ApiClusterList)
 		clusters.GET("/:clusterId/agents", s.ApiAgentList)
 		clusters.GET("/:clusterId/nodes", s.ApiNodeList)
 	}
@@ -44,6 +44,9 @@ func (s *NexServer) SetupApiHandler() {
 		snapshot.GET("/:clusterId/nodes/:nodeId/processes/:processId", s.ApiSnapshotProcesses)
 		snapshot.GET("/:clusterId/nodes/:nodeId/containers", s.ApiSnapshotContainers)
 		snapshot.GET("/:clusterId/nodes/:nodeId/containers/:containerId", s.ApiSnapshotContainers)
+		snapshot.GET("/:clusterId/k8s/pods", s.ApiSnapshotPods)
+		snapshot.GET("/:clusterId/k8s/namespaces/:namespaceId/pods", s.ApiSnapshotPods)
+		snapshot.GET("/:clusterId/k8s/namespaces/:namespaceId/pods/:podId", s.ApiSnapshotPods)
 	}
 	metrics := v1.Group("/metrics")
 	{
@@ -53,6 +56,9 @@ func (s *NexServer) SetupApiHandler() {
 		metrics.GET("/:clusterId/nodes/:nodeId/processes/:processId", s.ApiMetricsProcesses)
 		metrics.GET("/:clusterId/nodes/:nodeId/containers", s.ApiMetricsContainers)
 		metrics.GET("/:clusterId/nodes/:nodeId/containers/:containerId", s.ApiMetricsContainers)
+		metrics.GET("/:clusterId/k8s/pods", s.ApiMetricsPods)
+		metrics.GET("/:clusterId/k8s/namespaces/:namespaceId/pods", s.ApiMetricsPods)
+		metrics.GET("/:clusterId/k8s/namespaces/:namespaceId/pods/:podId", s.ApiMetricsPods)
 	}
 	summary := v1.Group("/summary")
 	{
@@ -75,6 +81,10 @@ func (s *NexServer) ApiResponseJson(c *gin.Context, code int, status, message st
 		"status":  status,
 		"message": message,
 	})
+}
+
+func (s *NexServer) Param(c *gin.Context, key string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(c.Param(key), "'", ""), "\"", "")
 }
 
 type Query struct {
@@ -161,7 +171,7 @@ WHERE metric_names.type_id=metric_types.id`).Rows()
 }
 
 func (s *NexServer) ApiSummaryClusters(c *gin.Context) {
-	targetClusterId := c.Param("clusterId")
+	targetClusterId := s.Param(c, "clusterId")
 	clusterQuery := ""
 	if targetClusterId != "" {
 		clusterQuery = fmt.Sprintf(" AND m2.cluster_id=%s", targetClusterId)
@@ -222,7 +232,7 @@ GROUP BY m1.cluster_id, clusters.name, metric_names.name`, clusterQuery)
 }
 
 func (s *NexServer) ApiSummaryNodes(c *gin.Context) {
-	targetClusterId := c.Param("clusterId")
+	targetClusterId := s.Param(c, "clusterId")
 	if targetClusterId == "" {
 		s.ApiResponseJson(c, 404, "bad", "missing parameters")
 		return
@@ -327,7 +337,7 @@ LEFT JOIN k8s_clusters ON clusters.id=k8s_clusters.agent_cluster_id`).Rows()
 }
 
 func (s *NexServer) ApiAgentList(c *gin.Context) {
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	if cId == "" {
 		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
 		return
@@ -410,7 +420,7 @@ func (s *NexServer) ApiAgentListAll(c *gin.Context) {
 }
 
 func (s *NexServer) ApiNodeList(c *gin.Context) {
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	if cId == "" {
 		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
 		return
@@ -507,13 +517,13 @@ func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 }
 
 func (s *NexServer) ApiSnapshotNodes(c *gin.Context) {
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	if cId == "" {
 		s.ApiResponseJson(c, 404, "bad", "invalid cluster id")
 		return
 	}
 
-	nodeId := c.Param("nodeId")
+	nodeId := s.Param(c, "nodeId")
 	nodeQuery := ""
 	if nodeId != "" {
 		nodeQuery = fmt.Sprintf("AND m2.node_id=%s", nodeId)
@@ -618,13 +628,13 @@ func (s *NexServer) findMetricIdByNames(names []string) []string {
 }
 
 func (s *NexServer) ApiMetricsNodes(c *gin.Context) {
-	nodeId := c.Param("nodeId")
+	nodeId := s.Param(c, "nodeId")
 	nodeQuery := ""
 	if nodeId != "" {
 		nodeQuery = fmt.Sprintf("AND metrics.node_id=%s", nodeId)
 	}
 
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
 	if cId == "" || query == nil || len(query.DateRange) != 2 {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
@@ -700,7 +710,7 @@ func (s *NexServer) CheckRequiredParams(c *gin.Context, params []string) (map[st
 	required := make(map[string]string)
 
 	for _, param := range params {
-		value := c.Param(param)
+		value := s.Param(c, param)
 		if value == "" {
 			return nil, false
 		}
@@ -720,7 +730,7 @@ func (s *NexServer) ApiSnapshotProcesses(c *gin.Context) {
 	clusterId := params["clusterId"]
 	nodeId := params["nodeId"]
 
-	processId := c.Param("processId")
+	processId := s.Param(c, "processId")
 	processQuery := ""
 	if processId != "" {
 		processQuery = fmt.Sprintf("AND m2.process_id=%s", processId)
@@ -801,7 +811,7 @@ func (s *NexServer) ApiSnapshotContainers(c *gin.Context) {
 	clusterId := params["clusterId"]
 	nodeId := params["nodeId"]
 
-	containerId := c.Param("containerId")
+	containerId := s.Param(c, "containerId")
 	containerQuery := ""
 	if containerId != "" {
 		containerQuery = fmt.Sprintf("AND m2.container_id=%s", containerId)
@@ -874,20 +884,107 @@ WHERE m1.name_id=metric_names.id
 	})
 }
 
+func (s *NexServer) ApiSnapshotPods(c *gin.Context) {
+	params, ok := s.CheckRequiredParams(c, []string{"clusterId"})
+	if !ok {
+		s.ApiResponseJson(c, 404, "bad", "missing parameters")
+		return
+	}
+	clusterId := params["clusterId"]
+
+	namespaceId := s.Param(c, "namespaceId")
+	namespaceQuery := ""
+	if namespaceId != "" {
+		namespaceQuery = fmt.Sprintf(" AND k8s_namespaces.id=%s", namespaceId)
+	}
+
+	podId := s.Param(c, "podId")
+	podQuery := ""
+	if podId != "" {
+		podQuery = fmt.Sprintf("   AND k8s_pods.id=%s", podId)
+	}
+
+	query := s.ParseQuery(c)
+	metricNameIds := s.findMetricIdByNames(query.MetricNames)
+	metricNameQuery := ""
+	if len(metricNameIds) > 0 {
+		metricNameQuery = fmt.Sprintf(" AND m2.name_id IN (%s)", strings.Join(metricNameIds, ","))
+	}
+
+	q := fmt.Sprintf(`
+SELECT k8s_pods.name as pod, k8s_namespaces.name as namespace, m1.ts, ROUND(SUM(m1.value)) as value,
+	metric_names.name as metric_name
+FROM metric_names, containers, k8s_pods, k8s_containers, k8s_namespaces, metrics as m1
+JOIN (
+    SELECT m2.container_id, name_id, MAX(ts) ts
+    FROM metrics m2
+    WHERE m2.ts >= NOW() - interval '6000 seconds'
+      AND m2.cluster_id=%s
+      AND m2.container_id != 0
+      AND m2.process_id=0 %s
+    GROUP BY m2.container_id, m2.name_id) newest
+ON newest.container_id=m1.container_id AND newest.ts=m1.ts AND newest.name_id=m1.name_id
+WHERE m1.name_id=metric_names.id
+  AND m1.container_id=containers.id
+  AND containers.container_id=k8s_containers.container_id
+  AND k8s_containers.k8s_pod_id=k8s_pods.id
+  AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
+GROUP BY pod, namespace, m1.ts, metric_name`, clusterId, metricNameQuery, namespaceQuery, podQuery)
+
+	rows, err := s.db.Raw(q).Rows()
+	if err != nil {
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
+		return
+	}
+
+	type PodMetric struct {
+		Pod        string    `json:"pod"`
+		Namespace  string    `json:"namespace"`
+		Ts         time.Time `json:"ts"`
+		Value      float64   `json:"value"`
+		MetricName string    `json:"metric_name"`
+	}
+
+	results := make(map[string][]PodMetric)
+
+	for rows.Next() {
+		var podMetric PodMetric
+
+		err := rows.Scan(&podMetric.Pod, &podMetric.Namespace, &podMetric.Ts, &podMetric.Value, &podMetric.MetricName)
+		if err != nil {
+			continue
+		}
+
+		podMetrics, found := results[podMetric.Pod]
+		if !found {
+			results[podMetric.Pod] = make([]PodMetric, 0, 16)
+		}
+
+		podMetrics = append(podMetrics, podMetric)
+		results[podMetric.Pod] = podMetrics
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    results,
+	})
+}
+
 func (s *NexServer) ApiMetricsProcesses(c *gin.Context) {
-	nodeId := c.Param("nodeId")
+	nodeId := s.Param(c, "nodeId")
 	nodeQuery := ""
 	if nodeId != "" {
 		nodeQuery = fmt.Sprintf(" AND metrics.node_id=%s", nodeId)
 	}
 
-	processId := c.Param("processId")
+	processId := s.Param(c, "processId")
 	processQuery := ""
 	if processId != "" {
 		processQuery = fmt.Sprintf(" AND metrics.process_id=%s", processId)
 	}
 
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
 	if cId == "" || query == nil || len(query.DateRange) != 2 {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
@@ -959,19 +1056,19 @@ ORDER BY bucket;
 }
 
 func (s *NexServer) ApiMetricsContainers(c *gin.Context) {
-	nodeId := c.Param("nodeId")
+	nodeId := s.Param(c, "nodeId")
 	nodeQuery := ""
 	if nodeId != "" {
 		nodeQuery = fmt.Sprintf(" AND metrics.node_id=%s", nodeId)
 	}
 
-	containerId := c.Param("containerId")
+	containerId := s.Param(c, "containerId")
 	containerQuery := ""
 	if containerId != "" {
 		containerQuery = fmt.Sprintf(" AND metrics.container_id=%s", containerId)
 	}
 
-	cId := c.Param("clusterId")
+	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
 	if cId == "" || query == nil || len(query.DateRange) != 2 {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
@@ -1028,6 +1125,93 @@ ORDER BY bucket;
 
 		err := rows.Scan(&item.Container, &item.ContainerId,
 			&item.Value, &item.Bucket, &item.MetricName, &item.MetricLabel)
+		if err != nil {
+			log.Printf("failed to get record: %v", err)
+			continue
+		}
+
+		results = append(results, item)
+	}
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    results,
+	})
+}
+
+func (s *NexServer) ApiMetricsPods(c *gin.Context) {
+	namespaceId := s.Param(c, "namespaceId")
+	namespaceQuery := ""
+	if namespaceId != "" {
+		namespaceQuery = fmt.Sprintf(" AND k8s_namespaces.id=%s", namespaceId)
+	}
+
+	podId := s.Param(c, "podId")
+	podQuery := ""
+	if podId != "" {
+		podQuery = fmt.Sprintf(" AND k8s_pods.id=%s", podId)
+	}
+
+	cId := s.Param(c, "clusterId")
+	query := s.ParseQuery(c)
+	if cId == "" || query == nil || len(query.DateRange) != 2 {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
+
+	metricNameIds := s.findMetricIdByNames(query.MetricNames)
+	metricNameQuery := ""
+	if len(metricNameIds) > 0 {
+		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
+	}
+	granularity := query.Granularity
+	if granularity == "" {
+		granularity = "minute"
+	}
+
+	q := fmt.Sprintf(`
+SELECT k8s_pods.name as pod, k8s_namespaces.name as namespace,
+       ROUND(SUM(value), 2) as value, bucket, metric_names.name
+FROM
+    (SELECT metrics.container_id as container_id, avg(value) as value,
+            metrics.name_id, metrics.label_id,
+           date_trunc('%s', ts) as bucket
+    FROM metrics
+    WHERE ts >= '%s' AND ts < '%s'
+      AND metrics.cluster_id=%s %s
+    GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
+        as metrics_bucket, metric_names, containers, k8s_pods, k8s_containers, k8s_namespaces
+WHERE
+    metrics_bucket.container_id=containers.id
+    AND metrics_bucket.name_id=metric_names.id
+    AND containers.container_id=k8s_containers.container_id
+    AND k8s_containers.k8s_pod_id=k8s_pods.id
+    AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
+GROUP BY bucket, pod, namespace, metric_names.name
+ORDER BY bucket
+`, granularity, query.DateRange[0], query.DateRange[1], cId, metricNameQuery, namespaceQuery, podQuery)
+
+	rows, err := s.db.Raw(q).Rows()
+	if err != nil {
+		log.Printf("failed to get metric data: %v", err)
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
+		return
+	}
+
+	type MetricItem struct {
+		Pod        string  `json:"pod"`
+		Namespace  string  `json:"namespace"`
+		Value      float64 `json:"value"`
+		Bucket     string  `json:"bucket"`
+		MetricName string  `json:"metric_name"`
+	}
+	results := make([]MetricItem, 0, 16)
+
+	for rows.Next() {
+		var item MetricItem
+
+		err := rows.Scan(&item.Pod, &item.Namespace, &item.Value, &item.Bucket, &item.MetricName)
 		if err != nil {
 			log.Printf("failed to get record: %v", err)
 			continue
