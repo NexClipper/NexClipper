@@ -1,7 +1,7 @@
 .PHONY: compile
 NEXSERVER=nexserver
 NEXAGENT=nexagent
-VERSION=0.2.0
+VERSION=0.3.0
 DOCKER_REGISTRY=
 
 PROTOC_GEN_GO := $(GOPATH)/bin/protoc-gen-go

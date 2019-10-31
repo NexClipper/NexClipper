@@ -4,24 +4,24 @@ metadata:
   name: nexserver
   labels:
     app.kubernetes.io/name: nexserver
-    app.kubernetes.io/version: 0.2.0
+    app.kubernetes.io/version: 0.3.0
   namespace: nexclipper
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: nexserver
-      app.kubernetes.io/version: 0.2.0
+      app.kubernetes.io/version: 0.3.0
   template:
     metadata:
       name: nexserver
       labels:
         app.kubernetes.io/name: nexserver
-        app.kubernetes.io/version: 0.2.0
+        app.kubernetes.io/version: 0.3.0
     spec:
       containers:
         - name: nexserver
-          image: registry.nexclipper.io/nexserver:0.2.0
+          image: registry.nexclipper.io/nexserver:0.3.0
           resources:
             limits:
               memory: 1Gi
@@ -50,7 +50,7 @@ metadata:
   name: nexserver
   labels:
     app.kubernetes.io/name: nexserver
-    app.kubernetes.io/version: 0.2.0
+    app.kubernetes.io/version: 0.3.0
   namespace: nexclipper
 spec:
   type: NodePort
@@ -61,4 +61,4 @@ spec:
       name: agent-port
   selector:
     app.kubernetes.io/name: nexserver
-    app.kubernetes.io/version: 0.2.0
+    app.kubernetes.io/version: 0.3.0
