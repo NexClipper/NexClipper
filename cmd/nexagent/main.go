@@ -28,6 +28,12 @@ func main() {
 			Required: false,
 			Value:    "",
 		},
+		cli.IntFlag{
+			Name:   "api",
+			Usage:  "Listening port for REST API",
+			EnvVar: "NEXAGENT_API_PORT",
+			Value:  18002,
+		},
 		cli.StringFlag{
 			Name:   "k8s.cluster",
 			Usage:  "Name of Kubernetes cluster",
@@ -87,6 +93,7 @@ func main() {
 			k8sCluster := c.String("k8s.cluster")
 			k8sNamespace := c.String("k8s.namespace")
 			agentCluster := c.String("agent.cluster")
+			apiPort := c.Int("api")
 
 			nexAgent.InitWithDefault()
 
@@ -94,6 +101,7 @@ func main() {
 			nexAgent.SetServerAddress(serverAddress)
 			nexAgent.SetK8sCluster(k8sCluster)
 			nexAgent.SetK8sNamespace(k8sNamespace)
+			nexAgent.SetApiPort(apiPort)
 		}
 
 		if err := nexAgent.Start(); err != nil {
