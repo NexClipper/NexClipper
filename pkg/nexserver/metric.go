@@ -27,18 +27,6 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, nodeId uint, sour
 		metricLabel = s.getMetricLabel(reportMetric.Label)
 
 		switch sourceType {
-		//case pb.Metric_NODE:
-		//	if source != nil {
-		//		srcNode := source.(Node)
-		//		node = &srcNode
-		//	} else {
-		//		node = s.getNode(reportMetric.Source, clusterId)
-		//		if node == nil {
-		//			skippedCount += 1
-		//			continue
-		//		}
-		//	}
-		//	metric.NodeID = node.ID
 		case pb.Metric_CONTAINER:
 			if source != nil {
 				srcContainer := source.(Container)

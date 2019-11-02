@@ -84,7 +84,17 @@ func (s *NexServer) ApiResponseJson(c *gin.Context, code int, status, message st
 }
 
 func (s *NexServer) Param(c *gin.Context, key string) string {
-	return strings.ReplaceAll(strings.ReplaceAll(c.Param(key), "'", ""), "\"", "")
+	return s.RemoveSpecialChar(c.Param(key))
+}
+
+func (s *NexServer) RemoveSpecialChar(key string) string {
+	chars := []string{"'", "\""}
+
+	for _, ch := range chars {
+		key = strings.ReplaceAll(key, ch, "")
+	}
+
+	return key
 }
 
 type Query struct {
@@ -107,17 +117,16 @@ func (s *NexServer) ParseQuery(c *gin.Context) *Query {
 		return &query
 	}
 
-	query.Timezone = strings.ReplaceAll(c.DefaultQuery("timezone", "UTC"), "'", "")
-	query.Granularity = strings.ReplaceAll(
-		c.DefaultQuery("granularity", "minute"), "'", "")
+	query.Timezone = s.RemoveSpecialChar(c.DefaultQuery("timezone", "UTC"))
+	query.Granularity = s.RemoveSpecialChar(c.DefaultQuery("granularity", "minute"))
 	query.DateRange = c.QueryArray("dateRange")
 	query.MetricNames = c.QueryArray("metricNames")
 
 	for idx, dateRange := range query.DateRange {
-		query.DateRange[idx] = strings.ReplaceAll(dateRange, "'", "")
+		query.DateRange[idx] = s.RemoveSpecialChar(dateRange)
 	}
 	for idx, metricName := range query.MetricNames {
-		query.MetricNames[idx] = strings.ReplaceAll(metricName, "'", "")
+		query.MetricNames[idx] = s.RemoveSpecialChar(metricName)
 	}
 
 	return &query
@@ -532,6 +541,10 @@ func (s *NexServer) ApiSnapshotNodes(c *gin.Context) {
 	query := s.ParseQuery(c)
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND m2.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -636,13 +649,17 @@ func (s *NexServer) ApiMetricsNodes(c *gin.Context) {
 
 	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
-	if cId == "" || query == nil || len(query.DateRange) != 2 {
+	if s.IsValidParams(cId, query, true, true) == false {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
 		return
 	}
 
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -656,9 +673,9 @@ SELECT nodes.host as node, nodes.id as node_id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.node_id as node_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
-           date_trunc('%s', ts) as bucket
+           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
     FROM metrics
-    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s 
+    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s' AND metrics.cluster_id=%s 
       AND metrics.process_id=0
       AND metrics.container_id=0 %s %s
     GROUP BY bucket, metrics.node_id, metrics.name_id, metrics.label_id)
@@ -667,8 +684,9 @@ WHERE
     metrics_bucket.node_id=nodes.id AND
     metrics_bucket.name_id=metric_names.id AND
     metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket;
-`, granularity, query.DateRange[0], query.DateRange[1], cId, nodeQuery, metricNameQuery)
+ORDER BY bucket`, granularity, query.Timezone, query.Timezone,
+		query.DateRange[0], query.Timezone, query.DateRange[1],
+		cId, nodeQuery, metricNameQuery)
 
 	rows, err := s.db.Raw(metricQuery).Rows()
 	if err != nil {
@@ -721,6 +739,26 @@ func (s *NexServer) CheckRequiredParams(c *gin.Context, params []string) (map[st
 	return required, true
 }
 
+func (s *NexServer) IsValidParams(clusterId string, query *Query, existDateRange bool, existMetricNames bool) bool {
+	if clusterId == "" || query == nil {
+		return false
+	}
+
+	if existDateRange {
+		if query.DateRange == nil || len(query.DateRange) < 2 {
+			return false
+		}
+	}
+
+	if existMetricNames {
+		if query.MetricNames == nil || len(query.MetricNames) < 1 {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (s *NexServer) ApiSnapshotProcesses(c *gin.Context) {
 	params, ok := s.CheckRequiredParams(c, []string{"clusterId", "nodeId"})
 	if !ok {
@@ -739,6 +777,10 @@ func (s *NexServer) ApiSnapshotProcesses(c *gin.Context) {
 	query := s.ParseQuery(c)
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND m2.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -820,6 +862,10 @@ func (s *NexServer) ApiSnapshotContainers(c *gin.Context) {
 	query := s.ParseQuery(c)
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND m2.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -907,6 +953,10 @@ func (s *NexServer) ApiSnapshotPods(c *gin.Context) {
 	query := s.ParseQuery(c)
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND m2.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -918,7 +968,7 @@ FROM metric_names, containers, k8s_pods, k8s_containers, k8s_namespaces, metrics
 JOIN (
     SELECT m2.container_id, name_id, MAX(ts) ts
     FROM metrics m2
-    WHERE m2.ts >= NOW() - interval '6000 seconds'
+    WHERE m2.ts >= NOW() - interval '60 seconds'
       AND m2.cluster_id=%s
       AND m2.container_id != 0
       AND m2.process_id=0 %s
@@ -986,13 +1036,17 @@ func (s *NexServer) ApiMetricsProcesses(c *gin.Context) {
 
 	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
-	if cId == "" || query == nil || len(query.DateRange) != 2 {
+	if s.IsValidParams(cId, query, true, true) == false {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
 		return
 	}
 
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -1006,9 +1060,9 @@ SELECT processes.name as process, processes.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.process_id as process_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
-           date_trunc('%s', ts) as bucket
+           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
     FROM metrics
-    WHERE ts >= '%s' AND ts < '%s'
+    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s %s %s
     GROUP BY bucket, metrics.process_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, metric_labels, processes
@@ -1016,8 +1070,9 @@ WHERE
     metrics_bucket.process_id=processes.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket;
-`, granularity, query.DateRange[0], query.DateRange[1], cId, nodeQuery, processQuery, metricNameQuery)
+ORDER BY bucket`, granularity, query.Timezone, query.Timezone,
+		query.DateRange[0], query.Timezone, query.DateRange[1],
+		cId, nodeQuery, processQuery, metricNameQuery)
 
 	rows, err := s.db.Raw(q).Rows()
 	if err != nil {
@@ -1070,13 +1125,17 @@ func (s *NexServer) ApiMetricsContainers(c *gin.Context) {
 
 	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
-	if cId == "" || query == nil || len(query.DateRange) != 2 {
+	if s.IsValidParams(cId, query, true, true) == false {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
 		return
 	}
 
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -1090,9 +1149,9 @@ SELECT containers.name as container, containers.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
-           date_trunc('%s', ts) as bucket
+           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
     FROM metrics
-    WHERE ts >= '%s' AND ts < '%s'
+    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s %s %s
     GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, metric_labels, containers
@@ -1100,8 +1159,8 @@ WHERE
     metrics_bucket.container_id=containers.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket;
-`, granularity, query.DateRange[0], query.DateRange[1], cId, nodeQuery, containerQuery, metricNameQuery)
+ORDER BY bucket`, granularity, query.Timezone, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+		cId, nodeQuery, containerQuery, metricNameQuery)
 
 	rows, err := s.db.Raw(q).Rows()
 	if err != nil {
@@ -1155,13 +1214,17 @@ func (s *NexServer) ApiMetricsPods(c *gin.Context) {
 
 	cId := s.Param(c, "clusterId")
 	query := s.ParseQuery(c)
-	if cId == "" || query == nil || len(query.DateRange) != 2 {
+	if s.IsValidParams(cId, query, true, true) == false {
 		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
 		return
 	}
 
 	metricNameIds := s.findMetricIdByNames(query.MetricNames)
 	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
@@ -1176,9 +1239,9 @@ SELECT k8s_pods.name as pod, k8s_namespaces.name as namespace,
 FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id,
-           date_trunc('%s', ts) as bucket
+           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
     FROM metrics
-    WHERE ts >= '%s' AND ts < '%s'
+    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s
     GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, containers, k8s_pods, k8s_containers, k8s_namespaces
@@ -1189,8 +1252,8 @@ WHERE
     AND k8s_containers.k8s_pod_id=k8s_pods.id
     AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
 GROUP BY bucket, pod, namespace, metric_names.name
-ORDER BY bucket
-`, granularity, query.DateRange[0], query.DateRange[1], cId, metricNameQuery, namespaceQuery, podQuery)
+ORDER BY bucket`, granularity, query.Timezone, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+		cId, metricNameQuery, namespaceQuery, podQuery)
 
 	rows, err := s.db.Raw(q).Rows()
 	if err != nil {
