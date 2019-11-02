@@ -157,8 +157,8 @@ func (s *NexServer) updateLastContact(agentUuid string) bool {
 	if !found {
 		return false
 	}
-	agent.LastContact = time.Now()
 
+	agent.LastContact = time.Now()
 	s.db.Save(agent)
 
 	return true
@@ -173,6 +173,38 @@ func (s *NexServer) getPublicIP(ctx context.Context) (string, error) {
 	publicIpv4 := strings.Split(p.Addr.String(), ":")[0]
 
 	return publicIpv4, nil
+}
+
+func (s *NexServer) updateAgentInfo(agent *Agent, publicIpv4 string, in *pb.Agent) error {
+	needToUpdate := false
+
+	if agent.Version != in.Version {
+		agent.Version = in.Version
+		needToUpdate = true
+	}
+	if agent.PublicIpv4 != publicIpv4 {
+		agent.PublicIpv4 = publicIpv4
+		needToUpdate = true
+	}
+	if agent.Ipv4 != in.Node.Ipv4 {
+		agent.Ipv4 = in.Node.Ipv4
+		needToUpdate = true
+	}
+
+	if needToUpdate == false {
+		return nil
+	}
+
+	result := s.db.Model(agent).Updates(Agent{
+		Version:    agent.Version,
+		PublicIpv4: agent.PublicIpv4,
+		Ipv4:       agent.Ipv4})
+	if result.Error != nil {
+		log.Printf("failed to update agent: %v", result.Error)
+		return result.Error
+	}
+
+	return nil
 }
 
 func (s *NexServer) UpdateAgent(ctx context.Context, in *pb.Agent) (*pb.Response, error) {
@@ -197,6 +229,7 @@ func (s *NexServer) UpdateAgent(ctx context.Context, in *pb.Agent) (*pb.Response
 		s.addAgent(remoteAgent.Uuid, remoteAgent)
 	}
 
+	s.updateAgentInfo(remoteAgent, publicIpv4, in)
 	s.updateLastContact(remoteAgent.Uuid)
 
 	node := s.findNodeByAgent(remoteAgent)
