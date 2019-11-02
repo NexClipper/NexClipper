@@ -129,6 +129,11 @@ func (s *NexServer) ParseQuery(c *gin.Context) *Query {
 		query.MetricNames[idx] = s.RemoveSpecialChar(metricName)
 	}
 
+	_, err := time.LoadLocation(query.Timezone)
+	if err != nil {
+		return nil
+	}
+
 	return &query
 }
 
