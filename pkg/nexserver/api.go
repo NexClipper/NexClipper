@@ -118,7 +118,7 @@ func (s *NexServer) ParseQuery(c *gin.Context) *Query {
 	}
 
 	query.Timezone = s.RemoveSpecialChar(c.DefaultQuery("timezone", "UTC"))
-	query.Granularity = s.RemoveSpecialChar(c.DefaultQuery("granularity", "minute"))
+	query.Granularity = s.RemoveSpecialChar(c.DefaultQuery("granularity", ""))
 	query.DateRange = c.QueryArray("dateRange")
 	query.MetricNames = c.QueryArray("metricNames")
 
@@ -668,17 +668,14 @@ func (s *NexServer) ApiMetricsNodes(c *gin.Context) {
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
-	granularity := query.Granularity
-	if granularity == "" {
-		granularity = "minute"
-	}
+
+	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
 
 	metricQuery := fmt.Sprintf(`
 SELECT nodes.host as node, nodes.id as node_id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.node_id as node_id, avg(value) as value,
-            metrics.name_id, metrics.label_id,
-           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
+            metrics.name_id, metrics.label_id, %s
     FROM metrics
     WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s' AND metrics.cluster_id=%s 
       AND metrics.process_id=0
@@ -689,7 +686,7 @@ WHERE
     metrics_bucket.node_id=nodes.id AND
     metrics_bucket.name_id=metric_names.id AND
     metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, granularity, query.Timezone, query.Timezone,
+ORDER BY bucket`, truncateQuery, query.Timezone,
 		query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, metricNameQuery)
 
@@ -1055,17 +1052,14 @@ func (s *NexServer) ApiMetricsProcesses(c *gin.Context) {
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
-	granularity := query.Granularity
-	if granularity == "" {
-		granularity = "minute"
-	}
+
+	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
 
 	q := fmt.Sprintf(`
 SELECT processes.name as process, processes.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.process_id as process_id, avg(value) as value,
-            metrics.name_id, metrics.label_id,
-           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
+            metrics.name_id, metrics.label_id, %s
     FROM metrics
     WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s %s %s
@@ -1075,7 +1069,7 @@ WHERE
     metrics_bucket.process_id=processes.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, granularity, query.Timezone, query.Timezone,
+ORDER BY bucket`, truncateQuery, query.Timezone,
 		query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, processQuery, metricNameQuery)
 
@@ -1144,17 +1138,14 @@ func (s *NexServer) ApiMetricsContainers(c *gin.Context) {
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
-	granularity := query.Granularity
-	if granularity == "" {
-		granularity = "minute"
-	}
+
+	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
 
 	q := fmt.Sprintf(`
 SELECT containers.name as container, containers.id, ROUND(value, 2), bucket,
        metric_names.name, metric_labels.label FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
-            metrics.name_id, metrics.label_id,
-           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
+            metrics.name_id, metrics.label_id, %s
     FROM metrics
     WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s %s %s
@@ -1164,7 +1155,7 @@ WHERE
     metrics_bucket.container_id=containers.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, granularity, query.Timezone, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, containerQuery, metricNameQuery)
 
 	rows, err := s.db.Raw(q).Rows()
@@ -1233,18 +1224,15 @@ func (s *NexServer) ApiMetricsPods(c *gin.Context) {
 	if len(metricNameIds) > 0 {
 		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
 	}
-	granularity := query.Granularity
-	if granularity == "" {
-		granularity = "minute"
-	}
+
+	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
 
 	q := fmt.Sprintf(`
 SELECT k8s_pods.name as pod, k8s_namespaces.name as namespace,
        ROUND(SUM(value), 2) as value, bucket, metric_names.name
 FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
-            metrics.name_id, metrics.label_id,
-           DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket
+            metrics.name_id, metrics.label_id, %s
     FROM metrics
     WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
       AND metrics.cluster_id=%s %s
@@ -1257,7 +1245,7 @@ WHERE
     AND k8s_containers.k8s_pod_id=k8s_pods.id
     AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
 GROUP BY bucket, pod, namespace, metric_names.name
-ORDER BY bucket`, granularity, query.Timezone, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, metricNameQuery, namespaceQuery, podQuery)
 
 	rows, err := s.db.Raw(q).Rows()
@@ -1293,4 +1281,63 @@ ORDER BY bucket`, granularity, query.Timezone, query.Timezone, query.DateRange[0
 		"message": "",
 		"data":    results,
 	})
+}
+
+func (s *NexServer) calculateGranularity(dateRanges []string, timezone, granularity string) string {
+	if dateRanges == nil || len(dateRanges) != 2 {
+		return ""
+	}
+
+	bucket := ""
+	for _, wantedBucket := range []string{"minute", "hour", "day", "month", "year"} {
+		if granularity == wantedBucket {
+			bucket = granularity
+			break
+		}
+	}
+	if bucket != "" {
+		truncateQuery := fmt.Sprintf(`DATE_TRUNC('%s', ts AT TIME ZONE '%s') as bucket`, bucket, timezone)
+
+		return truncateQuery
+	}
+
+	start, err := time.Parse(time.RFC3339, dateRanges[0])
+	if err != nil {
+		start, err = time.Parse("2006-01-02 15:04:05", dateRanges[0])
+		if err != nil {
+			return ""
+		}
+	}
+	end, err := time.Parse(time.RFC3339, dateRanges[1])
+	if err != nil {
+		end, err = time.Parse("2006-01-02 15:04:05", dateRanges[1])
+		if err != nil {
+			return ""
+		}
+	}
+
+	diff := end.Sub(start).Minutes()
+	interval := int64(diff/60.0) * 5 / 5
+	truncateQuery := ""
+
+	if interval < 60 {
+		truncateQuery = fmt.Sprintf(`
+			DATE_TRUNC('hour', ts AT TIME ZONE '%s') +
+			DATE_PART('minute', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d minute' as bucket`,
+			timezone, timezone, interval, interval)
+	} else if interval < 1440 {
+		interval /= 60
+		truncateQuery = fmt.Sprintf(`
+			DATE_TRUNC('day', ts AT TIME ZONE '%s') +
+			DATE_PART('hour', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d hour' as bucket`,
+			timezone, timezone, interval, interval)
+	} else {
+		interval /= 1440
+		truncateQuery = fmt.Sprintf(`
+			DATE_TRUNC('month', ts AT TIME ZONE '%s') +
+			DATE_PART('day', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d day' as bucket`,
+			timezone, timezone, interval, interval)
+	}
+
+	return truncateQuery
 }
