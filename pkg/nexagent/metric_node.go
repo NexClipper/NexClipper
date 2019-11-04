@@ -4,9 +4,11 @@ import (
 	"fmt"
 	pb "github.com/NexClipper/NexClipper/api"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -148,6 +150,66 @@ func (s *NexAgent) addNodeMemoryMetric(metrics *pb.Metrics, ts *time.Time) *pb.M
 	return metrics
 }
 
+func (s *NexAgent) addNodeDiskMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
+	parts, err := disk.Partitions(false)
+	if err != nil {
+		return metrics
+	}
+
+	var usage []*disk.UsageStat
+
+	for _, part := range parts {
+		u, err := disk.Usage(part.Mountpoint)
+		if err != nil {
+			return metrics
+		}
+		p, err := disk.Usage(part.Device)
+		if err != nil {
+			return metrics
+		}
+
+		label := fmt.Sprintf("host=%s,path=%s", s.hostName, p.Path)
+		usage = append(usage, u)
+
+		if s.IsDiskDevice(p.Path) {
+			diskMetrics := BasicMetrics{
+				&BasicMetric{
+					Name:  "node_disk_total",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(u.Total),
+				},
+				&BasicMetric{
+					Name:  "node_disk_free",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(u.Free),
+				},
+				&BasicMetric{
+					Name:  "node_disk_used",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(u.Used),
+				},
+			}
+			s.appendMetrics(metrics, &diskMetrics, "/node/metrics", pb.Metric_NODE, s.hostName, 0, ts)
+		}
+	}
+	return metrics
+}
+
+func (s *NexAgent) IsDiskDevice(deviceName string) bool {
+	diskDevicePrefix := []string{"/dev/sd", "/dev/nvme", "dev/vd"}
+
+	for _, diskPrefix := range diskDevicePrefix {
+		if strings.HasPrefix(deviceName, diskPrefix) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -162,6 +224,7 @@ func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	s.addNodeLoadMetric(metrics, ts)
 	s.addNodeCpuMetric(metrics, ts)
 	s.addNodeMemoryMetric(metrics, ts)
+	s.addNodeDiskMetric(metrics, ts)
 
 	_, err := s.collectorClient.ReportMetrics(s.ctx, metrics)
 	if err != nil {
