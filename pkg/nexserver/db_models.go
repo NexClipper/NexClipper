@@ -11,6 +11,7 @@ type Cluster struct {
 
 	Name        string `gorm:"size:128"`
 	Description string
+	Disabled    bool
 
 	Agents []Agent
 	Nodes  []Node
@@ -27,6 +28,7 @@ type Agent struct {
 	PublicIpv6 string `gorm:"size:40"`
 
 	LastContact time.Time
+	Disabled    bool
 	Uuid        string `gorm:"size:36;unique_index"`
 	MachineID   string `gorm:"size:70;unique_index"`
 	Description string
@@ -50,6 +52,7 @@ type Node struct {
 	Info            postgres.Jsonb
 	Uuid            string `gorm:"size:36;unique_index"`
 	Description     string
+	Disabled        bool
 
 	AgentID   uint `gorm:"index"`
 	ClusterID uint `gorm:"index"`
@@ -158,15 +161,20 @@ type Event struct {
 	Ts    time.Time
 	Value string
 
+	Acked   bool
+	AckedTs time.Time
+
 	EndpointID uint
 	TypeID     uint
 	NameID     uint
 	LabelID    uint
 
 	ClusterID   uint
+	AgentID     uint
 	NodeID      uint
 	ProcessID   uint
 	ContainerID uint
+	PodID       uint
 }
 
 type K8sEvent struct {
@@ -320,4 +328,12 @@ type K8sObjectTag struct {
 
 	K8sObjectID uint
 	K8sLabelID  uint
+}
+
+type IncidentBasicRule struct {
+	gorm.Model
+
+	Name        string
+	Description string
+	Query       string
 }
