@@ -4,16 +4,18 @@ import (
 	"fmt"
 	pb "github.com/NexClipper/NexClipper/api"
 	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"log"
+	"strings"
 	"time"
 )
 
 func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
 	avgStat, err := load.Avg()
 	if err != nil {
-		log.Printf("addNodeLoadMetric: failed get load average stat: %v\n", err)
+		log.Printf("Failed get load average stat: %v\n", err)
 		return nil
 	}
 
@@ -41,8 +43,8 @@ func (s *NexAgent) addNodeLoadMetric(metrics *pb.Metrics, ts *time.Time) *pb.Met
 
 	s.appendMetrics(metrics, &loadMetrics, "/node/metrics", pb.Metric_NODE, s.hostName, 0, ts)
 
-	//log.Printf("Load Avg. load1: %v, load5: %v, load15: %v\n",
-	//	avgStat.Load1, avgStat.Load5, avgStat.Load15)
+	log.Printf("Load Avg. load1: %v, load5: %v, load15: %v\n",
+		avgStat.Load1, avgStat.Load5, avgStat.Load15)
 
 	return metrics
 }
@@ -53,32 +55,32 @@ func (s *NexAgent) addNodeCpuMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metr
 		return metrics
 	}
 
+	perCpuStats, err := cpu.Times(true)
+	if err != nil {
+		return metrics
+	}
+
+	cpuStats = append(cpuStats, perCpuStats...)
+
 	for _, cpuStat := range cpuStats {
-		label := fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU)
 		cpuMetrics := BasicMetrics{
 			&BasicMetric{
 				Name:  "node_cpu_user",
-				Label: label,
+				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
 				Type:  "gauge",
 				Value: cpuStat.User,
 			},
 			&BasicMetric{
 				Name:  "node_cpu_system",
-				Label: label,
+				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
 				Type:  "gauge",
 				Value: cpuStat.System,
 			},
 			&BasicMetric{
 				Name:  "node_cpu_idle",
-				Label: label,
+				Label: fmt.Sprintf("host=%s,cpu=%s", s.hostName, cpuStat.CPU),
 				Type:  "gauge",
 				Value: cpuStat.Idle,
-			},
-			&BasicMetric{
-				Name:  "node_cpu_iowait",
-				Label: label,
-				Type:  "gauge",
-				Value: cpuStat.Iowait,
 			},
 		}
 
@@ -148,10 +150,59 @@ func (s *NexAgent) addNodeMemoryMetric(metrics *pb.Metrics, ts *time.Time) *pb.M
 	return metrics
 }
 
+// add DiskUsage
+func (s *NexAgent) addNodeDiskMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
+	parts, err := disk.Partitions(false)
+	if err != nil {
+		return metrics
+	}
+
+	var usage []*disk.UsageStat
+
+	for _, part := range parts{
+		u, err := disk.Usage(part.Mountpoint)
+		if err != nil{
+			return metrics
+		}
+		p, err := disk.Usage(part.Device)
+		if err != nil{
+			return metrics
+		}
+
+		label := fmt.Sprintf("host=%s", s.hostName)
+		usage = append(usage, u)
+
+		if strings.Contains(p.Path, "/dev/sd"){
+			diskMetrics := BasicMetrics{
+				&BasicMetric{
+					Name: "node_disk_total",
+					Label: label,
+					Type: "gauge",
+					Value: float64(u.Total),
+				},
+				&BasicMetric{
+					Name:"node_disk_free",
+					Label: label,
+					Type: "gauge",
+					Value: float64(u.Free),
+				},
+				&BasicMetric{
+					Name: "node_disk_used",
+					Label: label,
+					Type: "gauge",
+					Value: float64(u.Used),
+				},
+			}
+			s.appendMetrics(metrics, &diskMetrics, "/node/metrics", pb.Metric_NODE, s.hostName, 0, ts)
+		}
+	}
+	return metrics
+}
+
 func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("sendNodeMetrics: %v\n", r)
+			log.Printf("Network error: %v\n", r)
 		}
 	}()
 
@@ -162,6 +213,7 @@ func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	s.addNodeLoadMetric(metrics, ts)
 	s.addNodeCpuMetric(metrics, ts)
 	s.addNodeMemoryMetric(metrics, ts)
+	s.addNodeDiskMetric(metrics, ts)
 
 	_, err := s.collectorClient.ReportMetrics(s.ctx, metrics)
 	if err != nil {

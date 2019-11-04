@@ -29,7 +29,7 @@ import (
 const (
 	AppName          = "NexServer"
 	AppDescription   = "NexServer for NexClipper Monitoring System"
-	NexServerVersion = "0.3.0"
+	NexServerVersion = "0.2.0"
 	ConfigFilename   = "nexserver.yaml"
 )
 
@@ -157,8 +157,8 @@ func (s *NexServer) updateLastContact(agentUuid string) bool {
 	if !found {
 		return false
 	}
-
 	agent.LastContact = time.Now()
+
 	s.db.Save(agent)
 
 	return true
@@ -173,38 +173,6 @@ func (s *NexServer) getPublicIP(ctx context.Context) (string, error) {
 	publicIpv4 := strings.Split(p.Addr.String(), ":")[0]
 
 	return publicIpv4, nil
-}
-
-func (s *NexServer) updateAgentInfo(agent *Agent, publicIpv4 string, in *pb.Agent) error {
-	needToUpdate := false
-
-	if agent.Version != in.Version {
-		agent.Version = in.Version
-		needToUpdate = true
-	}
-	if agent.PublicIpv4 != publicIpv4 {
-		agent.PublicIpv4 = publicIpv4
-		needToUpdate = true
-	}
-	if agent.Ipv4 != in.Node.Ipv4 {
-		agent.Ipv4 = in.Node.Ipv4
-		needToUpdate = true
-	}
-
-	if needToUpdate == false {
-		return nil
-	}
-
-	result := s.db.Model(agent).Updates(Agent{
-		Version:    agent.Version,
-		PublicIpv4: agent.PublicIpv4,
-		Ipv4:       agent.Ipv4})
-	if result.Error != nil {
-		log.Printf("failed to update agent: %v", result.Error)
-		return result.Error
-	}
-
-	return nil
 }
 
 func (s *NexServer) UpdateAgent(ctx context.Context, in *pb.Agent) (*pb.Response, error) {
@@ -229,7 +197,6 @@ func (s *NexServer) UpdateAgent(ctx context.Context, in *pb.Agent) (*pb.Response
 		s.addAgent(remoteAgent.Uuid, remoteAgent)
 	}
 
-	s.updateAgentInfo(remoteAgent, publicIpv4, in)
 	s.updateLastContact(remoteAgent.Uuid)
 
 	node := s.findNodeByAgent(remoteAgent)
@@ -268,7 +235,7 @@ func (s *NexServer) findAgentFromContext(ctx context.Context) *Agent {
 func (s *NexServer) Ping(stream pb.Collector_PingServer) error {
 	agent := s.findAgentFromContext(stream.Context())
 	if agent == nil {
-		log.Printf("Ping: invalid agent")
+		log.Printf("invalid agent")
 		return status.Error(codes.PermissionDenied, "invalid agent")
 	}
 
@@ -284,9 +251,8 @@ func (s *NexServer) Ping(stream pb.Collector_PingServer) error {
 
 				return
 			}
-			if in.Uuid != agent.Uuid {
-				log.Println("Ping: invalid uuid")
-			}
+
+			log.Printf("Agent: received UUID: %s, Timestamp: %v\n", agent.Uuid, in.Timestamp)
 		}
 	}()
 
@@ -300,6 +266,7 @@ func (s *NexServer) Ping(stream pb.Collector_PingServer) error {
 		if err != nil {
 			log.Printf("Agent: failed to send ping: %v\n", err)
 			break
+
 		}
 	}
 
@@ -309,17 +276,10 @@ func (s *NexServer) Ping(stream pb.Collector_PingServer) error {
 func (s *NexServer) ReportMetrics(ctx context.Context, in *pb.Metrics) (*pb.Response, error) {
 	agent := s.findAgentFromContext(ctx)
 	if agent == nil {
-		log.Println("ReportMetrics: invalid agent")
 		return nil, status.Error(codes.PermissionDenied, "invalid agent")
 	}
 
-	node := s.getNodeByAgent(agent)
-	if node == nil {
-		log.Println("ReportMetrics: invalid agent")
-		return nil, status.Error(codes.PermissionDenied, "invalid agent")
-	}
-
-	s.addMetrics(in, agent.ClusterID, node.ID, nil)
+	s.addMetrics(in, agent.ClusterID, nil)
 
 	return s.response(true, 0, ""), nil
 }
@@ -327,7 +287,7 @@ func (s *NexServer) ReportMetrics(ctx context.Context, in *pb.Metrics) (*pb.Resp
 func (s *NexServer) mustValidAgent(ctx context.Context) (*Agent, error) {
 	agent := s.findAgentFromContext(ctx)
 	if agent == nil {
-		log.Println("ValidAgent: invalid agent")
+		log.Printf("invalid agent")
 		return nil, status.Error(codes.PermissionDenied, "invalid agent")
 	}
 
@@ -337,7 +297,7 @@ func (s *NexServer) mustValidAgent(ctx context.Context) (*Agent, error) {
 func (s *NexServer) mustValidCluster(clusterName string) (*Cluster, error) {
 	cluster := s.findCluster(clusterName)
 	if cluster == nil {
-		log.Println("ValidCluster: invalid cluster")
+		log.Printf("invalid cluster")
 		return nil, status.Error(codes.InvalidArgument, "invalid cluster")
 	}
 
@@ -347,7 +307,7 @@ func (s *NexServer) mustValidCluster(clusterName string) (*Cluster, error) {
 func (s *NexServer) mustValidNode(nodeName string, clusterId uint) (*Node, error) {
 	node := s.findNode(nodeName, clusterId)
 	if node == nil {
-		log.Println("ValidNode: invalid node")
+		log.Printf("invalid node")
 		return nil, status.Error(codes.InvalidArgument, "invalid node")
 	}
 
@@ -377,33 +337,27 @@ func (s *NexServer) ReportContainerMetrics(ctx context.Context, in *pb.Container
 func (s *NexServer) UpdateK8SCluster(ctx context.Context, in *pb.K8SCluster) (*pb.Response, error) {
 	_, err := s.mustValidAgent(ctx)
 	if err != nil {
-		log.Println("UpdateK8SCluster: invalid agent")
 		return nil, status.Error(codes.PermissionDenied, "invalid agent")
 	}
 	cluster, err := s.mustValidCluster(in.AgentCluster)
 	if err != nil {
-		log.Println("UpdateK8SCluster: invalid agent")
 		return nil, status.Error(codes.InvalidArgument, "invalid cluster")
 	}
 	k8sCluster, err := s.mustValidK8sCluster(in.Object.Name, cluster.ID)
 	if err != nil {
-		log.Println("UpdateK8SCluster: invalid kubernetes cluster")
 		return nil, status.Error(codes.InvalidArgument, "invalid kubernetes cluster")
 	}
 
 	if in.K8SNodes == nil || in.K8SNamespaces == nil {
-		log.Println("UpdateK8SCluster: invalid kubernetes cluster")
 		return nil, status.Error(codes.InvalidArgument, "invalid kubernetes cluster")
 	}
 
 	err = s.addK8sNodes(in.K8SNodes, k8sCluster)
 	if err != nil {
-		log.Println("UpdateK8SCluster: invalid arguments")
 		return nil, status.Error(codes.InvalidArgument, "invalid arguments")
 	}
 	err = s.addNamespaces(in.K8SNamespaces, k8sCluster)
 	if err != nil {
-		log.Println("UpdateK8SCluster: invalid arguments")
 		return nil, status.Error(codes.InvalidArgument, "invalid arguments")
 	}
 
@@ -413,17 +367,14 @@ func (s *NexServer) UpdateK8SCluster(ctx context.Context, in *pb.K8SCluster) (*p
 func (s *NexServer) ReportK8SMetrics(ctx context.Context, in *pb.K8SMetrics) (*pb.Response, error) {
 	_, err := s.mustValidAgent(ctx)
 	if err != nil {
-		log.Println("ReportK8SMetrics: invalid agent")
 		return nil, status.Error(codes.PermissionDenied, "invalid agent")
 	}
 	cluster, err := s.mustValidCluster(in.AgentCluster)
 	if err != nil {
-		log.Println("ReportK8SMetrics: invalid agent")
 		return nil, status.Error(codes.InvalidArgument, "invalid cluster")
 	}
 	k8sCluster, err := s.mustValidK8sCluster(in.K8SCluster, cluster.ID)
 	if err != nil {
-		log.Println("ReportK8SMetrics: invalid kubernetes cluster")
 		return nil, status.Error(codes.InvalidArgument, "invalid kubernetes cluster")
 	}
 
@@ -470,7 +421,7 @@ func (s *NexServer) UpdateProcess(ctx context.Context, in *pb.ProcessAll) (*pb.R
 			processPtr = &processItem
 		}
 
-		s.addMetrics(psInfo.Metrics, cluster.ID, node.ID, *processPtr)
+		s.addMetrics(psInfo.Metrics, cluster.ID, *processPtr)
 	}
 
 	return s.response(true, 0, ""), nil
@@ -518,7 +469,7 @@ func (s *NexServer) UpdateContainer(ctx context.Context, in *pb.ContainerAll) (*
 			containerPtr = &containerItem
 		}
 
-		s.addMetrics(containerInfo.Metrics, cluster.ID, node.ID, *containerPtr)
+		s.addMetrics(containerInfo.Metrics, cluster.ID, *containerPtr)
 	}
 
 	return s.response(true, 0, ""), nil

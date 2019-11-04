@@ -5,6 +5,7 @@ import (
 	pb "github.com/NexClipper/NexClipper/api"
 	"github.com/shirou/gopsutil/cpu"
 	"log"
+	"math"
 	"strings"
 
 	"github.com/shirou/gopsutil/process"
@@ -77,7 +78,7 @@ func (s *NexAgent) calculateProcessLoad(ps *process.Process, now *time.Time) (fl
 func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("sendProcessMetrics: %v\n", r)
+			log.Printf("Network error: %v\n", r)
 		}
 	}()
 	s.clearProcessUpdateFlag()
@@ -111,6 +112,16 @@ func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 		if err != nil {
 			continue
 		}
+		netUsage, err := psInfo.IOCounters()
+		if err != nil {
+			continue
+		}
+
+		readByte, _ := convertBytes(netUsage.ReadBytes)
+		writeByte, _ := convertBytes(netUsage.WriteBytes)
+		readCounts, _ := convertBytes(netUsage.ReadCount)
+		writeCounts, _ := convertBytes(netUsage.WriteCount)
+
 
 		if !s.isScrapeProcess(psInfo, memInfo, cpuPercent, memPercent, cpuTimes) {
 			continue
@@ -192,6 +203,30 @@ func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 				Type:  "gauge",
 				Value: float64(memInfo.Swap),
 			},
+			&BasicMetric{
+				Name:"process_net_read_byte",
+				Label: label,
+				Type: "gauge",
+				Value: readByte,
+			},
+			&BasicMetric{
+				Name:"process_net_write_byte",
+				Label: label,
+				Type: "gauge",
+				Value: writeByte,
+			},
+			&BasicMetric{
+				Name:"process_net_read_counts",
+				Label: label,
+				Type: "gauge",
+				Value: readCounts,
+			},
+			&BasicMetric{
+				Name:"process_net_write_counts",
+				Label: label,
+				Type: "gauge",
+				Value: writeCounts,
+			},
 		}
 
 		s.appendMetrics(processMetrics, metrics, "/process/metrics", pb.Metric_PROCESS, name, psInfo.Pid, ts)
@@ -213,9 +248,15 @@ func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 
 	resp, err := s.collectorClient.UpdateProcess(s.ctx, processAll)
 	if err != nil {
-		log.Printf("sendProcessMetrics: failed to send: %v\n", err)
+		log.Printf("Failed UpdateProcess: %v\n", err)
 	}
 	if !resp.Success {
-		log.Printf("sendProcessMetrics: response: %v\n", err)
+		log.Printf("Failed UpdateProcess from remote: %v\n", err)
 	}
+}
+
+func convertBytes(b uint64) (float64, string) {
+	mb := float64(b) / float64(uint64(math.Pow(2, 20)))
+
+	return mb, "MB"
 }

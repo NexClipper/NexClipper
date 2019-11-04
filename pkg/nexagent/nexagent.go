@@ -3,6 +3,13 @@ package nexagent
 import (
 	"context"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"time"
+
 	pb "github.com/NexClipper/NexClipper/api"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/shirou/gopsutil/cpu"
@@ -12,24 +19,18 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"io/ioutil"
 	netutil "k8s.io/apimachinery/pkg/util/net"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-	"log"
-	"os"
-	"path/filepath"
 	"sigs.k8s.io/yaml"
-	"time"
 )
 
 const (
 	AppName          = "NexAgent"
 	AppDescription   = "NexAgent for NexClipper Monitoring System"
-	NexAgentVersion  = "0.3.0"
+	NexAgentVersion  = "0.2.0"
 	K8sLeaseLockName = "nexagent-lease-lock"
 )
 
@@ -40,9 +41,8 @@ var kacp = keepalive.ClientParameters{
 }
 
 type NexAgent struct {
-	connected bool
-	hostName  string
-	config    *Config
+	hostName string
+	config   *Config
 
 	ctx  context.Context
 	conn *grpc.ClientConn
@@ -70,7 +70,6 @@ type AgentConfig struct {
 	Cluster        string
 	ServerAddress  string
 	ReportInterval int
-	ApiPort        int
 }
 
 type TLSConfig struct {
@@ -129,21 +128,7 @@ func (s *NexAgent) saveContext(agentUuid string) {
 	s.ctx = ctx
 }
 
-func (s *NexAgent) resetContext() {
-	s.ctx = context.Background()
-}
-
 func (s *NexAgent) updateAgent() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Printf("updateAgent: %v\n", r)
-		}
-	}()
-
-	if s.connected == false {
-		return
-	}
-
 	hostInfo, err := host.Info()
 	if err != nil {
 		log.Fatalf("Failed to get host information: %v", err)
@@ -189,8 +174,6 @@ func (s *NexAgent) updateAgent() {
 		s.nodeId = resp.DataString[1]
 
 		s.saveContext(s.uuid)
-	} else {
-		log.Printf("updateAgent: failed to update: %v\n", resp.DataString[0])
 	}
 }
 
@@ -267,13 +250,9 @@ func (s *NexAgent) appendMetric(
 func (s *NexAgent) sendMetrics(ts *time.Time) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("sendMetrics: %v\n", r)
+			log.Printf("Error: %v\n", r)
 		}
 	}()
-
-	if s.connected == false {
-		return
-	}
 
 	go s.sendNodeMetrics(ts)
 	go s.sendDockerMetrics(ts)
@@ -290,32 +269,30 @@ func (s *NexAgent) sendMetrics(ts *time.Time) {
 func (s *NexAgent) runPing(client pb.CollectorClient) {
 	stream, err := client.Ping(s.ctx)
 	if err != nil {
-		log.Printf("Ping: %v\n", err)
+		log.Printf("Failed ping: %v\n", err)
 	}
 
 	waitc := make(chan struct{})
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("ping: %v\n", r)
-				s.connected = false
+				log.Printf("Network error: %v\n", r)
+
+				return
 			}
 		}()
 
 		for range time.Tick(time.Second * 5) {
-			if s.connected == false {
-				break
-			}
-
 			status := &pb.Status{
 				Uuid:      s.uuid,
 				Timestamp: time.Now().Unix(),
 			}
 
+			log.Println("Sending Ping")
 			err := stream.Send(status)
 			if err != nil {
-				log.Printf("Ping: failed to send ping: %v\n", err)
-				s.connected = false
+				log.Printf("Failed send ping: %v\n", err)
+
 				close(waitc)
 				return
 			}
@@ -325,25 +302,19 @@ func (s *NexAgent) runPing(client pb.CollectorClient) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("Ping: failed to receive ping: %v\n", r)
-				s.connected = false
+				log.Printf("Network error: %v\n", r)
+
+				return
 			}
 		}()
 
 		for {
-			if s.connected == false {
-				break
-			}
-
 			in, err := stream.Recv()
 			if err == io.EOF {
 				log.Printf("Ping EOF: %v\n", err)
-				s.connected = false
-				break
 			}
-			if in != nil {
-				log.Printf("Ping received: %v\n", in.Timestamp)
-			}
+
+			log.Printf("Ping received: %v\n", in.Timestamp)
 		}
 	}()
 
@@ -357,29 +328,25 @@ func (s *NexAgent) runPing(client pb.CollectorClient) {
 func (s *NexAgent) Start() error {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Start: %v\n", r)
+			log.Printf("Error: %v\n", r)
 			time.Sleep(15 * time.Second)
-			s.resetContext()
 		}
 	}()
 
-	s.SetupApiHandler()
-
 	for {
-		s.resetContext()
 		conn, err := s.connectServer()
 		if err != nil {
 			log.Printf("Failed connect to server: %v\n", err)
-			time.Sleep(15 * time.Second)
 
+			time.Sleep(15 * time.Second)
 			continue
 		}
 		log.Println("Server connected")
 
-		s.connected = true
 		s.collectorClient = pb.NewCollectorClient(conn)
 
 		now := time.Now()
+
 		s.lastCheckTS = now
 
 		s.updateAgent()
@@ -395,18 +362,14 @@ func (s *NexAgent) Start() error {
 		go s.runPing(s.collectorClient)
 		go func() {
 			for now := range time.Tick(time.Second * s.reportInterval) {
-				if s.connected == false {
-					break
-				}
 				s.sendMetrics(&now)
+
 				s.lastCheckTS = now
 			}
 		}()
 
-		for range time.Tick(time.Second * s.updateStatusInterval) {
-			if s.connected == false {
-				break
-			}
+		for now := range time.Tick(time.Second * s.updateStatusInterval) {
+			log.Printf("updateAgent: %v\n", now)
 			s.updateAgent()
 			if s.useK8sMetric {
 				s.updateK8sCluster()
@@ -515,10 +478,6 @@ func (s *NexAgent) SetServerAddress(serverAddress string) {
 
 func (s *NexAgent) SetAgentCluster(agentCluster string) {
 	s.config.Agent.Cluster = agentCluster
-}
-
-func (s *NexAgent) SetApiPort(restApiPort int) {
-	s.config.Agent.ApiPort = restApiPort
 }
 
 func NewNexAgent() *NexAgent {

@@ -3,6 +3,7 @@ module github.com/NexClipper/NexClipper
 go 1.12
 
 require (
+	github.com/KyleBanks/dockerstats v0.0.0-20180213183355-b5fec062e953 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dgraph-io/ristretto v0.0.0-20191004195602-f823dc4a5031
