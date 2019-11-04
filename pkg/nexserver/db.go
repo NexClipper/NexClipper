@@ -1,10 +1,12 @@
 package nexserver
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"log"
 	"sync"
+	"time"
 )
 
 func Migrate(host string, port int, user string, password string, dbname string, sslmode string) error {
@@ -33,7 +35,7 @@ func Migrate(host string, port int, user string, password string, dbname string,
 		&K8sCluster{}, &K8sNamespace{}, &K8sNode{},
 		&K8sObject{}, &K8sDeployment{}, &K8sStatefulSet{}, &K8sDaemonSet{},
 		&K8sReplicaSet{}, &K8sPod{}, &K8sContainer{}, &K8sObjectTag{},
-		&Setting{}, &K8sConnector{})
+		&Setting{}, &K8sConnector{}, &IncidentBasicRule{})
 	db.Exec("select create_hypertable('metrics', 'ts', chunk_time_interval => interval '1 day');")
 	db.Exec("select create_hypertable('events', 'ts', chunk_time_interval => interval '1 day');")
 	db.Exec("select create_hypertable('k8s_metrics', 'ts', chunk_time_interval => interval '1 day');")
@@ -216,4 +218,12 @@ func (s *NexServer) findProcess(processName string, pid int32, nodeId, clusterID
 	}
 
 	return &process
+}
+
+func (s *NexServer) QueryRowsWithTime(q *gorm.DB) (*sql.Rows, error, time.Duration) {
+	queryStart := time.Now()
+	rows, err := q.Rows()
+	queryTime := time.Since(queryStart)
+
+	return rows, err, queryTime
 }

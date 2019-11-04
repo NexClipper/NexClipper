@@ -29,6 +29,7 @@ func (s *NexServer) SetupApiHandler() {
 		v1.GET("/agents", s.ApiAgentListAll)
 		v1.GET("/nodes", s.ApiNodeListAll)
 		v1.GET("/metric_names", s.ApiMetricNameList)
+		v1.GET("/status", s.ApiStatus)
 	}
 
 	clusters := v1.Group("/clusters")
@@ -97,6 +98,22 @@ func (s *NexServer) RemoveSpecialChar(key string) string {
 	return key
 }
 
+func (s *NexServer) ApiStatus(c *gin.Context) {
+	uptime := time.Since(s.serverStartTs)
+	uptimeSeconds := uptime.Seconds()
+
+	metricsPerSeconds := float64(s.metricSaveCounter) / uptimeSeconds
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data": gin.H{
+			"uptime":            uptime.String(),
+			"metricsPerSeconds": fmt.Sprintf("%.2f", metricsPerSeconds),
+		},
+	})
+}
+
 type Query struct {
 	Timezone    string   `json:"timezone"`
 	MetricNames []string `json:"metricNames"`
@@ -131,6 +148,7 @@ func (s *NexServer) ParseQuery(c *gin.Context) *Query {
 
 	_, err := time.LoadLocation(query.Timezone)
 	if err != nil {
+		log.Printf("invalid timezone: %s: %v\n", query.Timezone, err)
 		return nil
 	}
 
@@ -147,10 +165,11 @@ func (s *NexServer) ApiHealth(c *gin.Context) {
 }
 
 func (s *NexServer) ApiMetricNameList(c *gin.Context) {
-	rows, err := s.db.Raw(`
+	query := s.db.Raw(`
 SELECT metric_names.id, metric_names.name, metric_names.help, metric_types.name as metric_type
 FROM metric_names, metric_types
-WHERE metric_names.type_id=metric_types.id`).Rows()
+WHERE metric_names.type_id=metric_types.id`)
+	rows, err, queryTime := s.QueryRowsWithTime(query)
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get metric names: %v\n", err))
@@ -178,9 +197,10 @@ WHERE metric_names.type_id=metric_types.id`).Rows()
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    metricNames,
+		"status":        "ok",
+		"message":       "",
+		"data":          metricNames,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -307,11 +327,12 @@ GROUP BY m1.node_id, nodes.host, metric_names.name`, targetClusterId)
 }
 
 func (s *NexServer) ApiClusterList(c *gin.Context) {
-	rows, err := s.db.Raw(`
+	query := s.db.Raw(`
 SELECT clusters.id as cluster_id, clusters.name, 
        coalesce(k8s_clusters.id::integer, 0) as k8s_agent_cluster_id
 FROM clusters
-LEFT JOIN k8s_clusters ON clusters.id=k8s_clusters.agent_cluster_id`).Rows()
+LEFT JOIN k8s_clusters ON clusters.id=k8s_clusters.agent_cluster_id`)
+	rows, err, queryTime := s.QueryRowsWithTime(query)
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
@@ -344,9 +365,10 @@ LEFT JOIN k8s_clusters ON clusters.id=k8s_clusters.agent_cluster_id`).Rows()
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    items,
+		"status":        "ok",
+		"message":       "",
+		"data":          items,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -359,7 +381,9 @@ func (s *NexServer) ApiAgentList(c *gin.Context) {
 
 	var agents []Agent
 
+	queryStart := time.Now()
 	result := s.db.Where("cluster_id=?", cId).Find(&agents)
+	queryTime := time.Since(queryStart)
 	if result.Error != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", result.Error))
@@ -384,16 +408,18 @@ func (s *NexServer) ApiAgentList(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    items,
+		"status":        "ok",
+		"message":       "",
+		"data":          items,
+		"db_query_time": queryTime.String(),
 	})
 }
 
 func (s *NexServer) ApiAgentListAll(c *gin.Context) {
-	rows, err := s.db.Table("agents").
+	query := s.db.Table("agents").
 		Select("agents.id, agents.version, agents.ipv4, agents.online, clusters.name").
-		Joins("left join clusters on agents.cluster_id=clusters.id").Rows()
+		Joins("left join clusters on agents.cluster_id=clusters.id")
+	rows, err, queryTime := s.QueryRowsWithTime(query)
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", err))
@@ -427,9 +453,10 @@ func (s *NexServer) ApiAgentListAll(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    clusterMap,
+		"status":        "ok",
+		"message":       "",
+		"data":          clusterMap,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -442,7 +469,9 @@ func (s *NexServer) ApiNodeList(c *gin.Context) {
 
 	var nodes []Node
 
+	queryStart := time.Now()
 	result := s.db.Where("cluster_id=?", cId).Find(&nodes)
+	queryTime := time.Since(queryStart)
 	if result.Error != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", result.Error))
@@ -475,17 +504,19 @@ func (s *NexServer) ApiNodeList(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    items,
+		"status":        "ok",
+		"message":       "",
+		"data":          items,
+		"db_query_time": queryTime.String(),
 	})
 }
 
 func (s *NexServer) ApiNodeListAll(c *gin.Context) {
-	rows, err := s.db.Table("nodes").
+	query := s.db.Table("nodes").
 		Select("nodes.id, nodes.host, nodes.ipv4, nodes.os, " +
 			"nodes.platform, nodes.platform_family, nodes.platform_version, nodes.agent_id, clusters.name").
-		Joins("left join clusters on nodes.cluster_id=clusters.id").Rows()
+		Joins("left join clusters on nodes.cluster_id=clusters.id")
+	rows, err, queryTime := s.QueryRowsWithTime(query)
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad",
 			fmt.Sprintf("failed to get data: %v", err))
@@ -524,9 +555,10 @@ func (s *NexServer) ApiNodeListAll(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    clusterMap,
+		"status":        "ok",
+		"message":       "",
+		"data":          clusterMap,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -569,7 +601,7 @@ WHERE m1.name_id=metric_names.id
 	AND m1.node_id=nodes.id 
 	AND m1.label_id=metric_labels.id`, nodeQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
@@ -605,9 +637,10 @@ WHERE m1.name_id=metric_names.id
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -690,7 +723,8 @@ ORDER BY bucket`, truncateQuery, query.Timezone,
 		query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(metricQuery).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(metricQuery))
+
 	if err != nil {
 		log.Printf("failed to get metric data: %v", err)
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
@@ -720,9 +754,11 @@ ORDER BY bucket`, truncateQuery, query.Timezone,
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"count":         len(results),
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -803,7 +839,7 @@ WHERE m1.name_id=metric_names.id
   AND m1.label_id=metric_labels.id
   AND m1.process_id=processes.id`, clusterId, nodeId, processQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
@@ -840,9 +876,10 @@ WHERE m1.name_id=metric_names.id
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -889,7 +926,7 @@ WHERE m1.name_id=metric_names.id
   AND m1.label_id=metric_labels.id
   AND m1.container_id=containers.id`, clusterId, nodeId, containerQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
@@ -926,9 +963,10 @@ WHERE m1.name_id=metric_names.id
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -983,7 +1021,7 @@ WHERE m1.name_id=metric_names.id
   AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
 GROUP BY pod, namespace, m1.ts, metric_name`, clusterId, metricNameQuery, namespaceQuery, podQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
 	if err != nil {
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("failed to get data: %v", err))
 		return
@@ -1017,9 +1055,10 @@ GROUP BY pod, namespace, m1.ts, metric_name`, clusterId, metricNameQuery, namesp
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -1073,7 +1112,8 @@ ORDER BY bucket`, truncateQuery, query.Timezone,
 		query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, processQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
+
 	if err != nil {
 		log.Printf("failed to get metric data: %v", err)
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
@@ -1103,9 +1143,11 @@ ORDER BY bucket`, truncateQuery, query.Timezone,
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"count":         len(results),
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -1158,7 +1200,7 @@ WHERE
 ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, nodeQuery, containerQuery, metricNameQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
 	if err != nil {
 		log.Printf("failed to get metric data: %v", err)
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
@@ -1189,9 +1231,11 @@ ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timez
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"count":         len(results),
+		"db_query_time": queryTime.String(),
 	})
 }
 
@@ -1248,7 +1292,8 @@ GROUP BY bucket, pod, namespace, metric_names.name
 ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
 		cId, metricNameQuery, namespaceQuery, podQuery)
 
-	rows, err := s.db.Raw(q).Rows()
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
+
 	if err != nil {
 		log.Printf("failed to get metric data: %v", err)
 		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
@@ -1277,9 +1322,11 @@ ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timez
 	}
 
 	c.JSON(200, gin.H{
-		"status":  "ok",
-		"message": "",
-		"data":    results,
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"count":         len(results),
+		"db_query_time": queryTime.String(),
 	})
 }
 
