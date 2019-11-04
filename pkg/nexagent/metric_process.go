@@ -194,7 +194,46 @@ func (s *NexAgent) sendProcessMetrics(ts *time.Time) {
 			},
 		}
 
-		s.appendMetrics(processMetrics, metrics, "/process/metrics", pb.Metric_PROCESS, name, psInfo.Pid, ts)
+		var netMetrics *BasicMetrics
+
+		netUsage, err := psInfo.IOCounters()
+		if err == nil {
+			netMetrics = &BasicMetrics{
+				&BasicMetric{
+					Name:  "process_net_read_bytes",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(netUsage.ReadBytes),
+				},
+				&BasicMetric{
+					Name:  "process_net_write_bytes",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(netUsage.WriteBytes),
+				},
+				&BasicMetric{
+					Name:  "process_net_read_count",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(netUsage.ReadCount),
+				},
+				&BasicMetric{
+					Name:  "process_net_write_count",
+					Label: label,
+					Type:  "gauge",
+					Value: float64(netUsage.WriteCount),
+				},
+			}
+		} else {
+			log.Printf("failed to get io counter metric: %v\n", err)
+		}
+
+		s.appendMetrics(processMetrics, metrics,
+			"/process/metrics", pb.Metric_PROCESS, name, psInfo.Pid, ts)
+		if netUsage != nil && netMetrics != nil {
+			s.appendMetrics(processMetrics, netMetrics,
+				"/process/metrics", pb.Metric_PROCESS, name, psInfo.Pid, ts)
+		}
 
 		processes = append(processes, &pb.Process{
 			Pid:     psInfo.Pid,
