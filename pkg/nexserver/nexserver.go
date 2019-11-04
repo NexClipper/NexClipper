@@ -82,6 +82,10 @@ type NexServer struct {
 	nodeMap  map[string]*Node
 
 	cache *ristretto.Cache
+
+	serverStartTs         time.Time
+	metricSaveCounter     uint64
+	metricSaveCounterLock sync.RWMutex
 }
 
 func (s *NexServer) newAgent(in *pb.Agent, publicIpv4 string, cluster *Cluster) *Agent {
@@ -545,6 +549,7 @@ func (s *NexServer) Start() error {
 		grpc.KeepaliveParams(kasp))
 
 	pb.RegisterCollectorServer(srv, s)
+	s.serverStartTs = time.Now()
 
 	if err := srv.Serve(listen); err != nil {
 		return err
@@ -583,10 +588,11 @@ func (s *NexServer) LoadConfig(configPath string) error {
 
 func NewNexServer() *NexServer {
 	server := &NexServer{
-		agentMap: make(map[string]*Agent),
-		nodeMap:  make(map[string]*Node),
-		dbLock:   make(map[string]*sync.RWMutex),
-		config:   &Config{},
+		agentMap:              make(map[string]*Agent),
+		nodeMap:               make(map[string]*Node),
+		dbLock:                make(map[string]*sync.RWMutex),
+		config:                &Config{},
+		metricSaveCounterLock: sync.RWMutex{},
 	}
 
 	return server

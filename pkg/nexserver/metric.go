@@ -76,5 +76,9 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, nodeId uint, sour
 		savedCount += 1
 	}
 
+	s.metricSaveCounterLock.Lock()
+	s.metricSaveCounter += uint64(savedCount)
+	s.metricSaveCounterLock.Unlock()
+
 	return savedCount, skippedCount
 }
