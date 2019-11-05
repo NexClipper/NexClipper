@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
+	github.com/cakturk/go-netstat v0.0.0-20190620190123-a633b9c55b1a // indirect
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dgraph-io/ristretto v0.0.0-20191004195602-f823dc4a5031
 	github.com/gin-contrib/cors v1.3.0

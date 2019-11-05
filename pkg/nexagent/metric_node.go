@@ -7,6 +7,7 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/shirou/gopsutil/net"
 	"log"
 	"strings"
 	"time"
@@ -198,11 +199,103 @@ func (s *NexAgent) addNodeDiskMetric(metrics *pb.Metrics, ts *time.Time) *pb.Met
 	return metrics
 }
 
+func (s *NexAgent) addNodeNetMetric(metrics *pb.Metrics, ts *time.Time) *pb.Metrics {
+	interfaces, err := net.IOCounters(true)
+	if err != nil{
+		return metrics
+	}
+
+	for _, _interface := range interfaces{
+		label := fmt.Sprintf("host=%s,path=%s", s.hostName, _interface.Name)
+
+		if s.IsNetDevice(_interface.Name){
+			netMetrics := BasicMetrics{
+				&BasicMetric{
+					Name: "node_net_bytes_sent",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.BytesSent),
+				},
+				&BasicMetric{
+					Name: "node_net_bytes_recv",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.BytesRecv),
+				},
+				&BasicMetric{
+					Name: "node_net_drop_in",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Dropin),
+				},
+				&BasicMetric{
+					Name: "node_net_drop_out",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Dropout),
+				},
+				&BasicMetric{
+					Name: "node_net_err_in",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Errin),
+				},
+				&BasicMetric{
+					Name: "node_net_err_out",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Errout),
+				},
+				&BasicMetric{
+					Name: "node_net_fifo_in",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Fifoin),
+				},
+				&BasicMetric{
+					Name: "node_net_fifo_out",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.Fifoout),
+				},
+				&BasicMetric{
+					Name: "node_net_packets_sent",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.PacketsSent),
+				},
+				&BasicMetric{
+					Name: "node_net_packets_recv",
+					Label: label,
+					Type: "gauge",
+					Value: float64(_interface.PacketsRecv),
+				},
+			}
+			s.appendMetrics(metrics, &netMetrics, "/node/metrics", pb.Metric_NODE, s.hostName, 0, ts)
+		}
+	}
+
+	return metrics
+}
+
+
 func (s *NexAgent) IsDiskDevice(deviceName string) bool {
 	diskDevicePrefix := []string{"/dev/sd", "/dev/nvme", "dev/vd"}
 
 	for _, diskPrefix := range diskDevicePrefix {
 		if strings.HasPrefix(deviceName, diskPrefix) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (s *NexAgent) IsNetDevice(deviceName string) bool {
+	netDevicePrefix := []string{"e", "w"}
+
+	for _, netPrefix := range netDevicePrefix{
+		if strings.HasPrefix(deviceName, netPrefix) {
 			return true
 		}
 	}
@@ -225,6 +318,7 @@ func (s *NexAgent) sendNodeMetrics(ts *time.Time) {
 	s.addNodeCpuMetric(metrics, ts)
 	s.addNodeMemoryMetric(metrics, ts)
 	s.addNodeDiskMetric(metrics, ts)
+	s.addNodeNetMetric(metrics, ts)
 
 	_, err := s.collectorClient.ReportMetrics(s.ctx, metrics)
 	if err != nil {
