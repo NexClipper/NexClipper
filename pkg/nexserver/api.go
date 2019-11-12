@@ -237,7 +237,7 @@ GROUP BY m1.cluster_id, clusters.name, metric_names.name`, clusterQuery)
 		return
 	}
 
-	items := make(map[string]map[string]float64)
+	items := make(map[uint]map[string]float64)
 	var clusterId uint
 	var clusterName string
 	var metricName string
@@ -249,10 +249,10 @@ GROUP BY m1.cluster_id, clusters.name, metric_names.name`, clusterQuery)
 			continue
 		}
 
-		clusterMetrics, found := items[clusterName]
+		clusterMetrics, found := items[clusterId]
 		if !found {
 			clusterMetrics = make(map[string]float64)
-			items[clusterName] = clusterMetrics
+			items[clusterId] = clusterMetrics
 		}
 
 		clusterMetrics[metricName] = value
