@@ -128,7 +128,7 @@ type MetricType struct {
 
 type Metric struct {
 	Ts    time.Time `gorm:"index"`
-	Value float64   `gorm:"index"`
+	Value float64
 
 	EndpointID uint `gorm:"index"`
 	TypeID     uint `gorm:"index"`
