@@ -4,6 +4,8 @@
 
 ![img](./docs/img/logo1_wide.png)
 
+[![Build Status](https://travis-ci.org/NexClipper/NexClipper.svg?branch=master)](https://travis-ci.org/NexClipper/NexClipper)
+
 # NexClipper Monitoring System
 
 Monitor & Manage Enterprise Cloud Native Infrastructure with NexClipper, an OSS CNCF (Cloud Native Computing Foundation) Member Company
