@@ -710,7 +710,7 @@ SELECT nodes.host as node, nodes.id as node_id, ROUND(value, 2), bucket,
     (SELECT metrics.node_id as node_id, avg(value) as value,
             metrics.name_id, metrics.label_id, %s
     FROM metrics
-    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s' AND metrics.cluster_id=%s 
+    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s 
       AND metrics.process_id=0
       AND metrics.container_id=0 %s %s
     GROUP BY bucket, metrics.node_id, metrics.name_id, metrics.label_id)
@@ -719,8 +719,7 @@ WHERE
     metrics_bucket.node_id=nodes.id AND
     metrics_bucket.name_id=metric_names.id AND
     metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, truncateQuery, query.Timezone,
-		query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1],
 		cId, nodeQuery, metricNameQuery)
 
 	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(metricQuery))
@@ -1100,7 +1099,7 @@ SELECT processes.name as process, processes.id, ROUND(value, 2), bucket,
     (SELECT metrics.process_id as process_id, avg(value) as value,
             metrics.name_id, metrics.label_id, %s
     FROM metrics
-    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
+    WHERE ts >= '%s' AND ts < '%s'
       AND metrics.cluster_id=%s %s %s %s
     GROUP BY bucket, metrics.process_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, metric_labels, processes
@@ -1108,8 +1107,7 @@ WHERE
     metrics_bucket.process_id=processes.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, truncateQuery, query.Timezone,
-		query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1],
 		cId, nodeQuery, processQuery, metricNameQuery)
 
 	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
@@ -1189,7 +1187,7 @@ SELECT containers.name as container, containers.id, ROUND(value, 2), bucket,
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id, %s
     FROM metrics
-    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
+    WHERE ts '%s' >= '%s' AND ts '%s' < '%s'
       AND metrics.cluster_id=%s %s %s %s
     GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, metric_labels, containers
@@ -1197,7 +1195,7 @@ WHERE
     metrics_bucket.container_id=containers.id AND
       metrics_bucket.name_id=metric_names.id AND
       metrics_bucket.label_id=metric_labels.id
-ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1],
 		cId, nodeQuery, containerQuery, metricNameQuery)
 
 	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
@@ -1278,7 +1276,7 @@ FROM
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id, %s
     FROM metrics
-    WHERE ts AT TIME ZONE '%s' >= '%s' AND ts AT TIME ZONE '%s' < '%s'
+    WHERE ts >= '%s' AND ts < '%s'
       AND metrics.cluster_id=%s %s
     GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, containers, k8s_pods, k8s_containers, k8s_namespaces
@@ -1289,7 +1287,7 @@ WHERE
     AND k8s_containers.k8s_pod_id=k8s_pods.id
     AND k8s_pods.k8s_namespace_id=k8s_namespaces.id %s %s
 GROUP BY bucket, pod, namespace, metric_names.name
-ORDER BY bucket`, truncateQuery, query.Timezone, query.DateRange[0], query.Timezone, query.DateRange[1],
+ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1],
 		cId, metricNameQuery, namespaceQuery, podQuery)
 
 	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(q))
@@ -1365,25 +1363,28 @@ func (s *NexServer) calculateGranularity(dateRanges []string, timezone, granular
 
 	diff := end.Sub(start).Minutes()
 	interval := int64(diff/60.0) * 5 / 5
+	if interval == 0 {
+		interval = 1
+	}
 	truncateQuery := ""
 
 	if interval < 60 {
 		truncateQuery = fmt.Sprintf(`
-			DATE_TRUNC('hour', ts AT TIME ZONE '%s') +
-			DATE_PART('minute', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d minute' as bucket`,
-			timezone, timezone, interval, interval)
+			DATE_TRUNC('hour', ts) +
+			DATE_PART('minute', ts)::int / %d * INTERVAL '%d minute' as bucket`,
+			interval, interval)
 	} else if interval < 1440 {
 		interval /= 60
 		truncateQuery = fmt.Sprintf(`
-			DATE_TRUNC('day', ts AT TIME ZONE '%s') +
-			DATE_PART('hour', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d hour' as bucket`,
-			timezone, timezone, interval, interval)
+			DATE_TRUNC('day', ts) +
+			DATE_PART('hour', ts)::int / %d * INTERVAL '%d hour' as bucket`,
+			interval, interval)
 	} else {
 		interval /= 1440
 		truncateQuery = fmt.Sprintf(`
-			DATE_TRUNC('month', ts AT TIME ZONE '%s') +
-			DATE_PART('day', ts AT TIME ZONE '%s')::int / %d * INTERVAL '%d day' as bucket`,
-			timezone, timezone, interval, interval)
+			DATE_TRUNC('month', ts) +
+			DATE_PART('day', ts)::int / %d * INTERVAL '%d day' as bucket`,
+			interval, interval)
 	}
 
 	return truncateQuery
