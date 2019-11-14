@@ -1,4 +1,5 @@
-.PHONY: compile
+.DEFAULT_GOAL=build
+.PHONY: build
 NEXSERVER=nexserver
 NEXAGENT=nexagent
 VERSION=0.3.0
@@ -16,6 +17,7 @@ compile: nexclipper.pb.go
 
 nexserver: cmd/nexserver/main.go api/nexclipper.pb.go
 	mkdir -p build/nexserver
+	go mod download
 	go build -a -o build/nexserver/nexserver ./cmd/nexserver/
 
 nexserver-docker: Dockerfile-nexserver nexserver
@@ -24,6 +26,7 @@ nexserver-docker: Dockerfile-nexserver nexserver
 
 nexagent: cmd/nexagent/main.go api/nexclipper.pb.go
 	mkdir -p build/nexagent
+	go mod download
 	go build -a -o build/nexagent/nexagent ./cmd/nexagent/
 
 nexagent-docker: Dockerfile-nexagent nexagent
@@ -37,6 +40,8 @@ nexserver-docker-push: nexserver-docker
 	docker push $(DOCKER_REGISTRY)$(NEXSERVER):$(VERSION)
 
 all: nexclipper.pb.go nexserver nexagent nexserver-docker nexagent-docker
+
+build: nexagent nexserver
 
 docker: nexserver-docker nexagent-docker
 
