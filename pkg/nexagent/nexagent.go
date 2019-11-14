@@ -521,6 +521,11 @@ func (s *NexAgent) SetApiPort(restApiPort int) {
 	s.config.Agent.ApiPort = restApiPort
 }
 
+func (s *NexAgent) SetReportInterval(reportInterval int) {
+	s.config.Agent.ReportInterval = reportInterval
+	s.reportInterval = time.Duration(s.config.Agent.ReportInterval)
+}
+
 func NewNexAgent() *NexAgent {
 	machineId, err := machineid.ProtectedID(AppName)
 	if err != nil {

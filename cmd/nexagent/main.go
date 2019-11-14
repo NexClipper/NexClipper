@@ -93,6 +93,7 @@ func main() {
 			k8sCluster := c.String("k8s.cluster")
 			k8sNamespace := c.String("k8s.namespace")
 			agentCluster := c.String("agent.cluster")
+			reportInterval := c.Int("agent.interval")
 			apiPort := c.Int("api")
 
 			nexAgent.InitWithDefault()
@@ -102,6 +103,7 @@ func main() {
 			nexAgent.SetK8sCluster(k8sCluster)
 			nexAgent.SetK8sNamespace(k8sNamespace)
 			nexAgent.SetApiPort(apiPort)
+			nexAgent.SetReportInterval(reportInterval)
 		}
 
 		if err := nexAgent.Start(); err != nil {
