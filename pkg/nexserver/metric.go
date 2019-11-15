@@ -74,6 +74,8 @@ func (s *NexServer) addMetrics(in *pb.Metrics, clusterId uint, nodeId uint, sour
 
 		s.db.Create(&metric)
 		savedCount += 1
+
+		s.metricChannel <- metric
 	}
 
 	s.metricSaveCounterLock.Lock()

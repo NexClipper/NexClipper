@@ -89,6 +89,24 @@ func initApp() *cli.App {
 			EnvVar: "NEXSERVER_DB_SSLMODE",
 			Value:  "disable",
 		},
+		cli.Float64Flag{
+			Name:   "rule.node_cpu_load1",
+			Usage:  "Basic incident rule for node's cpu load too high",
+			EnvVar: "NEXSERVER_RULE_NODE_CPU_LOAD1",
+			Value:  1.0,
+		},
+		cli.Float64Flag{
+			Name:   "rule.node_disk_free",
+			Usage:  "Basic incident rule for node's free space too small",
+			EnvVar: "NEXSERVER_RULE_NODE_DISK_FREE",
+			Value:  50.0,
+		},
+		cli.Float64Flag{
+			Name:   "rule.node_memory_free",
+			Usage:  "Basic incident rule for node's free memory too small",
+			EnvVar: "NEXSERVER_RULE_NODE_MEMORY_FREE",
+			Value:  90,
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
@@ -115,6 +133,12 @@ func initApp() *cli.App {
 			dbSslMode := c.String("db.sslmode")
 
 			nexServer.SetDatabaseConfig(dbHost, dbPort, dbUser, dbPass, dbName, dbSslMode)
+
+			ruleNodeLoad1 := c.Float64("rule.node_cpu_load1")
+			ruleNodeDiskFree := c.Float64("rule.node_disk_free")
+			ruleNodeMemoryFree := c.Float64("rule.node_memory_free")
+
+			nexServer.SetBasicRule(ruleNodeLoad1, ruleNodeDiskFree, ruleNodeMemoryFree)
 		}
 
 		_, err := nexServer.ConnectDatabase()

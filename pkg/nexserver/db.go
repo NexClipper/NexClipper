@@ -194,6 +194,17 @@ func (s *NexServer) findNode(hostName string, clusterId uint) *Node {
 	return &node
 }
 
+func (s *NexServer) findNodeById(id, clusterId uint) *Node {
+	var node Node
+
+	result := s.db.Where("id=? AND cluster_id=?", id, clusterId).First(&node)
+	if result.Error != nil {
+		return nil
+	}
+
+	return &node
+}
+
 func (s *NexServer) findContainer(containerName string, nodeId, clusterId uint) *Container {
 	var container Container
 

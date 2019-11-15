@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"sort"
 	"strings"
 	"time"
 )
@@ -68,6 +69,10 @@ func (s *NexServer) SetupApiHandler() {
 		summary.GET("/clusters/:clusterId/nodes", s.ApiSummaryNodes)
 		summary.GET("/clusters/:clusterId/nodes/:nodeId", s.ApiSummaryNodes)
 	}
+	incident := v1.Group("/incidents")
+	{
+		incident.GET("/basic", s.ApiIncidentBasic)
+	}
 
 	go func() {
 		err := router.Run(fmt.Sprintf("%s:%d", s.config.Server.BindAddress, s.config.Server.ApiPort))
@@ -110,6 +115,7 @@ func (s *NexServer) ApiStatus(c *gin.Context) {
 		"data": gin.H{
 			"uptime":            uptime.String(),
 			"metricsPerSeconds": fmt.Sprintf("%.2f", metricsPerSeconds),
+			"totalMetrics":      fmt.Sprintf("%d", s.metricSaveCounter),
 		},
 	})
 }
@@ -1187,7 +1193,7 @@ SELECT containers.name as container, containers.id, ROUND(value, 2), bucket,
     (SELECT metrics.container_id as container_id, avg(value) as value,
             metrics.name_id, metrics.label_id, %s
     FROM metrics
-    WHERE ts '%s' >= '%s' AND ts '%s' < '%s'
+    WHERE ts >= '%s' AND ts < '%s'
       AND metrics.cluster_id=%s %s %s %s
     GROUP BY bucket, metrics.container_id, metrics.name_id, metrics.label_id)
         as metrics_bucket, metric_names, metric_labels, containers
@@ -1388,4 +1394,22 @@ func (s *NexServer) calculateGranularity(dateRanges []string, timezone, granular
 	}
 
 	return truncateQuery
+}
+
+func (s *NexServer) ApiIncidentBasic(c *gin.Context) {
+	incidents := make([]*IncidentItem, 0, 16)
+
+	for eventName := range s.incidentMap {
+		incidents = append(incidents, s.incidentMap[eventName]...)
+	}
+
+	sort.Slice(incidents, func(i, j int) bool {
+		return incidents[i].DetectedTs.Unix() >= incidents[j].DetectedTs.Unix()
+	})
+
+	c.JSON(200, gin.H{
+		"status":  "ok",
+		"message": "",
+		"data":    incidents,
+	})
 }

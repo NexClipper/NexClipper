@@ -66,9 +66,16 @@ type TLSConfig struct {
 }
 
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	TLS      TLSConfig
+	Server    ServerConfig
+	Database  DatabaseConfig
+	TLS       TLSConfig
+	BasicRule BasicRuleConfig
+}
+
+type BasicRuleConfig struct {
+	NodeCpuLoad1   float64
+	NodeMemoryFree float64
+	NodeDiskFree   float64
 }
 
 type NexServer struct {
@@ -86,6 +93,9 @@ type NexServer struct {
 	serverStartTs         time.Time
 	metricSaveCounter     uint64
 	metricSaveCounterLock sync.RWMutex
+
+	incidentMap   map[string][]*IncidentItem
+	metricChannel chan Metric
 }
 
 func (s *NexServer) newAgent(in *pb.Agent, publicIpv4 string, cluster *Cluster) *Agent {
@@ -231,6 +241,11 @@ func (s *NexServer) UpdateAgent(ctx context.Context, in *pb.Agent) (*pb.Response
 	agent := s.findAgent(remoteAgent.Uuid)
 	if agent == nil {
 		s.addAgent(remoteAgent.Uuid, remoteAgent)
+
+		node := s.findNodeByAgent(remoteAgent)
+		if node != nil {
+			s.ClearAgentConnected(cluster.ID, node.ID, node.Host)
+		}
 	}
 
 	s.updateAgentInfo(remoteAgent, publicIpv4, in)
@@ -284,6 +299,10 @@ func (s *NexServer) Ping(stream pb.Collector_PingServer) error {
 			}
 			if err != nil {
 				log.Printf("Agent: %s disconnected: %v\n", agent.Uuid, err)
+
+				node := s.findNodeByAgent(agent)
+				s.FireAgentDisconnected(agent.ClusterID, node.ID, node.Host)
+
 				s.deleteAgent(agent.Uuid)
 
 				return
@@ -551,6 +570,8 @@ func (s *NexServer) Start() error {
 	pb.RegisterCollectorServer(srv, s)
 	s.serverStartTs = time.Now()
 
+	go s.InitBasicRuleChecker()
+
 	if err := srv.Serve(listen); err != nil {
 		return err
 	}
@@ -593,6 +614,8 @@ func NewNexServer() *NexServer {
 		dbLock:                make(map[string]*sync.RWMutex),
 		config:                &Config{},
 		metricSaveCounterLock: sync.RWMutex{},
+		incidentMap:           make(map[string][]*IncidentItem),
+		metricChannel:         make(chan Metric, 1024),
 	}
 
 	return server
@@ -615,4 +638,10 @@ func (s *NexServer) SetDatabaseConfig(dbHost string, dbPort int, dbUser, dbPass,
 	}
 
 	s.config.Database = dbConfig
+}
+
+func (s *NexServer) SetBasicRule(nodeCpuLoad1, nodeDiskFree, nodeMemoryFree float64) {
+	s.config.BasicRule.NodeCpuLoad1 = nodeCpuLoad1
+	s.config.BasicRule.NodeDiskFree = nodeDiskFree
+	s.config.BasicRule.NodeMemoryFree = nodeMemoryFree
 }

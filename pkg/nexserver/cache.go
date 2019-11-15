@@ -90,6 +90,25 @@ func (s *NexServer) getNode(hostName string, clusterId uint) *Node {
 	return &node
 }
 
+func (s *NexServer) getNodeById(id, clusterId uint) *Node {
+	key := fmt.Sprintf("NODEBYID_%d_%d", clusterId, id)
+
+	value, found := s.cache.Get(key)
+	if !found {
+		node := s.findNodeById(id, clusterId)
+		if node == nil {
+			return nil
+		}
+
+		s.cache.Set(key, *node, 1)
+		return node
+	}
+
+	node := value.(Node)
+
+	return &node
+}
+
 func (s *NexServer) getNodeByAgent(agent *Agent) *Node {
 	key := fmt.Sprintf("NODE_%d", agent.ID)
 
