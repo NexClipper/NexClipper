@@ -61,6 +61,7 @@ func (s *NexServer) SetupApiHandler() {
 		metrics.GET("/:clusterId/k8s/pods", s.ApiMetricsPods)
 		metrics.GET("/:clusterId/k8s/namespaces/:namespaceId/pods", s.ApiMetricsPods)
 		metrics.GET("/:clusterId/k8s/namespaces/:namespaceId/pods/:podId", s.ApiMetricsPods)
+		metrics.GET("/:clusterId/summary", s.ApiMetricsClusterSummary)
 	}
 	summary := v1.Group("/summary")
 	{
@@ -1411,5 +1412,77 @@ func (s *NexServer) ApiIncidentBasic(c *gin.Context) {
 		"status":  "ok",
 		"message": "",
 		"data":    incidents,
+	})
+}
+
+func (s *NexServer) ApiMetricsClusterSummary(c *gin.Context) {
+	cId := s.Param(c, "clusterId")
+	query := s.ParseQuery(c)
+	if s.IsValidParams(cId, query, true, true) == false {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
+
+	metricNameIds := s.findMetricIdByNames(query.MetricNames)
+	metricNameQuery := ""
+	if len(query.MetricNames) != len(metricNameIds) {
+		s.ApiResponseJson(c, 404, "bad", "invalid query parameters")
+		return
+	}
+	if len(metricNameIds) > 0 {
+		metricNameQuery = fmt.Sprintf(" AND metrics.name_id IN (%s)", strings.Join(metricNameIds, ","))
+	}
+
+	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
+
+	metricQuery := fmt.Sprintf(`
+SELECT ROUND(value, 2) as value, bucket, metric_names.name, metric_labels.label 
+FROM
+    (SELECT avg(value) as value, metrics.name_id, metrics.label_id, %s
+    FROM metrics
+    WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s 
+      AND metrics.process_id=0
+      AND metrics.container_id=0 %s
+    GROUP BY bucket, metrics.name_id, metrics.label_id)
+        as metrics_bucket, metric_names, metric_labels
+WHERE
+    metrics_bucket.name_id=metric_names.id AND
+    metrics_bucket.label_id=metric_labels.id
+ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1], cId, metricNameQuery)
+
+	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(metricQuery))
+
+	if err != nil {
+		log.Printf("failed to get metric data: %v", err)
+		s.ApiResponseJson(c, 500, "bad", fmt.Sprintf("unexpected error: %v", err))
+		return
+	}
+
+	type MetricItem struct {
+		Value       float64 `json:"value"`
+		Bucket      string  `json:"bucket"`
+		MetricName  string  `json:"metric_name"`
+		MetricLabel string  `json:"metric_label"`
+	}
+	results := make([]MetricItem, 0, 16)
+
+	for rows.Next() {
+		var item MetricItem
+
+		err := rows.Scan(&item.Value, &item.Bucket, &item.MetricName, &item.MetricLabel)
+		if err != nil {
+			log.Printf("failed to get record: %v", err)
+			continue
+		}
+
+		results = append(results, item)
+	}
+
+	c.JSON(200, gin.H{
+		"status":        "ok",
+		"message":       "",
+		"data":          results,
+		"count":         len(results),
+		"db_query_time": queryTime.String(),
 	})
 }
