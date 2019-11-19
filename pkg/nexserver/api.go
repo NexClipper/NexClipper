@@ -1436,18 +1436,17 @@ func (s *NexServer) ApiMetricsClusterSummary(c *gin.Context) {
 	truncateQuery := s.calculateGranularity(query.DateRange, query.Timezone, query.Granularity)
 
 	metricQuery := fmt.Sprintf(`
-SELECT ROUND(value, 2) as value, bucket, metric_names.name, metric_labels.label 
+SELECT ROUND(value, 2) as value, bucket, metric_names.name 
 FROM
-    (SELECT avg(value) as value, metrics.name_id, metrics.label_id, %s
+    (SELECT avg(value) as value, metrics.name_id, %s
     FROM metrics
     WHERE ts >= '%s' AND ts < '%s' AND metrics.cluster_id=%s 
       AND metrics.process_id=0
       AND metrics.container_id=0 %s
-    GROUP BY bucket, metrics.name_id, metrics.label_id)
-        as metrics_bucket, metric_names, metric_labels
+    GROUP BY bucket, metrics.name_id)
+        as metrics_bucket, metric_names
 WHERE
-    metrics_bucket.name_id=metric_names.id AND
-    metrics_bucket.label_id=metric_labels.id
+    metrics_bucket.name_id=metric_names.id
 ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1], cId, metricNameQuery)
 
 	rows, err, queryTime := s.QueryRowsWithTime(s.db.Raw(metricQuery))
@@ -1459,17 +1458,16 @@ ORDER BY bucket`, truncateQuery, query.DateRange[0], query.DateRange[1], cId, me
 	}
 
 	type MetricItem struct {
-		Value       float64 `json:"value"`
-		Bucket      string  `json:"bucket"`
-		MetricName  string  `json:"metric_name"`
-		MetricLabel string  `json:"metric_label"`
+		Value      float64 `json:"value"`
+		Bucket     string  `json:"bucket"`
+		MetricName string  `json:"metric_name"`
 	}
 	results := make([]MetricItem, 0, 16)
 
 	for rows.Next() {
 		var item MetricItem
 
-		err := rows.Scan(&item.Value, &item.Bucket, &item.MetricName, &item.MetricLabel)
+		err := rows.Scan(&item.Value, &item.Bucket, &item.MetricName)
 		if err != nil {
 			log.Printf("failed to get record: %v", err)
 			continue
