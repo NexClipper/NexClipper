@@ -74,7 +74,7 @@ Monitor & Manage Enterprise Cloud Native Infrastructure with NexClipper, an OSS 
 ### v0.4.0
 
 - Integrated full stack dashboard
-- Prometheus exporter for help search and install easily
+- Prometheus exporter management system for help search and install easily
 
 ### v0.5.0
 
@@ -86,13 +86,13 @@ Monitor & Manage Enterprise Cloud Native Infrastructure with NexClipper, an OSS 
 
 ## Architecture Overview
 
-![architecture-overview.png](./docs/img/architecture-overview.png)
+![nexclipper_architecture.png](./docs/img/nexclipper_architecture.png)
 
 
 
 ## Metrics Pipeline
 
-![metrics-pipeline.png](./docs/img/metrics-pipeline.png)
+<img src="./docs/img/metrics-pipeline.png" width="400px">
 
 - Provide system metrics from scraped data from clusters to other monitoring system like Prometheus through OpenMetrics standard format.
 
