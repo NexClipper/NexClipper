@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/cakturk/go-netstat v0.0.0-20190620190123-a633b9c55b1a // indirect
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dgraph-io/ristretto v0.0.0-20191004195602-f823dc4a5031
 	github.com/gin-contrib/cors v1.3.0
@@ -22,9 +21,8 @@ require (
 	github.com/urfave/cli v1.22.1
 	golang.org/x/sys v0.0.0-20191010194322-b09406accb47 // indirect
 	google.golang.org/grpc v1.23.0
-	gopkg.in/yaml.v2 v2.2.4 // indirect
 	k8s.io/api v0.0.0-20190905160310-fb749d2f1064 // indirect
-	k8s.io/apimachinery v0.0.0-20190831074630-461753078381
+	k8s.io/apimachinery v0.15.7
 	k8s.io/client-go v0.0.0-20190620085101-78d2af792bab
 	k8s.io/klog v0.4.0
 	k8s.io/utils v0.0.0-20190907131718-3d4f5b7dea0b // indirect
